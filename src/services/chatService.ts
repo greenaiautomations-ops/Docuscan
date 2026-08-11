@@ -1,4 +1,5 @@
 import { supabase } from '../lib/supabase'
+import { invokeFunction } from '../lib/functionsClient'
 import type { ChatMessage } from '../types/document'
 
 export async function listChatMessages(documentId: string): Promise<ChatMessage[]> {
@@ -21,13 +22,7 @@ export async function sendChatMessage(
   documentId: string,
   message: string,
 ): Promise<SendChatMessageResult> {
-  const { data, error } = await supabase.functions.invoke('chat-with-document', {
-    body: { documentId, message },
-  })
-
-  if (error) throw new Error(error.message ?? 'Failed to send message.')
-  if (data?.error) throw new Error(data.error)
-  return data as SendChatMessageResult
+  return invokeFunction<SendChatMessageResult>('chat-with-document', { documentId, message })
 }
 
 export async function clearChatHistory(documentId: string): Promise<void> {

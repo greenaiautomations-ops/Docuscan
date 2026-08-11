@@ -1,4 +1,5 @@
 import { supabase } from '../lib/supabase'
+import { invokeFunction } from '../lib/functionsClient'
 import type { Translation, TranslationLanguage, TranslationScope } from '../types/document'
 
 export async function listTranslations(documentId: string): Promise<Translation[]> {
@@ -18,11 +19,6 @@ export async function translateDocument(params: {
   scope: TranslationScope
   text?: string
 }): Promise<Translation> {
-  const { data, error } = await supabase.functions.invoke('translate-document', {
-    body: params,
-  })
-
-  if (error) throw new Error(error.message ?? 'Translation failed.')
-  if (data?.error) throw new Error(data.error)
-  return data.translation as Translation
+  const result = await invokeFunction<{ translation: Translation }>('translate-document', params)
+  return result.translation
 }

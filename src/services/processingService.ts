@@ -1,4 +1,4 @@
-import { supabase } from '../lib/supabase'
+import { invokeFunction } from '../lib/functionsClient'
 
 export interface ProcessDocumentResult {
   success: boolean
@@ -15,15 +15,5 @@ export interface ProcessDocumentResult {
  * progress in the UI instead of waiting on this promise alone.
  */
 export async function processDocument(documentId: string): Promise<ProcessDocumentResult> {
-  const { data, error } = await supabase.functions.invoke('process-document', {
-    body: { documentId },
-  })
-
-  if (error) {
-    throw new Error(error.message ?? 'Failed to start document processing.')
-  }
-  if (data?.error) {
-    throw new Error(data.error)
-  }
-  return data as ProcessDocumentResult
+  return invokeFunction<ProcessDocumentResult>('process-document', { documentId })
 }
