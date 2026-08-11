@@ -1,5 +1,14 @@
 import { supabase } from '../lib/supabase'
-import type { Document, DocumentInsert, DocumentStatus, DocumentUpdate } from '../types/document'
+import type {
+  Document,
+  DocumentAnalysis,
+  DocumentInsert,
+  DocumentOcr,
+  DocumentPage,
+  DocumentStatus,
+  DocumentUpdate,
+  ExtractedData,
+} from '../types/document'
 
 export interface DocumentFilters {
   search?: string
@@ -15,8 +24,12 @@ export async function listDocuments(filters: DocumentFilters = {}): Promise<Docu
 
   query = query.eq('is_archived', filters.archived ?? false)
 
-  if (filters.search) {
-    query = query.ilike('title', `%${filters.search}%`)
+  const term = filters.search?.trim()
+  if (term) {
+    // Matches on title (substring) OR the full-text search vector, which is
+    // built from title, issuer, document type, category, tags, the AI
+    // summary, and the raw OCR text (see refresh_document_search_vector()).
+    query = query.or(`title.ilike.%${term}%,search_vector.wfts(english).${term}`)
   }
   if (filters.category && filters.category !== 'all') {
     query = query.eq('category', filters.category)
@@ -73,8 +86,60 @@ export async function setImportant(id: string, isImportant: boolean): Promise<Do
   return updateDocument(id, { is_important: isImportant })
 }
 
-export async function retryProcessing(id: string): Promise<Document> {
-  return updateDocument(id, { status: 'processing' })
+// ---------------------------------------------------------------------
+// Phase 2 — AI analysis, OCR, pages
+// ---------------------------------------------------------------------
+
+export async function getDocumentOcr(documentId: string): Promise<DocumentOcr | null> {
+  const { data, error } = await supabase
+    .from('document_ocr')
+    .select('*')
+    .eq('document_id', documentId)
+    .order('created_at', { ascending: false })
+    .limit(1)
+    .maybeSingle()
+  if (error) throw error
+  return data
+}
+
+export async function getDocumentPages(documentId: string): Promise<DocumentPage[]> {
+  const { data, error } = await supabase
+    .from('document_pages')
+    .select('*')
+    .eq('document_id', documentId)
+    .order('page_number', { ascending: true })
+  if (error) throw error
+  return data ?? []
+}
+
+export async function getDocumentAnalysis(documentId: string): Promise<DocumentAnalysis | null> {
+  const { data, error } = await supabase
+    .from('document_analysis')
+    .select('*')
+    .eq('document_id', documentId)
+    .order('created_at', { ascending: false })
+    .limit(1)
+    .maybeSingle()
+  if (error) throw error
+  return data
+}
+
+/** Saves user corrections to the AI-extracted fields, flagging the analysis as user-edited. */
+export async function updateExtractedData(
+  analysisId: string,
+  extractedData: ExtractedData,
+): Promise<DocumentAnalysis> {
+  const { data, error } = await supabase
+    .from('document_analysis')
+    .update({
+      extracted_data: extractedData as unknown as Record<string, unknown>,
+      edited_by_user: true,
+    })
+    .eq('id', analysisId)
+    .select()
+    .single()
+  if (error) throw error
+  return data
 }
 
 export async function getDashboardData() {

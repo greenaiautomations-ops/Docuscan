@@ -1,62 +1,76 @@
-# Docuscan — Phase 1: Document Management MVP
+# Docuscan — Document Management + AI Intelligence
 
-A functional MVP for an AI-powered document management app. Phase 1 covers
-authentication, document upload/storage, a document library, a basic camera
-scanner, and a dashboard — all backed by Supabase (Postgres + RLS + Storage +
-Auth). AI/OCR features are intentionally out of scope for this phase; the UI
-has placeholders ready for Phase 2 to fill in.
+Docuscan turns uploaded documents into structured, understandable information.
+Phase 1 built the document-management foundation (auth, upload, storage,
+library, dashboard, scanner). Phase 2 adds OCR and AI document intelligence
+on top of it: automatic text extraction, classification, structured data
+extraction, summaries, a per-document AI chat, and translation.
+
+Pipeline: **Upload → Storage → OCR → Language Detection → Classification →
+AI Extraction → Summary → Database → Search / Chat / Translation**
 
 ## Stack
 
-- React 19 + TypeScript + Vite
-- Tailwind CSS v4
-- React Router 7
-- Supabase (Postgres, Row Level Security, Auth, Storage)
+- React 19 + TypeScript + Vite, Tailwind CSS v4, React Router 7
+- Supabase: Postgres + Row Level Security, Auth, Storage, Edge Functions
+- Anthropic Claude for OCR + AI (classification, extraction, summary,
+  translation, chat) — one provider, one API key, swappable behind an
+  interface
+- Voyage AI for embeddings (optional — groundwork for Phase 3 semantic search)
 - Deployed on Vercel, source on GitHub
 
 ## Project structure
 
 ```
 src/
-  components/   Reusable UI, grouped by feature (layout, documents, scan, dashboard, common)
-  pages/        Route-level views
-  hooks/        Data-fetching hooks (useAuth, useDocuments, useDashboardStats, useNotifications)
-  services/     All Supabase reads/writes (documents, storage, profile, tags, notifications, upload)
-  contexts/     AuthContext (session, profile, sign in/up/out)
-  lib/          Supabase client singleton
-  types/        Database types + domain types
-  utils/        Formatters, validation, constants
+  components/     UI, grouped by feature (layout, documents, scan, dashboard,
+                   analysis, chat, translation, common)
+  pages/          Route-level views
+  hooks/          Data-fetching + polling hooks (useAuth, useDocuments,
+                   useDocumentProcessing, useDashboardStats, useNotifications)
+  services/       All Supabase reads/writes + Edge Function calls
+                   (documents, storage, profile, tags, notifications, upload,
+                   processing, chat, translation)
+  contexts/       AuthContext (session, profile, sign in/up/out)
+  lib/            Supabase client singleton
+  types/          Database types + domain types (incl. AI extraction shapes)
+  utils/          Formatters, validation, constants
 supabase/
-  migrations/   SQL migrations (schema, RLS policies, storage bucket + policies)
+  migrations/     SQL migrations (schema, RLS, storage, Phase 2 schema + RLS)
+  functions/
+    _shared/      Auth client helper, Zod schemas, Anthropic + Voyage providers
+    process-document/      OCR -> classification -> extraction -> summary pipeline
+    chat-with-document/    Per-document Q&A grounded in OCR/analysis, no hallucination
+    translate-document/    Full/summary/selection translation into 5 languages
 ```
 
-Business/database logic lives in `services/` and `hooks/` — never directly
-inside page or component files.
+Business/database logic lives in `services/`, `hooks/`, and
+`supabase/functions/` — never directly inside page or component files.
 
 ## Prerequisites
 
 - Node.js 20+
+- The Supabase CLI: `npm install -g supabase`
 - A Supabase project (free tier is fine): https://supabase.com/dashboard
-- The Supabase CLI (optional but recommended): `npm install -g supabase`
+- An Anthropic API key: https://console.anthropic.com (used for OCR + all AI
+  features)
+- Optional: a Voyage AI key for embeddings: https://dashboard.voyageai.com
+  (Phase 2 works fully without it — embeddings are best-effort groundwork for
+  Phase 3 semantic search, and are silently skipped if this key is absent)
 
 ## 1. Clone & install
 
 ```bash
 git clone <your-repo-url>
 cd docuscan
-rm -rf node_modules package-lock.json   # only needed once, see note below
 npm install
 ```
-
-> Note: if you received this project via an automated setup, an earlier
-> partial install may have left a stray `node_modules` folder. Deleting it
-> once and reinstalling avoids odd `ENOTEMPTY` npm errors.
 
 ## 2. Create the Supabase project
 
 1. Create a new project at https://supabase.com/dashboard.
 2. In **Settings → API**, copy the **Project URL** and **anon/public key**.
-3. Copy `.env.example` to `.env` and fill both values in:
+3. Copy `.env.example` to `.env` and fill in the two `VITE_` values:
 
    ```bash
    cp .env.example .env
@@ -68,21 +82,23 @@ npm install
    ```
 
    Never put the `service_role` key, or any AI/OCR provider secret, in this
-   file or anywhere in frontend code — those only ever belong in Supabase
-   Edge Function secrets (Phase 2).
+   file or anywhere in frontend code — anything prefixed `VITE_` is bundled
+   into the client. Provider keys only ever live in Edge Function secrets
+   (step 5).
 
 ## 3. Run the database migrations
 
-The SQL in `supabase/migrations/` creates every table, index, trigger, RLS
-policy, and the storage bucket, in order:
+`supabase/migrations/` contains, in order:
 
-- `0001_init_schema.sql` — tables, indexes, triggers, auto-profile-on-signup
-- `0002_rls_policies.sql` — Row Level Security policies (every user-owned
-  table is locked to its owner)
-- `0003_storage.sql` — the private `documents` storage bucket + owner-only
-  storage policies
-
-**Option A — Supabase CLI (recommended):**
+- `0001_init_schema.sql` / `0002_rls_policies.sql` / `0003_storage.sql` —
+  Phase 1: tables, indexes, triggers, RLS, the private `documents` storage
+  bucket
+- `0004_phase2_schema.sql` — enables `pgvector`; adds processing
+  stage/error columns and full-text `search_vector` to `documents`; adds
+  status/error columns to `document_ocr`; adds per-page confidence to
+  `document_pages`; adds `document_chat_messages`, `document_translations`,
+  `document_embeddings`
+- `0005_phase2_rls.sql` — RLS for the three new Phase 2 tables
 
 ```bash
 supabase login
@@ -90,24 +106,42 @@ supabase link --project-ref your-project-ref
 supabase db push
 ```
 
-**Option B — SQL editor:** open each file in `supabase/migrations/` in order
-and run its contents in the Supabase dashboard's SQL Editor.
+(Or paste each file, in order, into the Supabase dashboard's SQL Editor.)
 
 ## 4. Configure Auth
 
-In **Authentication → Providers**, Email is enabled by default. For local
-development you can disable "Confirm email" under **Authentication →
-Settings** so you can sign in immediately after signing up; for production,
-leave confirmation on and set your Site URL / Redirect URLs under
-**Authentication → URL Configuration** to your deployed domain.
+Email auth is enabled by default. For local development you can disable
+"Confirm email" under **Authentication → Settings**; for production, keep
+confirmation on and set Site URL / Redirect URLs under **Authentication →
+URL Configuration** to your deployed domain.
 
-## 5. Run locally
+## 5. Deploy the Edge Functions + set secrets
+
+```bash
+supabase functions deploy process-document
+supabase functions deploy chat-with-document
+supabase functions deploy translate-document
+
+supabase secrets set ANTHROPIC_API_KEY=sk-ant-...
+# optional overrides / additions:
+supabase secrets set ANTHROPIC_MODEL=claude-sonnet-5
+supabase secrets set VOYAGE_API_KEY=pa-...
+```
+
+The functions authenticate using the caller's own Supabase session (the
+frontend forwards it automatically via `supabase.functions.invoke`), so they
+read/write the database under the same RLS policies as the browser client —
+no service-role key is needed or used.
+
+## 6. Run locally
 
 ```bash
 npm run dev
 ```
 
-Visit the printed local URL, sign up, and you're in.
+Sign up, upload a document, and watch it move through
+`uploaded → processing → analyzed → completed` on the Documents page and in
+the document viewer.
 
 ## Available scripts
 
@@ -122,39 +156,63 @@ npm run lint       # run oxlint
 
 1. Push this repository to GitHub.
 2. In Vercel, "Add New Project" → import the repo. Framework preset: Vite.
-3. Add the two environment variables from `.env` (`VITE_SUPABASE_URL`,
-   `VITE_SUPABASE_ANON_KEY`) under Project Settings → Environment Variables.
-4. Deploy. Build command `npm run build`, output directory `dist` (Vercel's
-   Vite preset sets these automatically).
-5. Back in Supabase, add your Vercel domain to **Authentication → URL
+3. Add `VITE_SUPABASE_URL` and `VITE_SUPABASE_ANON_KEY` under Project
+   Settings → Environment Variables. (Edge Function secrets are configured
+   in Supabase, not Vercel — see step 5 above.)
+4. Deploy. Build command `npm run build`, output directory `dist`.
+5. In Supabase, add your Vercel domain to **Authentication → URL
    Configuration → Redirect URLs**.
 
-## What's implemented (Phase 1)
+## Testing the full Phase 2 flow
 
-- Email/password sign up, sign in, sign out; persisted sessions; protected
-  routes; a profile row auto-created on signup (`profiles` table)
-- Document upload (PDF/JPG/JPEG/PNG/WEBP, 25MB limit) with status tracking
-  (`uploading` → `processing` → `completed`/`failed`) and retry on failure
-- Documents library: search, filters (category, status, important, archived),
-  rename, delete, archive/unarchive, mark important, open
-- Document viewer: signed-URL preview/download, file info panel, and clearly
-  labeled placeholder sections for AI Summary, Translation, Important Dates,
-  Payments, Appointments, and AI Chat (Phase 2)
-- Dashboard: total documents, recently added, important documents, documents
-  needing action (failed uploads), recent notifications — all live Supabase
-  queries
-- Basic browser camera scanner: permission request, capture, preview, retake,
-  and hand-off into the same upload pipeline
-- Calendar, Notifications, and Settings pages are fully functional shells:
-  Notifications reads/writes real `notifications` rows; Settings edits the
-  real `profiles` row; Calendar is a working month view with an extension
-  point for Phase 2's date extraction
-- RLS enabled on every user-owned table; a private Storage bucket with
-  owner-only policies keyed off the `{user_id}/...` path prefix
+1. Sign in, go to **Upload**, upload a PDF or image.
+2. The document row moves `uploading → uploaded`, then the Edge Function
+   takes over: `processing` (stages: Reading… → Extracting text… →
+   Understanding… → Finding important information… → Creating summary…) →
+   `analyzed` → `completed`. The Documents list and the viewer poll and
+   update live — no manual refresh needed.
+3. Open the document. You'll see, in order: the file preview, AI Summary,
+   Document Type, Important Information, Dates, Payments, Required Action,
+   and a collapsible raw Extracted Data JSON block.
+4. Try **Explain** (asks the AI chat to summarize in plain language),
+   **Ask AI** (open-ended Q&A grounded only in this document — try "When is
+   the deadline?" or "How much do I need to pay?"), **Translate** (full
+   text, summary, or pasted excerpt, into English/German/Spanish/Chinese/
+   Russian), and **Edit Information** (correct any AI-extracted field).
+5. Search for the document from the Documents page by title, by a phrase
+   from its OCR text, by its detected type, or by its issuer — all are
+   indexed in `documents.search_vector`.
+6. To see retry handling, temporarily remove `ANTHROPIC_API_KEY` from your
+   Edge Function secrets, upload a document (it will land on `failed` with
+   an error message), restore the key, and click **Retry Processing**.
 
-## What's intentionally NOT in Phase 1
+## What's implemented (Phase 1 + Phase 2)
 
-AI/OCR processing, translation, payment/appointment extraction, calendar
-intelligence, and AI chat. The document viewer and calendar have placeholder
-UI and the schema (`document_ocr`, `document_analysis`) already has room for
-Phase 2 to plug into without further schema changes.
+Auth, protected routes, profiles, document upload/storage/library/viewer,
+dashboard, camera scanner, and Calendar/Notifications/Settings shells
+(Phase 1) — plus, in Phase 2: server-side OCR (PDF, JPG/JPEG, PNG, WEBP,
+multi-page PDFs) via a Supabase Edge Function; a provider-independent AI
+service abstraction (`analyzeDocument`-style functions: OCR, classify,
+extract, summarize, translate, answer questions, generate embeddings) with
+Zod-validated structured output and automatic one-shot retry on invalid AI
+JSON; automatic document type classification (15 types) and language
+detection; structured entity extraction with per-field confidence scores
+that never invents missing data; a 7-question AI summary that separates
+extracted fact from AI interpretation; an upgraded document viewer with
+Explain / Translate / Ask AI / Edit Information / Retry Processing actions;
+per-document AI chat with persisted history that refuses to hallucinate;
+full/summary/selection translation into 5 languages, stored separately from
+the original OCR text; full-text document search across title, OCR text,
+document type, issuer, and tags; a pgvector-backed `document_embeddings`
+table (embeddings generated best-effort via Voyage AI) as groundwork for
+Phase 3 semantic search — without building out RAG yet; and RLS on every new
+table, so a user can never read another user's OCR, analysis, translations,
+or chat.
+
+## What's intentionally NOT in Phase 2
+
+Advanced calendar intelligence, payment tracking, appointment management,
+automated reminders, an advanced notification system, family/shared
+accounts, email integration, and advanced animations. Those belong to
+Phase 3, along with turning the embeddings groundwork into full semantic
+search / RAG.

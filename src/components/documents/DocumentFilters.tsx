@@ -12,7 +12,7 @@ interface DocumentFiltersProps {
   onArchivedChange: (value: boolean) => void
 }
 
-const STATUSES = ['all', 'uploading', 'processing', 'completed', 'failed']
+const STATUSES = ['all', 'uploading', 'uploaded', 'processing', 'analyzed', 'completed', 'failed']
 
 export function DocumentFilters({
   category,

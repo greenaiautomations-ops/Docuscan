@@ -1,5 +1,6 @@
 import { createDocument, updateDocument, deleteDocument } from './documentService'
 import { buildDocumentPath, uploadDocumentFile, deleteDocumentFile } from './storageService'
+import { processDocument } from './processingService'
 import { validateFile } from '../utils/validation'
 import type { Document, DocumentCategory } from '../types/document'
 
@@ -12,12 +13,14 @@ export interface UploadOptions {
 }
 
 /**
- * Orchestrates the full Phase 1 upload pipeline:
+ * Orchestrates the Phase 1+2 upload pipeline:
  * validate -> create document row (uploading) -> push file to storage ->
- * flip to processing -> flip to completed (or failed + rollback on error).
+ * flip to uploaded -> kick off server-side OCR/AI processing.
  *
- * Phase 2 will replace the "processing -> completed" step with a real
- * OCR/AI Edge Function that updates the row asynchronously instead.
+ * Processing runs in a Supabase Edge Function and can take up to a minute,
+ * updating `status`/`processing_stage` on the document row as it goes.
+ * This function does not wait for processing to finish — callers should
+ * poll/refetch the document (see useDocumentProcessing) to reflect progress.
  */
 export async function uploadDocument({
   userId,
@@ -48,17 +51,19 @@ export async function uploadDocument({
 
   try {
     await uploadDocumentFile(path, file)
-    document = await updateDocument(document.id, { file_path: path, status: 'processing' })
-    onStatusChange?.('processing')
+    document = await updateDocument(document.id, { file_path: path, status: 'uploaded' })
+    onStatusChange?.('uploaded')
 
-    // Phase 1 has no backend processing worker yet, so we finalize
-    // immediately. Phase 2 hooks in here with real OCR/AI analysis.
-    document = await updateDocument(document.id, { status: 'completed' })
-    onStatusChange?.('completed')
+    // Fire-and-forget: the Edge Function updates status/processing_stage on
+    // the document row throughout, and marks status='failed' on error, so
+    // there's nothing further to do with this promise here.
+    void processDocument(document.id).catch(() => undefined)
 
     return document
   } catch (err) {
-    await updateDocument(document.id, { status: 'failed' }).catch(() => undefined)
+    await updateDocument(document.id, { status: 'failed', error_message: 'File upload failed.' }).catch(
+      () => undefined,
+    )
     onStatusChange?.('failed')
     throw err
   }
@@ -71,16 +76,18 @@ export async function retryUpload(document: Document, file: File): Promise<Docum
     throw new Error(validation.error)
   }
 
-  await updateDocument(document.id, { status: 'uploading' })
+  await updateDocument(document.id, { status: 'uploading', error_message: null })
   const path = buildDocumentPath(document.user_id, document.id, file.name)
 
   try {
     await uploadDocumentFile(path, file)
-    let updated = await updateDocument(document.id, { file_path: path, status: 'processing' })
-    updated = await updateDocument(document.id, { status: 'completed' })
+    const updated = await updateDocument(document.id, { file_path: path, status: 'uploaded' })
+    void processDocument(document.id).catch(() => undefined)
     return updated
   } catch (err) {
-    await updateDocument(document.id, { status: 'failed' }).catch(() => undefined)
+    await updateDocument(document.id, { status: 'failed', error_message: 'File upload failed.' }).catch(
+      () => undefined,
+    )
     throw err
   }
 }

@@ -46,3 +46,7 @@ export function titleCase(value: string): string {
     .map((word) => word[0].toUpperCase() + word.slice(1))
     .join(' ')
 }
+
+export function formatConfidence(confidence: number): string {
+  return `${Math.round(confidence * 100)}%`
+}

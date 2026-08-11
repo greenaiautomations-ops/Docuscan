@@ -2,9 +2,25 @@
 // Regenerate with `supabase gen types typescript --linked` once the project
 // is linked, and this file can be replaced 1:1.
 
-export type DocumentStatus = 'uploading' | 'processing' | 'completed' | 'failed'
+export type DocumentStatus =
+  | 'uploading'
+  | 'uploaded'
+  | 'processing'
+  | 'analyzed'
+  | 'completed'
+  | 'failed'
+export type ProcessingStage =
+  | 'reading'
+  | 'extracting_text'
+  | 'understanding'
+  | 'finding_important_information'
+  | 'creating_summary'
 export type DocumentImportance = 'low' | 'normal' | 'high'
 export type NotificationType = 'info' | 'success' | 'warning' | 'error' | 'action_required'
+export type ChatRole = 'user' | 'assistant'
+export type TranslationLanguage = 'en' | 'de' | 'es' | 'zh' | 'ru'
+export type TranslationScope = 'full' | 'summary' | 'selection'
+export type OcrStatus = 'pending' | 'processing' | 'completed' | 'failed'
 
 export interface Database {
   public: {
@@ -46,6 +62,10 @@ export interface Database {
           importance: DocumentImportance
           is_important: boolean
           is_archived: boolean
+          processing_stage: ProcessingStage | null
+          error_message: string | null
+          issuer: string | null
+          language: string | null
           created_at: string
           updated_at: string
         }
@@ -63,6 +83,10 @@ export interface Database {
           importance?: DocumentImportance
           is_important?: boolean
           is_archived?: boolean
+          processing_stage?: ProcessingStage | null
+          error_message?: string | null
+          issuer?: string | null
+          language?: string | null
           created_at?: string
           updated_at?: string
         }
@@ -76,6 +100,7 @@ export interface Database {
           page_number: number
           image_path: string
           extracted_text: string | null
+          confidence: number | null
           created_at: string
         }
         Insert: {
@@ -84,6 +109,7 @@ export interface Database {
           page_number: number
           image_path: string
           extracted_text?: string | null
+          confidence?: number | null
           created_at?: string
         }
         Update: Partial<Database['public']['Tables']['document_pages']['Insert']>
@@ -102,6 +128,9 @@ export interface Database {
           document_id: string
           raw_text: string | null
           confidence: number | null
+          status: OcrStatus
+          error_message: string | null
+          provider: string
           created_at: string
           updated_at: string
         }
@@ -110,6 +139,9 @@ export interface Database {
           document_id: string
           raw_text?: string | null
           confidence?: number | null
+          status?: OcrStatus
+          error_message?: string | null
+          provider?: string
           created_at?: string
           updated_at?: string
         }
@@ -131,6 +163,8 @@ export interface Database {
           document_type: string | null
           extracted_data: Record<string, unknown>
           confidence: number | null
+          language: string | null
+          edited_by_user: boolean
           created_at: string
           updated_at: string
         }
@@ -141,6 +175,8 @@ export interface Database {
           document_type?: string | null
           extracted_data?: Record<string, unknown>
           confidence?: number | null
+          language?: string | null
+          edited_by_user?: boolean
           created_at?: string
           updated_at?: string
         }
@@ -228,9 +264,97 @@ export interface Database {
           },
         ]
       }
+      document_chat_messages: {
+        Row: {
+          id: string
+          user_id: string
+          document_id: string
+          role: ChatRole
+          content: string
+          created_at: string
+        }
+        Insert: {
+          id?: string
+          user_id: string
+          document_id: string
+          role: ChatRole
+          content: string
+          created_at?: string
+        }
+        Update: Partial<Database['public']['Tables']['document_chat_messages']['Insert']>
+        Relationships: [
+          {
+            foreignKeyName: 'document_chat_messages_document_id_fkey'
+            columns: ['document_id']
+            referencedRelation: 'documents'
+            referencedColumns: ['id']
+          },
+        ]
+      }
+      document_translations: {
+        Row: {
+          id: string
+          document_id: string
+          language: TranslationLanguage
+          scope: TranslationScope
+          source_excerpt: string | null
+          translated_text: string
+          created_at: string
+        }
+        Insert: {
+          id?: string
+          document_id: string
+          language: TranslationLanguage
+          scope?: TranslationScope
+          source_excerpt?: string | null
+          translated_text: string
+          created_at?: string
+        }
+        Update: Partial<Database['public']['Tables']['document_translations']['Insert']>
+        Relationships: [
+          {
+            foreignKeyName: 'document_translations_document_id_fkey'
+            columns: ['document_id']
+            referencedRelation: 'documents'
+            referencedColumns: ['id']
+          },
+        ]
+      }
+      document_embeddings: {
+        Row: {
+          id: string
+          document_id: string
+          chunk_index: number
+          content: string
+          embedding: number[] | null
+          created_at: string
+        }
+        Insert: {
+          id?: string
+          document_id: string
+          chunk_index?: number
+          content: string
+          embedding?: number[] | null
+          created_at?: string
+        }
+        Update: Partial<Database['public']['Tables']['document_embeddings']['Insert']>
+        Relationships: [
+          {
+            foreignKeyName: 'document_embeddings_document_id_fkey'
+            columns: ['document_id']
+            referencedRelation: 'documents'
+            referencedColumns: ['id']
+          },
+        ]
+      }
     }
     Views: Record<string, never>
-    Functions: Record<string, never>
+    Functions: {
+      refresh_document_search_vector: {
+        Args: { p_document_id: string }
+        Returns: undefined
+      }
+    }
     Enums: Record<string, never>
     CompositeTypes: Record<string, never>
   }
