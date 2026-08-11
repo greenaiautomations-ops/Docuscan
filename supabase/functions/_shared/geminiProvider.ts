@@ -1,9 +1,11 @@
-// NOTE: Gemini (geminiProvider.ts) is the active provider by default — see
-// process-document/chat-with-document/translate-document. This Anthropic Claude
-// implementation is kept as a drop-in alternative: it exposes the exact same
-// function signatures, so swapping providers is just changing the import path
-// in those three functions (and setting ANTHROPIC_API_KEY instead of
-// GEMINI_API_KEY as a secret).
+// AI provider implementation backed by Google's Gemini API. Exposes the same
+// function signatures as anthropicProvider.ts (performOcr, classifyDocument,
+// extractInformation, summarizeDocument, translateText, answerQuestion) so
+// the Edge Functions can swap providers by changing a single import.
+//
+// Gemini's Flash models have a genuine free tier (no credit card required
+// via Google AI Studio keys) and support native PDF/image understanding
+// plus JSON-mode structured output, which is what this file uses.
 
 import {
   ClassificationResultSchema,
@@ -17,85 +19,97 @@ import {
   type SummaryResult,
 } from './schemas.ts'
 
-const ANTHROPIC_API_URL = 'https://api.anthropic.com/v1/messages'
-const ANTHROPIC_VERSION = '2023-06-01'
-const DEFAULT_MODEL = 'claude-sonnet-5'
+const GEMINI_API_BASE = 'https://generativelanguage.googleapis.com/v1beta/models'
+const DEFAULT_MODEL = 'gemini-flash-latest'
 
 function getApiKey(): string {
-  const key = Deno.env.get('ANTHROPIC_API_KEY')
+  const key = Deno.env.get('GEMINI_API_KEY')
   if (!key) {
     throw new Error(
-      'ANTHROPIC_API_KEY is not configured. Set it with `supabase secrets set ANTHROPIC_API_KEY=...`.',
+      'GEMINI_API_KEY is not configured. Set it with `supabase secrets set GEMINI_API_KEY=...` ' +
+        '(get a free key at https://aistudio.google.com/apikey).',
     )
   }
   return key
 }
 
 function getModel(): string {
-  return Deno.env.get('ANTHROPIC_MODEL') || DEFAULT_MODEL
+  return Deno.env.get('GEMINI_MODEL') || DEFAULT_MODEL
 }
 
-type ContentBlock =
-  | { type: 'text'; text: string }
-  | { type: 'image'; source: { type: 'base64'; media_type: string; data: string } }
-  | { type: 'document'; source: { type: 'base64'; media_type: 'application/pdf'; data: string } }
+type GeminiPart =
+  | { text: string }
+  | { inline_data: { mime_type: string; data: string } }
 
-interface ClaudeCallOptions {
+interface GeminiCallOptions {
   system: string
-  content: ContentBlock[]
+  parts: GeminiPart[]
   maxTokens?: number
+  jsonMode?: boolean
 }
 
-/** Low-level call to the Anthropic Messages API. Returns the raw text reply. */
-async function callClaude({ system, content, maxTokens = 4096 }: ClaudeCallOptions): Promise<string> {
-  const response = await fetch(ANTHROPIC_API_URL, {
+/** Low-level call to the Gemini generateContent API. Returns the raw text reply. */
+async function callGemini({ system, parts, maxTokens = 4096, jsonMode = false }: GeminiCallOptions): Promise<string> {
+  const url = `${GEMINI_API_BASE}/${getModel()}:generateContent`
+
+  const response = await fetch(url, {
     method: 'POST',
     headers: {
       'content-type': 'application/json',
-      'x-api-key': getApiKey(),
-      'anthropic-version': ANTHROPIC_VERSION,
+      'x-goog-api-key': getApiKey(),
     },
     body: JSON.stringify({
-      model: getModel(),
-      max_tokens: maxTokens,
-      system,
-      messages: [{ role: 'user', content }],
+      contents: [{ role: 'user', parts }],
+      systemInstruction: { parts: [{ text: system }] },
+      generationConfig: {
+        maxOutputTokens: maxTokens,
+        ...(jsonMode ? { responseMimeType: 'application/json' } : {}),
+      },
     }),
   })
 
   if (!response.ok) {
     const body = await response.text().catch(() => '')
-    throw new Error(`Anthropic API error (${response.status}): ${body.slice(0, 500)}`)
+    throw new Error(`Gemini API error (${response.status}): ${body.slice(0, 500)}`)
   }
 
   const data = await response.json()
-  const text = data.content?.find((b: { type: string }) => b.type === 'text')?.text
-  if (typeof text !== 'string') {
-    throw new Error('Anthropic API returned no text content.')
+  const candidate = data.candidates?.[0]
+  if (!candidate) {
+    const blockReason = data.promptFeedback?.blockReason
+    throw new Error(`Gemini API returned no candidates.${blockReason ? ` Blocked: ${blockReason}` : ''}`)
+  }
+  if (candidate.finishReason && !['STOP', 'MAX_TOKENS'].includes(candidate.finishReason)) {
+    throw new Error(`Gemini API stopped early: ${candidate.finishReason}`)
+  }
+
+  const text = candidate.content?.parts?.map((p: { text?: string }) => p.text ?? '').join('')
+  if (typeof text !== 'string' || text.length === 0) {
+    throw new Error('Gemini API returned no text content.')
   }
   return text
 }
 
 /**
- * Calls Claude and validates the JSON reply against a Zod schema. If the
- * first reply fails to parse/validate, retries once with an explicit
+ * Calls Gemini in JSON mode and validates the reply against a Zod schema.
+ * If the first reply fails validation, retries once with an explicit
  * correction instruction. Throws (rather than saving) if it still fails,
  * so the pipeline can mark the document as failed instead of corrupting data.
  */
-async function callClaudeForJson<T>(
-  options: ClaudeCallOptions,
+async function callGeminiForJson<T>(
+  options: Omit<GeminiCallOptions, 'jsonMode'>,
   schema: Parameters<typeof parseJsonWithSchema<T>>[1],
 ): Promise<T> {
-  const firstReply = await callClaude(options)
+  const firstReply = await callGemini({ ...options, jsonMode: true })
   try {
     return parseJsonWithSchema(firstReply, schema)
   } catch (firstError) {
-    const retryReply = await callClaude({
+    const retryReply = await callGemini({
       ...options,
-      content: [
-        ...options.content,
+      jsonMode: true,
+      parts: [
+        ...options.parts,
         {
-          type: 'text',
           text:
             `Your previous reply could not be parsed as valid JSON matching the required schema ` +
             `(error: ${firstError instanceof Error ? firstError.message : String(firstError)}). ` +
@@ -107,21 +121,15 @@ async function callClaudeForJson<T>(
   }
 }
 
-function fileToContentBlock(fileType: string, base64Data: string): ContentBlock {
-  if (fileType === 'application/pdf') {
-    return { type: 'document', source: { type: 'base64', media_type: 'application/pdf', data: base64Data } }
-  }
-  return {
-    type: 'image',
-    source: { type: 'base64', media_type: fileType as 'image/jpeg', data: base64Data },
-  }
+function fileToPart(fileType: string, base64Data: string): GeminiPart {
+  return { inline_data: { mime_type: fileType, data: base64Data } }
 }
 
 // ---------------------------------------------------------------------
 // OCR
 // ---------------------------------------------------------------------
 export async function performOcr(fileType: string, base64Data: string): Promise<OcrResult> {
-  return callClaudeForJson(
+  return callGeminiForJson(
     {
       system:
         'You are a precise OCR engine. Transcribe every page of the provided document exactly as ' +
@@ -130,9 +138,9 @@ export async function performOcr(fileType: string, base64Data: string): Promise<
         '{"pages": [{"page_number": number, "text": string, "confidence": number between 0 and 1}], ' +
         '"overall_confidence": number between 0 and 1}. Confidence reflects how legible/certain the ' +
         'transcription is, not document quality.',
-      content: [
-        fileToContentBlock(fileType, base64Data),
-        { type: 'text', text: 'Transcribe this document. Reply with only the JSON object.' },
+      parts: [
+        fileToPart(fileType, base64Data),
+        { text: 'Transcribe this document. Reply with only the JSON object.' },
       ],
       maxTokens: 8192,
     },
@@ -144,7 +152,7 @@ export async function performOcr(fileType: string, base64Data: string): Promise<
 // Classification + language detection
 // ---------------------------------------------------------------------
 export async function classifyDocument(ocrText: string): Promise<ClassificationResult> {
-  return callClaudeForJson(
+  return callGeminiForJson(
     {
       system:
         'Classify the document type and detect its language from the OCR text below. ' +
@@ -153,7 +161,7 @@ export async function classifyDocument(ocrText: string): Promise<ClassificationR
         'utility_bill, appointment, certificate, receipt, subscription, other. ' +
         'language should be the language name in English (e.g. "English", "German"). ' +
         'Reply with ONLY JSON: {"document_type": string, "language": string, "confidence": number 0-1}.',
-      content: [{ type: 'text', text: ocrText.slice(0, 20000) }],
+      parts: [{ text: ocrText.slice(0, 20000) }],
       maxTokens: 512,
     },
     ClassificationResultSchema,
@@ -164,7 +172,7 @@ export async function classifyDocument(ocrText: string): Promise<ClassificationR
 // Structured information extraction
 // ---------------------------------------------------------------------
 export async function extractInformation(ocrText: string): Promise<ExtractedData> {
-  return callClaudeForJson(
+  return callGeminiForJson(
     {
       system:
         'Extract structured information from the OCR text below. Only include values that are ' +
@@ -183,7 +191,7 @@ export async function extractInformation(ocrText: string): Promise<ExtractedData
         '"customer_number": FIELD | null, "phone": FIELD | null, "email": FIELD | null, "iban": FIELD | null, ' +
         '"required_action": FIELD | null, "priority": "low" | "medium" | "high" | null} ' +
         'where FIELD = {"value": string, "confidence": number}.',
-      content: [{ type: 'text', text: ocrText.slice(0, 20000) }],
+      parts: [{ text: ocrText.slice(0, 20000) }],
       maxTokens: 4096,
     },
     ExtractedDataSchema,
@@ -197,7 +205,7 @@ export async function summarizeDocument(
   ocrText: string,
   extractedData: ExtractedData,
 ): Promise<SummaryResult> {
-  return callClaudeForJson(
+  return callGeminiForJson(
     {
       system:
         'Summarize the document for someone who has not read it. Base every answer strictly on the ' +
@@ -207,9 +215,8 @@ export async function summarizeDocument(
         '"who_sent_it": string, "what_it_means": string, "what_to_do": string, ' +
         '"has_deadline": boolean, "deadline_detail": string | null, ' +
         '"involves_money": boolean, "money_detail": string | null, "next_action": string}.',
-      content: [
+      parts: [
         {
-          type: 'text',
           text: `OCR TEXT:\n${ocrText.slice(0, 15000)}\n\nEXTRACTED DATA:\n${JSON.stringify(extractedData)}`,
         },
       ],
@@ -232,11 +239,11 @@ const LANGUAGE_NAMES: Record<string, string> = {
 
 export async function translateText(text: string, targetLanguage: string): Promise<string> {
   const languageName = LANGUAGE_NAMES[targetLanguage] ?? targetLanguage
-  return callClaude({
+  return callGemini({
     system:
       `Translate the given text into ${languageName}. Preserve meaning, tone, and structure. ` +
       'Reply with ONLY the translated text — no preamble, no explanation, no quotes around it.',
-    content: [{ type: 'text', text: text.slice(0, 20000) }],
+    parts: [{ text: text.slice(0, 20000) }],
     maxTokens: 4096,
   })
 }
@@ -259,16 +266,15 @@ export async function answerQuestion(
     .map((turn) => `${turn.role === 'user' ? 'User' : 'Assistant'}: ${turn.content}`)
     .join('\n')
 
-  return callClaude({
+  return callGemini({
     system:
       'You answer questions about ONE specific document, using only the document context provided below. ' +
       'If the answer is not present in the context, reply exactly: "I couldn\'t find this information in ' +
       'the document." Do not guess, do not use outside knowledge about the sender/topic, and do not ' +
       'invent facts. Keep answers short and direct.\n\n' +
       `DOCUMENT CONTEXT:\n${documentContext.slice(0, 15000)}`,
-    content: [
+    parts: [
       {
-        type: 'text',
         text: historyBlock ? `${historyBlock}\nUser: ${question}` : `User: ${question}`,
       },
     ],

@@ -13,10 +13,10 @@ AI Extraction → Summary → Database → Search / Chat / Translation**
 
 - React 19 + TypeScript + Vite, Tailwind CSS v4, React Router 7
 - Supabase: Postgres + Row Level Security, Auth, Storage, Edge Functions
-- Anthropic Claude for OCR + AI (classification, extraction, summary,
-  translation, chat) — one provider, one API key, swappable behind an
-  interface
-- Voyage AI for embeddings (optional — groundwork for Phase 3 semantic search)
+- Google Gemini for OCR + AI (classification, extraction, summary,
+  translation, chat) *and* embeddings — one free-tier API key, no credit
+  card required, swappable behind a provider interface (an Anthropic Claude
+  implementation ships too — see `supabase/functions/_shared/`)
 - Deployed on Vercel, source on GitHub
 
 ## Project structure
@@ -38,7 +38,8 @@ src/
 supabase/
   migrations/     SQL migrations (schema, RLS, storage, Phase 2 schema + RLS)
   functions/
-    _shared/      Auth client helper, Zod schemas, Anthropic + Voyage providers
+    _shared/      Auth client helper, Zod schemas, Gemini provider (default) +
+                   Anthropic Claude provider (drop-in alternative)
     process-document/      OCR -> classification -> extraction -> summary pipeline
     chat-with-document/    Per-document Q&A grounded in OCR/analysis, no hallucination
     translate-document/    Full/summary/selection translation into 5 languages
@@ -52,11 +53,11 @@ Business/database logic lives in `services/`, `hooks/`, and
 - Node.js 20+
 - The Supabase CLI: `npm install -g supabase`
 - A Supabase project (free tier is fine): https://supabase.com/dashboard
-- An Anthropic API key: https://console.anthropic.com (used for OCR + all AI
-  features)
-- Optional: a Voyage AI key for embeddings: https://dashboard.voyageai.com
-  (Phase 2 works fully without it — embeddings are best-effort groundwork for
-  Phase 3 semantic search, and are silently skipped if this key is absent)
+- A Gemini API key: https://aistudio.google.com/apikey — free, no credit card
+  required (Flash models). Used for OCR, classification, extraction, summary,
+  translation, chat, and embeddings. Embeddings are best-effort groundwork for
+  Phase 3 semantic search and are silently skipped if processing hits a quota
+  limit — everything else still works.
 
 ## 1. Clone & install
 
@@ -122,10 +123,9 @@ supabase functions deploy process-document
 supabase functions deploy chat-with-document
 supabase functions deploy translate-document
 
-supabase secrets set ANTHROPIC_API_KEY=sk-ant-...
-# optional overrides / additions:
-supabase secrets set ANTHROPIC_MODEL=claude-sonnet-5
-supabase secrets set VOYAGE_API_KEY=pa-...
+supabase secrets set GEMINI_API_KEY=AIza...
+# optional override:
+supabase secrets set GEMINI_MODEL=gemini-flash-latest
 ```
 
 The functions authenticate using the caller's own Supabase session (the
@@ -182,7 +182,7 @@ npm run lint       # run oxlint
 5. Search for the document from the Documents page by title, by a phrase
    from its OCR text, by its detected type, or by its issuer — all are
    indexed in `documents.search_vector`.
-6. To see retry handling, temporarily remove `ANTHROPIC_API_KEY` from your
+6. To see retry handling, temporarily remove `GEMINI_API_KEY` from your
    Edge Function secrets, upload a document (it will land on `failed` with
    an error message), restore the key, and click **Retry Processing**.
 
@@ -193,9 +193,10 @@ dashboard, camera scanner, and Calendar/Notifications/Settings shells
 (Phase 1) — plus, in Phase 2: server-side OCR (PDF, JPG/JPEG, PNG, WEBP,
 multi-page PDFs) via a Supabase Edge Function; a provider-independent AI
 service abstraction (`analyzeDocument`-style functions: OCR, classify,
-extract, summarize, translate, answer questions, generate embeddings) with
-Zod-validated structured output and automatic one-shot retry on invalid AI
-JSON; automatic document type classification (15 types) and language
+extract, summarize, translate, answer questions, generate embeddings),
+backed by Google Gemini by default (an Anthropic Claude implementation of
+the same interface ships alongside it) with Zod-validated structured output
+and automatic one-shot retry on invalid AI JSON; automatic document type classification (15 types) and language
 detection; structured entity extraction with per-field confidence scores
 that never invents missing data; a 7-question AI summary that separates
 extracted fact from AI interpretation; an upgraded document viewer with
@@ -204,7 +205,7 @@ per-document AI chat with persisted history that refuses to hallucinate;
 full/summary/selection translation into 5 languages, stored separately from
 the original OCR text; full-text document search across title, OCR text,
 document type, issuer, and tags; a pgvector-backed `document_embeddings`
-table (embeddings generated best-effort via Voyage AI) as groundwork for
+table (embeddings generated best-effort via Gemini) as groundwork for
 Phase 3 semantic search — without building out RAG yet; and RLS on every new
 table, so a user can never read another user's OCR, analysis, translations,
 or chat.

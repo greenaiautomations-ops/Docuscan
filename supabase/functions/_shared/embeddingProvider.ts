@@ -1,40 +1,46 @@
-const VOYAGE_API_URL = 'https://api.voyageai.com/v1/embeddings'
-const EMBEDDING_MODEL = 'voyage-3-lite' // 512 dimensions — matches document_embeddings.embedding
+const GEMINI_API_BASE = 'https://generativelanguage.googleapis.com/v1beta/models'
+const DEFAULT_EMBEDDING_MODEL = 'gemini-embedding-001'
+const EMBEDDING_DIMENSIONS = 512 // matches document_embeddings.embedding vector(512)
 
 /**
- * Generates an embedding vector for a chunk of text. Embeddings are
- * best-effort and optional in Phase 2 (architecture prep for Phase 3
- * semantic search) — if VOYAGE_API_KEY isn't configured, callers should
- * treat a thrown error as non-fatal and simply skip storing embeddings.
+ * Generates an embedding vector for a chunk of text using Gemini's
+ * embedding model (same GEMINI_API_KEY as OCR/AI — no separate provider or
+ * signup needed). Embeddings are best-effort and optional in Phase 2
+ * (architecture prep for Phase 3 semantic search) — if GEMINI_API_KEY isn't
+ * configured, or the request fails, callers should treat a thrown error as
+ * non-fatal and simply skip storing embeddings.
  */
 export async function generateEmbedding(text: string): Promise<number[]> {
-  const apiKey = Deno.env.get('VOYAGE_API_KEY')
+  const apiKey = Deno.env.get('GEMINI_API_KEY')
   if (!apiKey) {
-    throw new Error('VOYAGE_API_KEY is not configured; skipping embedding generation.')
+    throw new Error('GEMINI_API_KEY is not configured; skipping embedding generation.')
   }
 
-  const response = await fetch(VOYAGE_API_URL, {
+  const model = Deno.env.get('GEMINI_EMBEDDING_MODEL') || DEFAULT_EMBEDDING_MODEL
+  const url = `${GEMINI_API_BASE}/${model}:embedContent`
+
+  const response = await fetch(url, {
     method: 'POST',
     headers: {
       'content-type': 'application/json',
-      authorization: `Bearer ${apiKey}`,
+      'x-goog-api-key': apiKey,
     },
     body: JSON.stringify({
-      model: EMBEDDING_MODEL,
-      input: [text.slice(0, 8000)],
-      input_type: 'document',
+      content: { parts: [{ text: text.slice(0, 8000) }] },
+      outputDimensionality: EMBEDDING_DIMENSIONS,
+      taskType: 'RETRIEVAL_DOCUMENT',
     }),
   })
 
   if (!response.ok) {
     const body = await response.text().catch(() => '')
-    throw new Error(`Voyage AI embeddings error (${response.status}): ${body.slice(0, 300)}`)
+    throw new Error(`Gemini embeddings error (${response.status}): ${body.slice(0, 300)}`)
   }
 
   const data = await response.json()
-  const embedding = data?.data?.[0]?.embedding
+  const embedding = data?.embedding?.values
   if (!Array.isArray(embedding)) {
-    throw new Error('Voyage AI returned no embedding.')
+    throw new Error('Gemini API returned no embedding.')
   }
   return embedding
 }

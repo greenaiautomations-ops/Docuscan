@@ -5,7 +5,7 @@
 
 import { handleCors, jsonResponse } from '../_shared/cors.ts'
 import { getUserClient, requireUser, HttpError } from '../_shared/supabaseClient.ts'
-import { answerQuestion, type ChatTurn } from '../_shared/anthropicProvider.ts'
+import { answerQuestion, type ChatTurn } from '../_shared/geminiProvider.ts'
 
 Deno.serve(async (req: Request) => {
   const cors = handleCors(req)

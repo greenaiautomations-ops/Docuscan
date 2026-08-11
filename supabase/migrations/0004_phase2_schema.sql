@@ -100,7 +100,7 @@ alter table public.document_ocr
   add column if not exists status text not null default 'pending'
     check (status in ('pending', 'processing', 'completed', 'failed')),
   add column if not exists error_message text,
-  add column if not exists provider text not null default 'anthropic';
+  add column if not exists provider text not null default 'gemini';
 
 -- ---------------------------------------------------------------------
 -- document_pages: per-page OCR confidence

@@ -5,7 +5,7 @@
 
 import { handleCors, jsonResponse } from '../_shared/cors.ts'
 import { getUserClient, requireUser, HttpError } from '../_shared/supabaseClient.ts'
-import { translateText } from '../_shared/anthropicProvider.ts'
+import { translateText } from '../_shared/geminiProvider.ts'
 
 const SUPPORTED_LANGUAGES = ['en', 'de', 'es', 'zh', 'ru']
 

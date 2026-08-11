@@ -11,7 +11,7 @@ import {
   classifyDocument,
   extractInformation,
   summarizeDocument,
-} from '../_shared/anthropicProvider.ts'
+} from '../_shared/geminiProvider.ts'
 import { chunkText, generateEmbedding } from '../_shared/embeddingProvider.ts'
 
 const DOCUMENTS_BUCKET = 'documents'
@@ -116,6 +116,7 @@ async function runPipeline(supabase: any, document: any) {
     raw_text: rawText,
     confidence: ocrResult.overall_confidence,
     status: 'completed',
+    provider: 'gemini',
   })
 
   if (ocrResult.pages.length > 0) {
