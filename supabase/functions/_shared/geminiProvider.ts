@@ -7,6 +7,7 @@
 // via Google AI Studio keys) and support native PDF/image understanding
 // plus JSON-mode structured output, which is what this file uses.
 
+import { fetchWithRetry } from './httpRetry.ts'
 import {
   ClassificationResultSchema,
   ExtractedDataSchema,
@@ -52,7 +53,7 @@ interface GeminiCallOptions {
 async function callGemini({ system, parts, maxTokens = 4096, jsonMode = false }: GeminiCallOptions): Promise<string> {
   const url = `${GEMINI_API_BASE}/${getModel()}:generateContent`
 
-  const response = await fetch(url, {
+  const response = await fetchWithRetry(url, {
     method: 'POST',
     headers: {
       'content-type': 'application/json',

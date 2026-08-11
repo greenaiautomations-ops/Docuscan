@@ -43,6 +43,7 @@ export function DocumentViewerPage() {
   const [translateOpen, setTranslateOpen] = useState(false)
   const [editOpen, setEditOpen] = useState(false)
   const [retrying, setRetrying] = useState(false)
+  const [retryError, setRetryError] = useState<string | null>(null)
 
   const isAnalyzed = document?.status === 'analyzed' || document?.status === 'completed'
 
@@ -87,11 +88,15 @@ export function DocumentViewerPage() {
   const handleRetry = useCallback(async () => {
     if (!document) return
     setRetrying(true)
+    setRetryError(null)
     try {
       await processDocument(document.id)
-    } catch {
-      // The Edge Function already records failure on the document row;
-      // refresh() below will pick it up regardless of this promise's outcome.
+    } catch (err) {
+      // The Edge Function also records failure on the document row itself
+      // (status='failed' + error_message), which refresh() below picks up —
+      // this local error is just so the button shows *why* immediately,
+      // without waiting for the next poll tick.
+      setRetryError(err instanceof Error ? err.message : 'Retry failed.')
     } finally {
       setRetrying(false)
       refresh()
@@ -184,6 +189,7 @@ export function DocumentViewerPage() {
             <div className="rounded-xl border border-slate-200 bg-white p-5">
               <h2 className="mb-2 text-sm font-semibold text-slate-700">Processing</h2>
               <ProcessingStatus document={document} onRetry={handleRetry} retrying={retrying} />
+              {retryError && <p className="mt-2 text-sm text-red-600">{retryError}</p>}
             </div>
           )}
 
@@ -242,6 +248,7 @@ export function DocumentViewerPage() {
               </button>
             </div>
           )}
+          {retryError && isAnalyzed && <p className="text-sm text-red-600">{retryError}</p>}
 
           {ocr?.raw_text && (
             <details className="rounded-xl border border-slate-200 bg-white p-5">

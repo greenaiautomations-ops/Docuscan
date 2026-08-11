@@ -1,3 +1,5 @@
+import { fetchWithRetry } from './httpRetry.ts'
+
 const GEMINI_API_BASE = 'https://generativelanguage.googleapis.com/v1beta/models'
 const DEFAULT_EMBEDDING_MODEL = 'gemini-embedding-001'
 const EMBEDDING_DIMENSIONS = 512 // matches document_embeddings.embedding vector(512)
@@ -19,7 +21,7 @@ export async function generateEmbedding(text: string): Promise<number[]> {
   const model = Deno.env.get('GEMINI_EMBEDDING_MODEL') || DEFAULT_EMBEDDING_MODEL
   const url = `${GEMINI_API_BASE}/${model}:embedContent`
 
-  const response = await fetch(url, {
+  const response = await fetchWithRetry(url, {
     method: 'POST',
     headers: {
       'content-type': 'application/json',
@@ -30,7 +32,7 @@ export async function generateEmbedding(text: string): Promise<number[]> {
       outputDimensionality: EMBEDDING_DIMENSIONS,
       taskType: 'RETRIEVAL_DOCUMENT',
     }),
-  })
+  }, 2) // fewer retries — embeddings are best-effort and non-fatal anyway
 
   if (!response.ok) {
     const body = await response.text().catch(() => '')
