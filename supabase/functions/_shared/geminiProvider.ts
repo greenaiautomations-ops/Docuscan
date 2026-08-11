@@ -122,8 +122,15 @@ async function callGeminiForJson<T>(
   }
 }
 
+// Some browsers/OSes report JPEGs as "image/jpg", which isn't a registered
+// MIME type — Gemini expects the standard "image/jpeg". Everything else we
+// accept (application/pdf, image/png, image/webp) is already standard.
+function normalizeMimeType(fileType: string): string {
+  return fileType === 'image/jpg' ? 'image/jpeg' : fileType
+}
+
 function fileToPart(fileType: string, base64Data: string): GeminiPart {
-  return { inline_data: { mime_type: fileType, data: base64Data } }
+  return { inline_data: { mime_type: normalizeMimeType(fileType), data: base64Data } }
 }
 
 // ---------------------------------------------------------------------
@@ -143,7 +150,7 @@ export async function performOcr(fileType: string, base64Data: string): Promise<
         fileToPart(fileType, base64Data),
         { text: 'Transcribe this document. Reply with only the JSON object.' },
       ],
-      maxTokens: 8192,
+      maxTokens: 32768,
     },
     OcrResultSchema,
   )
@@ -245,7 +252,7 @@ export async function translateText(text: string, targetLanguage: string): Promi
       `Translate the given text into ${languageName}. Preserve meaning, tone, and structure. ` +
       'Reply with ONLY the translated text — no preamble, no explanation, no quotes around it.',
     parts: [{ text: text.slice(0, 20000) }],
-    maxTokens: 4096,
+    maxTokens: 8192,
   })
 }
 
