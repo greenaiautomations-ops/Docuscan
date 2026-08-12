@@ -1,0 +1,26 @@
+import { EVENT_TYPE_COLORS, EVENT_TYPE_LABELS, EVENT_STATUS_COMPLETED_COLOR } from '../../utils/constants'
+import type { Event } from '../../types/document'
+
+export function EventTypeBadge({ type, status }: { type: string; status?: Event['status'] }) {
+  const style = status === 'completed' ? EVENT_STATUS_COMPLETED_COLOR : (EVENT_TYPE_COLORS[type] ?? EVENT_TYPE_COLORS.other)
+  return (
+    <span className={`inline-flex items-center gap-1.5 rounded-full px-2.5 py-0.5 text-xs font-medium ${style.bg} ${style.text}`}>
+      <span className={`h-1.5 w-1.5 rounded-full ${style.dot}`} />
+      {EVENT_TYPE_LABELS[type] ?? type}
+    </span>
+  )
+}
+
+export function PriorityBadge({ priority }: { priority: string }) {
+  const styles: Record<string, string> = {
+    critical: 'bg-red-100 text-red-700',
+    high: 'bg-orange-100 text-orange-700',
+    medium: 'bg-amber-100 text-amber-700',
+    low: 'bg-slate-100 text-slate-600',
+  }
+  return (
+    <span className={`inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-medium capitalize ${styles[priority] ?? styles.low}`}>
+      {priority}
+    </span>
+  )
+}

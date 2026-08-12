@@ -15,12 +15,22 @@ export type ProcessingStage =
   | 'understanding'
   | 'finding_important_information'
   | 'creating_summary'
+  | 'creating_events'
 export type DocumentImportance = 'low' | 'normal' | 'high'
 export type NotificationType = 'info' | 'success' | 'warning' | 'error' | 'action_required'
 export type ChatRole = 'user' | 'assistant'
 export type TranslationLanguage = 'en' | 'de' | 'es' | 'zh' | 'ru'
 export type TranslationScope = 'full' | 'summary' | 'selection'
 export type OcrStatus = 'pending' | 'processing' | 'completed' | 'failed'
+
+// ---- Phase 3 ----
+export type EventType = 'deadline' | 'appointment' | 'payment_due' | 'renewal' | 'expiration' | 'task' | 'other'
+export type EventStatus = 'needs_review' | 'confirmed' | 'completed' | 'dismissed'
+export type EventPriority = 'critical' | 'high' | 'medium' | 'low'
+export type PaymentStatus = 'pending' | 'paid' | 'cancelled' | 'disputed' | 'unknown'
+export type RecurrenceInterval = 'weekly' | 'monthly' | 'quarterly' | 'yearly'
+export type ReminderType = 'seven_days' | 'three_days' | 'one_day' | 'same_day' | 'custom'
+export type NotificationEventType = 'reminder' | string
 
 export interface Database {
   public: {
@@ -343,6 +353,192 @@ export interface Database {
             foreignKeyName: 'document_embeddings_document_id_fkey'
             columns: ['document_id']
             referencedRelation: 'documents'
+            referencedColumns: ['id']
+          },
+        ]
+      }
+      events: {
+        Row: {
+          id: string
+          user_id: string
+          document_id: string | null
+          type: EventType
+          title: string
+          description: string | null
+          event_date: string | null
+          event_time: string | null
+          location: string | null
+          priority: EventPriority
+          status: EventStatus
+          source_confidence: number | null
+          source_field: string | null
+          is_user_edited: boolean
+          created_at: string
+          updated_at: string
+        }
+        Insert: {
+          id?: string
+          user_id: string
+          document_id?: string | null
+          type: EventType
+          title: string
+          description?: string | null
+          event_date?: string | null
+          event_time?: string | null
+          location?: string | null
+          priority?: EventPriority
+          status?: EventStatus
+          source_confidence?: number | null
+          source_field?: string | null
+          is_user_edited?: boolean
+          created_at?: string
+          updated_at?: string
+        }
+        Update: Partial<Database['public']['Tables']['events']['Insert']>
+        Relationships: [
+          {
+            foreignKeyName: 'events_document_id_fkey'
+            columns: ['document_id']
+            referencedRelation: 'documents'
+            referencedColumns: ['id']
+          },
+        ]
+      }
+      payments: {
+        Row: {
+          id: string
+          user_id: string
+          document_id: string | null
+          event_id: string | null
+          amount: number | null
+          currency: string | null
+          recipient: string | null
+          due_date: string | null
+          reference_number: string | null
+          status: PaymentStatus
+          recurring: boolean
+          recurrence_interval: RecurrenceInterval | null
+          confidence: number | null
+          is_user_edited: boolean
+          paid_at: string | null
+          created_at: string
+          updated_at: string
+        }
+        Insert: {
+          id?: string
+          user_id: string
+          document_id?: string | null
+          event_id?: string | null
+          amount?: number | null
+          currency?: string | null
+          recipient?: string | null
+          due_date?: string | null
+          reference_number?: string | null
+          status?: PaymentStatus
+          recurring?: boolean
+          recurrence_interval?: RecurrenceInterval | null
+          confidence?: number | null
+          is_user_edited?: boolean
+          paid_at?: string | null
+          created_at?: string
+          updated_at?: string
+        }
+        Update: Partial<Database['public']['Tables']['payments']['Insert']>
+        Relationships: [
+          {
+            foreignKeyName: 'payments_document_id_fkey'
+            columns: ['document_id']
+            referencedRelation: 'documents'
+            referencedColumns: ['id']
+          },
+          {
+            foreignKeyName: 'payments_event_id_fkey'
+            columns: ['event_id']
+            referencedRelation: 'events'
+            referencedColumns: ['id']
+          },
+        ]
+      }
+      reminders: {
+        Row: {
+          id: string
+          user_id: string
+          event_id: string
+          reminder_date: string
+          reminder_type: ReminderType
+          sent: boolean
+          created_at: string
+        }
+        Insert: {
+          id?: string
+          user_id: string
+          event_id: string
+          reminder_date: string
+          reminder_type: ReminderType
+          sent?: boolean
+          created_at?: string
+        }
+        Update: Partial<Database['public']['Tables']['reminders']['Insert']>
+        Relationships: [
+          {
+            foreignKeyName: 'reminders_event_id_fkey'
+            columns: ['event_id']
+            referencedRelation: 'events'
+            referencedColumns: ['id']
+          },
+        ]
+      }
+      notification_preferences: {
+        Row: {
+          id: string
+          user_id: string
+          seven_days: boolean
+          three_days: boolean
+          one_day: boolean
+          same_day: boolean
+          created_at: string
+          updated_at: string
+        }
+        Insert: {
+          id?: string
+          user_id: string
+          seven_days?: boolean
+          three_days?: boolean
+          one_day?: boolean
+          same_day?: boolean
+          created_at?: string
+          updated_at?: string
+        }
+        Update: Partial<Database['public']['Tables']['notification_preferences']['Insert']>
+        Relationships: []
+      }
+      notification_events: {
+        Row: {
+          id: string
+          user_id: string
+          event_id: string | null
+          type: string
+          title: string
+          message: string | null
+          read: boolean
+          created_at: string
+        }
+        Insert: {
+          id?: string
+          user_id: string
+          event_id?: string | null
+          type?: string
+          title: string
+          message?: string | null
+          read?: boolean
+          created_at?: string
+        }
+        Update: Partial<Database['public']['Tables']['notification_events']['Insert']>
+        Relationships: [
+          {
+            foreignKeyName: 'notification_events_event_id_fkey'
+            columns: ['event_id']
+            referencedRelation: 'events'
             referencedColumns: ['id']
           },
         ]

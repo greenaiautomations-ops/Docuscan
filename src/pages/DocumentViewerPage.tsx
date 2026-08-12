@@ -26,8 +26,15 @@ import { ExtractedDataRaw } from '../components/analysis/ExtractedDataRaw'
 import { EditInformationModal } from '../components/analysis/EditInformationModal'
 import { DocumentChatPanel } from '../components/chat/DocumentChatPanel'
 import { TranslatePanel } from '../components/translation/TranslatePanel'
+import { AppointmentCard } from '../components/events/AppointmentCard'
+import { DeadlineCard } from '../components/events/DeadlineCard'
+import { PaymentCard } from '../components/events/PaymentCard'
+import { EventModal } from '../components/events/EventModal'
+import { PaymentModal } from '../components/events/PaymentModal'
+import { getEventsForDocument, completeEvent, snoozeEvent } from '../services/eventService'
+import { getPaymentsForDocument, markPaymentPaid } from '../services/paymentService'
 import { formatDateTime, formatFileSize, titleCase } from '../utils/formatters'
-import type { DocumentAnalysis, DocumentOcr, ExtractedData } from '../types/document'
+import type { DocumentAnalysis, DocumentOcr, Event, ExtractedData, Payment } from '../types/document'
 
 export function DocumentViewerPage() {
   const { id } = useParams<{ id: string }>()
@@ -44,6 +51,10 @@ export function DocumentViewerPage() {
   const [editOpen, setEditOpen] = useState(false)
   const [retrying, setRetrying] = useState(false)
   const [retryError, setRetryError] = useState<string | null>(null)
+  const [linkedEvents, setLinkedEvents] = useState<Event[]>([])
+  const [linkedPayments, setLinkedPayments] = useState<Payment[]>([])
+  const [editingEvent, setEditingEvent] = useState<Event | null>(null)
+  const [editingPayment, setEditingPayment] = useState<Payment | null>(null)
 
   const isAnalyzed = document?.status === 'analyzed' || document?.status === 'completed'
 
@@ -72,6 +83,21 @@ export function DocumentViewerPage() {
       cancelled = true
     }
   }, [document?.id, document?.status, isAnalyzed])
+
+  useEffect(() => {
+    if (!document?.id) return
+    let cancelled = false
+    Promise.all([getEventsForDocument(document.id), getPaymentsForDocument(document.id)])
+      .then(([events, payments]) => {
+        if (cancelled) return
+        setLinkedEvents(events.filter((e) => e.status !== 'dismissed'))
+        setLinkedPayments(payments)
+      })
+      .catch(() => undefined)
+    return () => {
+      cancelled = true
+    }
+  }, [document?.id])
 
   const handleToggleImportant = async () => {
     if (!document) return
@@ -117,6 +143,38 @@ export function DocumentViewerPage() {
   const openAskAi = () => {
     setChatQuestion(null)
     setChatOpen(true)
+  }
+
+  const handleCompleteLinkedEvent = async (event: Event) => {
+    const updated = await completeEvent(event.id)
+    setLinkedEvents((prev) => prev.map((e) => (e.id === updated.id ? updated : e)))
+  }
+
+  const handleSnoozeLinkedEvent = async (event: Event) => {
+    if (!event.event_date) return
+    const next = new Date(`${event.event_date}T00:00:00`)
+    next.setDate(next.getDate() + 3)
+    const updated = await snoozeEvent(event.id, next.toISOString().slice(0, 10))
+    setLinkedEvents((prev) => prev.map((e) => (e.id === updated.id ? updated : e)))
+  }
+
+  const handleLinkedEventChanged = (updated: Event | null) => {
+    setLinkedEvents((prev) =>
+      updated ? prev.map((e) => (e.id === updated.id ? updated : e)) : prev.filter((e) => e.id !== editingEvent?.id),
+    )
+    setEditingEvent(null)
+  }
+
+  const handleMarkLinkedPaymentPaid = async (payment: Payment) => {
+    const updated = await markPaymentPaid(payment.id)
+    setLinkedPayments((prev) => prev.map((p) => (p.id === updated.id ? updated : p)))
+  }
+
+  const handleLinkedPaymentChanged = (updated: Payment | null) => {
+    setLinkedPayments((prev) =>
+      updated ? prev.map((p) => (p.id === updated.id ? updated : p)) : prev.filter((p) => p.id !== editingPayment?.id),
+    )
+    setEditingPayment(null)
   }
 
   if (loading) return <LoadingSpinner fullHeight label="Loading document…" />
@@ -209,6 +267,62 @@ export function DocumentViewerPage() {
           {isAnalyzed && extractedData && <DatesSection data={extractedData} />}
           {isAnalyzed && extractedData && <PaymentsSection data={extractedData} />}
           {isAnalyzed && extractedData && <RequiredActionSection data={extractedData} />}
+
+          {(linkedEvents.length > 0 || linkedPayments.length > 0) && (
+            <div className="rounded-xl border border-slate-200 bg-white p-5">
+              <h2 className="mb-3 text-sm font-semibold text-slate-700">Dates, payments &amp; tasks</h2>
+              <div className="flex flex-col gap-4">
+                {linkedEvents.filter((e) => e.type === 'appointment').length > 0 && (
+                  <div>
+                    <h3 className="mb-2 text-xs font-semibold uppercase tracking-wide text-slate-400">Appointments</h3>
+                    <div className="flex flex-col gap-2">
+                      {linkedEvents
+                        .filter((e) => e.type === 'appointment')
+                        .map((event) => (
+                          <AppointmentCard key={event.id} event={event} onOpen={setEditingEvent} />
+                        ))}
+                    </div>
+                  </div>
+                )}
+
+                {linkedEvents.filter((e) => e.type !== 'appointment').length > 0 && (
+                  <div>
+                    <h3 className="mb-2 text-xs font-semibold uppercase tracking-wide text-slate-400">Deadlines &amp; tasks</h3>
+                    <div className="flex flex-col gap-2">
+                      {linkedEvents
+                        .filter((e) => e.type !== 'appointment')
+                        .map((event) => (
+                          <DeadlineCard
+                            key={event.id}
+                            event={event}
+                            onComplete={handleCompleteLinkedEvent}
+                            onEdit={setEditingEvent}
+                            onSnooze={handleSnoozeLinkedEvent}
+                          />
+                        ))}
+                    </div>
+                  </div>
+                )}
+
+                {linkedPayments.length > 0 && (
+                  <div>
+                    <h3 className="mb-2 text-xs font-semibold uppercase tracking-wide text-slate-400">Payments</h3>
+                    <div className="grid grid-cols-1 gap-2 sm:grid-cols-2">
+                      {linkedPayments.map((payment) => (
+                        <PaymentCard
+                          key={payment.id}
+                          payment={payment}
+                          onOpen={setEditingPayment}
+                          onMarkPaid={handleMarkLinkedPaymentPaid}
+                        />
+                      ))}
+                    </div>
+                  </div>
+                )}
+              </div>
+            </div>
+          )}
+
           {isAnalyzed && extractedData && <ExtractedDataRaw data={extractedData} />}
 
           {isAnalyzed && (
@@ -321,6 +435,20 @@ export function DocumentViewerPage() {
         open={chatOpen}
         onClose={() => setChatOpen(false)}
         initialQuestion={chatQuestion}
+      />
+
+      <EventModal
+        event={editingEvent}
+        open={!!editingEvent}
+        onClose={() => setEditingEvent(null)}
+        onChanged={handleLinkedEventChanged}
+      />
+
+      <PaymentModal
+        payment={editingPayment}
+        open={!!editingPayment}
+        onClose={() => setEditingPayment(null)}
+        onChanged={handleLinkedPaymentChanged}
       />
     </div>
   )

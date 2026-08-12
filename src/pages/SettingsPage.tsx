@@ -1,6 +1,7 @@
 import { useState, type FormEvent } from 'react'
 import { useAuth } from '../hooks/useAuth'
 import { updateProfile } from '../services/profileService'
+import { ReminderSettings } from '../components/events/ReminderSettings'
 
 const LANGUAGES = [
   { code: 'en', label: 'English' },
@@ -108,6 +109,11 @@ export function SettingsPage() {
           {saving ? 'Saving…' : 'Save changes'}
         </button>
       </form>
+
+      <div className="rounded-xl border border-slate-200 bg-white p-5">
+        <h2 className="mb-3 text-sm font-semibold text-slate-700">Reminders</h2>
+        <ReminderSettings />
+      </div>
     </div>
   )
 }

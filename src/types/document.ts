@@ -3,9 +3,15 @@ import type {
   Database,
   DocumentImportance,
   DocumentStatus,
+  EventPriority,
+  EventStatus,
+  EventType,
   NotificationType,
   OcrStatus,
+  PaymentStatus,
   ProcessingStage,
+  RecurrenceInterval,
+  ReminderType,
   TranslationLanguage,
   TranslationScope,
 } from './database.types'
@@ -36,6 +42,45 @@ export type {
   TranslationLanguage,
   TranslationScope,
   OcrStatus,
+  EventType,
+  EventStatus,
+  EventPriority,
+  PaymentStatus,
+  RecurrenceInterval,
+  ReminderType,
+}
+
+export type Event = Database['public']['Tables']['events']['Row']
+export type EventInsert = Database['public']['Tables']['events']['Insert']
+export type EventUpdate = Database['public']['Tables']['events']['Update']
+
+export type Payment = Database['public']['Tables']['payments']['Row']
+export type PaymentInsert = Database['public']['Tables']['payments']['Insert']
+export type PaymentUpdate = Database['public']['Tables']['payments']['Update']
+
+export type Reminder = Database['public']['Tables']['reminders']['Row']
+export type NotificationPreferences = Database['public']['Tables']['notification_preferences']['Row']
+export type NotificationEvent = Database['public']['Tables']['notification_events']['Row']
+
+export interface EventWithPayment extends Event {
+  payment?: Payment | null
+}
+
+export interface PaymentWithEvent extends Payment {
+  event?: Event | null
+}
+
+/** A single item in the merged Notification Center feed (Phase 1 `notifications` + Phase 3 `notification_events`). */
+export interface UnifiedNotification {
+  id: string
+  source: 'document' | 'event'
+  type: string
+  title: string
+  message: string | null
+  documentId: string | null
+  eventId: string | null
+  read: boolean
+  createdAt: string
 }
 
 export const DOCUMENT_CATEGORIES = [
@@ -107,6 +152,7 @@ export const PROCESSING_STAGE_LABELS: Record<ProcessingStage, string> = {
   understanding: 'Understanding…',
   finding_important_information: 'Finding important information…',
   creating_summary: 'Creating summary…',
+  creating_events: 'Finding dates and payments…',
 }
 
 export const TRANSLATION_LANGUAGES: { code: TranslationLanguage; label: string }[] = [

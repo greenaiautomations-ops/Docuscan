@@ -13,6 +13,7 @@ import {
   summarizeDocument,
 } from '../_shared/geminiProvider.ts'
 import { chunkText, generateEmbedding } from '../_shared/embeddingProvider.ts'
+import { syncEventsAndPayments, createRemindersForEvents } from '../_shared/eventExtraction.ts'
 
 const DOCUMENTS_BUCKET = 'documents'
 
@@ -185,10 +186,37 @@ async function runPipeline(supabase: any, document: any) {
     })
     .eq('id', documentId)
 
-  // ---- 6. Search index ----
+  // ---- 6. Events, payments & reminders (Phase 3) ----
+  // Reprocessing is dedup-safe: syncEventsAndPayments keys off
+  // (document_id, source_field) and never touches rows the user has
+  // already confirmed, edited, dismissed, or completed.
+  await supabase
+    .from('documents')
+    .update({ processing_stage: 'creating_events' })
+    .eq('id', documentId)
+
+  try {
+    const eventIds = await syncEventsAndPayments(
+      supabase,
+      {
+        id: documentId,
+        user_id: document.user_id,
+        document_type: classification.document_type,
+        importance: document.importance,
+      },
+      extractedData,
+    )
+    await createRemindersForEvents(supabase, document.user_id, eventIds)
+  } catch (eventError) {
+    // Event/reminder creation is important but must never take down an
+    // otherwise-successful document analysis.
+    console.error('Event/reminder sync failed:', eventError)
+  }
+
+  // ---- 7. Search index ----
   await supabase.rpc('refresh_document_search_vector', { p_document_id: documentId })
 
-  // ---- 7. Embeddings (best-effort, non-fatal) ----
+  // ---- 8. Embeddings (best-effort, non-fatal) ----
   try {
     const chunks = chunkText(rawText)
     if (chunks.length > 0) {
@@ -207,7 +235,7 @@ async function runPipeline(supabase: any, document: any) {
     // document pipeline.
   }
 
-  // ---- 8. Done ----
+  // ---- 9. Done ----
   await supabase
     .from('documents')
     .update({ status: 'completed', processing_stage: null })

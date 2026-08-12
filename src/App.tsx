@@ -10,6 +10,8 @@ import { DocumentViewerPage } from './pages/DocumentViewerPage'
 import { ScanPage } from './pages/ScanPage'
 import { UploadPage } from './pages/UploadPage'
 import { CalendarPage } from './pages/CalendarPage'
+import { PaymentsPage } from './pages/PaymentsPage'
+import { DeadlinesPage } from './pages/DeadlinesPage'
 import { NotificationsPage } from './pages/NotificationsPage'
 import { SettingsPage } from './pages/SettingsPage'
 import { NotFoundPage } from './pages/NotFoundPage'
@@ -35,6 +37,8 @@ function App() {
             <Route path="/scan" element={<ScanPage />} />
             <Route path="/upload" element={<UploadPage />} />
             <Route path="/calendar" element={<CalendarPage />} />
+            <Route path="/payments" element={<PaymentsPage />} />
+            <Route path="/deadlines" element={<DeadlinesPage />} />
             <Route path="/notifications" element={<NotificationsPage />} />
             <Route path="/settings" element={<SettingsPage />} />
           </Route>

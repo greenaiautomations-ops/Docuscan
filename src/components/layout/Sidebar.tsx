@@ -1,5 +1,6 @@
 import { NavLink } from 'react-router-dom'
 import { NAV_ITEMS, APP_NAME } from '../../utils/constants'
+import { useUnreadNotificationCount } from '../../hooks/useUnreadNotificationCount'
 
 interface SidebarProps {
   open: boolean
@@ -7,6 +8,8 @@ interface SidebarProps {
 }
 
 export function Sidebar({ open, onNavigate }: SidebarProps) {
+  const { count } = useUnreadNotificationCount()
+
   return (
     <aside
       className={`fixed inset-y-0 left-0 z-40 w-64 transform border-r border-slate-200 bg-white transition-transform duration-200 ease-in-out lg:static lg:translate-x-0 ${
@@ -27,14 +30,19 @@ export function Sidebar({ open, onNavigate }: SidebarProps) {
             end={item.path === '/'}
             onClick={onNavigate}
             className={({ isActive }) =>
-              `rounded-lg px-3 py-2 text-sm font-medium transition-colors ${
+              `flex items-center justify-between rounded-lg px-3 py-2 text-sm font-medium transition-colors ${
                 isActive
                   ? 'bg-indigo-50 text-indigo-700'
                   : 'text-slate-600 hover:bg-slate-100 hover:text-slate-900'
               }`
             }
           >
-            {item.label}
+            <span>{item.label}</span>
+            {item.path === '/notifications' && count > 0 && (
+              <span className="rounded-full bg-indigo-600 px-1.5 py-0.5 text-[10px] font-semibold text-white">
+                {count > 99 ? '99+' : count}
+              </span>
+            )}
           </NavLink>
         ))}
       </nav>
