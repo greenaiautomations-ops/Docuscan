@@ -21,7 +21,12 @@ import {
 } from './schemas.ts'
 
 const GEMINI_API_BASE = 'https://generativelanguage.googleapis.com/v1beta/models'
-const DEFAULT_MODEL = 'gemini-flash-latest'
+// Flash-Lite, not the full Flash alias: Google's free tier for the full Flash
+// model family was cut hard in late 2025 (as low as ~20 requests/day in some
+// configurations), while Flash-Lite keeps a much higher free daily quota
+// (historically ~1,000/day). Override with GEMINI_MODEL if you're on a paid
+// plan and want the full model's higher quality.
+const DEFAULT_MODEL = 'gemini-flash-lite-latest'
 
 function getApiKey(): string {
   const key = Deno.env.get('GEMINI_API_KEY')

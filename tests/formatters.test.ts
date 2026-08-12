@@ -61,3 +61,32 @@ describe('formatCurrency', () => {
     expect(formatCurrency(undefined, 'USD')).toBe('—')
   })
 })
+
+describe('friendlyProcessingError', () => {
+  it('turns a Gemini 429 quota error into an actionable message', async () => {
+    const { friendlyProcessingError } = await import('../src/utils/formatters')
+    const raw =
+      'Gemini API error (429): { "error": { "code": 429, "message": "You exceeded your current quota...", "status": "RESOURCE_EXHAUSTED" } }'
+    const friendly = friendlyProcessingError(raw)
+    expect(friendly).not.toContain('RESOURCE_EXHAUSTED')
+    expect(friendly.toLowerCase()).toContain('limit')
+  })
+
+  it('turns a 503 overload error into an actionable message', async () => {
+    const { friendlyProcessingError } = await import('../src/utils/formatters')
+    const friendly = friendlyProcessingError('Gemini API error (503): { "status": "UNAVAILABLE" }')
+    expect(friendly.toLowerCase()).toContain('busy')
+  })
+
+  it('passes through a missing-API-key error unchanged (already actionable)', async () => {
+    const { friendlyProcessingError } = await import('../src/utils/formatters')
+    const raw = 'GEMINI_API_KEY is not configured. Set it with `supabase secrets set ...`'
+    expect(friendlyProcessingError(raw)).toBe(raw)
+  })
+
+  it('falls back to a generic label when there is no error text', async () => {
+    const { friendlyProcessingError } = await import('../src/utils/formatters')
+    expect(friendlyProcessingError(null)).toBe('Processing failed.')
+    expect(friendlyProcessingError(undefined)).toBe('Processing failed.')
+  })
+})

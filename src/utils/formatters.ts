@@ -96,3 +96,31 @@ export function relativeDateLabel(dateStr: string | null | undefined): string {
   if (diff <= 7) return `In ${diff} days`
   return formatDateOnly(dateStr)
 }
+
+/**
+ * Turns a raw AI/OCR provider error (often a verbose JSON blob from Gemini)
+ * into a short, actionable message for end users, while preserving the raw
+ * text for anyone who wants to look closer via the browser console/network
+ * tab. Known transient conditions (rate limit, overload) get a specific,
+ * reassuring message instead of a wall of JSON.
+ */
+export function friendlyProcessingError(raw: string | null | undefined): string {
+  if (!raw) return 'Processing failed.'
+
+  const lower = raw.toLowerCase()
+
+  if (lower.includes('429') || lower.includes('resource_exhausted') || lower.includes('quota')) {
+    return "AI usage limit reached for right now — this app's free-tier AI quota resets " +
+      'quickly. Wait a minute, then click Retry.'
+  }
+
+  if (lower.includes('503') || lower.includes('unavailable') || lower.includes('overloaded')) {
+    return 'The AI service is temporarily busy. Click Retry in a few seconds.'
+  }
+
+  if (lower.includes('gemini_api_key is not configured') || lower.includes('api key not valid')) {
+    return raw // Already a clear, actionable message — don't obscure it.
+  }
+
+  return raw.length > 220 ? `${raw.slice(0, 220)}…` : raw
+}

@@ -33,7 +33,7 @@ import { EventModal } from '../components/events/EventModal'
 import { PaymentModal } from '../components/events/PaymentModal'
 import { getEventsForDocument, completeEvent, snoozeEvent } from '../services/eventService'
 import { getPaymentsForDocument, markPaymentPaid } from '../services/paymentService'
-import { formatDateTime, formatFileSize, titleCase } from '../utils/formatters'
+import { formatDateTime, formatFileSize, friendlyProcessingError, titleCase } from '../utils/formatters'
 import type { DocumentAnalysis, DocumentOcr, Event, ExtractedData, Payment } from '../types/document'
 
 export function DocumentViewerPage() {
@@ -247,7 +247,7 @@ export function DocumentViewerPage() {
             <div className="rounded-xl border border-slate-200 bg-white p-5">
               <h2 className="mb-2 text-sm font-semibold text-slate-700">Processing</h2>
               <ProcessingStatus document={document} onRetry={handleRetry} retrying={retrying} />
-              {retryError && <p className="mt-2 text-sm text-red-600">{retryError}</p>}
+              {retryError && <p className="mt-2 text-sm text-red-600">{friendlyProcessingError(retryError)}</p>}
             </div>
           )}
 
@@ -362,7 +362,7 @@ export function DocumentViewerPage() {
               </button>
             </div>
           )}
-          {retryError && isAnalyzed && <p className="text-sm text-red-600">{retryError}</p>}
+          {retryError && isAnalyzed && <p className="text-sm text-red-600">{friendlyProcessingError(retryError)}</p>}
 
           {ocr?.raw_text && (
             <details className="rounded-xl border border-slate-200 bg-white p-5">

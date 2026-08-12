@@ -7,7 +7,7 @@ import { ProcessingStatus } from '../components/documents/ProcessingStatus'
 import { DOCUMENT_CATEGORIES, type DocumentCategory } from '../types/document'
 import { uploadDocument, retryUpload } from '../services/uploadService'
 import { getDocument } from '../services/documentService'
-import { titleCase } from '../utils/formatters'
+import { friendlyProcessingError, titleCase } from '../utils/formatters'
 
 interface UploadItem {
   id: string
@@ -30,7 +30,7 @@ function UploadItemRow({
     <div className="flex items-center justify-between gap-3 rounded-lg border border-slate-200 bg-white px-4 py-3">
       <div className="min-w-0 flex-1">
         <p className="truncate text-sm font-medium text-slate-800">{item.file.name}</p>
-        {item.error && <p className="text-xs text-red-600">{item.error}</p>}
+        {item.error && <p className="text-xs text-red-600">{friendlyProcessingError(item.error)}</p>}
       </div>
       {document ? (
         <ProcessingStatus document={document} onRetry={() => onRetry(item)} />
@@ -138,7 +138,7 @@ export function UploadPage() {
               >
                 <div className="min-w-0 flex-1">
                   <p className="truncate text-sm font-medium text-slate-800">{item.file.name}</p>
-                  {item.error && <p className="text-xs text-red-600">{item.error}</p>}
+                  {item.error && <p className="text-xs text-red-600">{friendlyProcessingError(item.error)}</p>}
                 </div>
                 {item.failedBeforeUpload ? (
                   <button

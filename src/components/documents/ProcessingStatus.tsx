@@ -1,4 +1,5 @@
 import { PROCESSING_STAGE_LABELS, type Document } from '../../types/document'
+import { friendlyProcessingError } from '../../utils/formatters'
 
 interface ProcessingStatusProps {
   document: Document
@@ -8,7 +9,7 @@ interface ProcessingStatusProps {
 
 function stageLabel(document: Document): string {
   if (document.status === 'uploading') return 'Uploading…'
-  if (document.status === 'failed') return document.error_message || 'Processing failed.'
+  if (document.status === 'failed') return friendlyProcessingError(document.error_message)
   if (document.status === 'completed') return 'Complete ✓'
   if (document.processing_stage) return PROCESSING_STAGE_LABELS[document.processing_stage]
   if (document.status === 'uploaded') return 'Reading…'

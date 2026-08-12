@@ -173,9 +173,22 @@ supabase functions deploy translate-document
 supabase functions deploy process-reminders
 
 supabase secrets set GEMINI_API_KEY=AQ....   # or AIza... for older keys
-# optional override:
-supabase secrets set GEMINI_MODEL=gemini-flash-latest
+# optional override — the default is already gemini-flash-lite-latest:
+supabase secrets set GEMINI_MODEL=gemini-flash-lite-latest
 ```
+
+**About the model choice / "429 quota exceeded" errors:** Docuscan defaults
+to `gemini-flash-lite-latest`, not the plain `-latest` Flash alias. Google
+cut the full Flash model's free-tier quota hard in late 2025 (as low as
+~20 requests/day in some configurations), which is easy to blow through in
+a single testing session — Flash-Lite keeps a much higher free daily quota.
+If you already deployed before this change, redeploy `process-document`,
+`chat-with-document`, and `translate-document` to pick up the new default
+(or just set `GEMINI_MODEL` explicitly as shown above). The Edge Functions
+also now parse Gemini's suggested retry delay out of 429 responses and wait
+that long before retrying automatically, and the UI shows a plain-language
+"AI usage limit reached, try again shortly" message instead of the raw
+error JSON.
 
 `process-document`, `chat-with-document`, and `translate-document`
 authenticate using the caller's own Supabase session (the frontend forwards
