@@ -1,14 +1,17 @@
 import { useMemo, useState } from 'react'
 import { useDocuments } from '../hooks/useDocuments'
+import { useFolders } from '../hooks/useFolders'
 import { DocumentList } from '../components/documents/DocumentList'
 import { DocumentSearchBar } from '../components/documents/DocumentSearchBar'
 import { DocumentFilters } from '../components/documents/DocumentFilters'
+import { FolderSidebar } from '../components/documents/FolderSidebar'
 import { UploadButton } from '../components/documents/UploadButton'
 import { RenameDialog } from '../components/documents/RenameDialog'
 import { ConfirmDialog } from '../components/common/ConfirmDialog'
 import { LoadingSpinner } from '../components/common/LoadingSpinner'
 import { ErrorMessage } from '../components/common/ErrorMessage'
 import { renameDocument, setArchived, setImportant } from '../services/documentService'
+import { setDocumentFolder } from '../services/folderService'
 import { removeDocument } from '../services/uploadService'
 import type { Document } from '../types/document'
 
@@ -18,15 +21,17 @@ export function DocumentsPage() {
   const [status, setStatus] = useState('all')
   const [importantOnly, setImportantOnly] = useState(false)
   const [archived, setArchivedFilter] = useState(false)
+  const [folderId, setFolderId] = useState<string | null | undefined>(undefined)
   const [renameTarget, setRenameTarget] = useState<Document | null>(null)
   const [deleteTarget, setDeleteTarget] = useState<Document | null>(null)
 
   const filters = useMemo(
-    () => ({ search, category, status, importantOnly, archived }),
-    [search, category, status, importantOnly, archived],
+    () => ({ search, category, status, importantOnly, archived, folderId }),
+    [search, category, status, importantOnly, archived, folderId],
   )
 
   const { documents, loading, error, refresh, setDocuments } = useDocuments(filters)
+  const { folders, counts, refresh: refreshFolders } = useFolders()
 
   const handleRename = async (title: string) => {
     if (!renameTarget) return
@@ -39,17 +44,31 @@ export function DocumentsPage() {
     if (!deleteTarget) return
     await removeDocument(deleteTarget)
     setDocuments((prev) => prev.filter((d) => d.id !== deleteTarget.id))
+    refreshFolders()
     setDeleteTarget(null)
   }
 
   const handleToggleArchive = async (doc: Document) => {
     const updated = await setArchived(doc.id, !doc.is_archived)
     setDocuments((prev) => prev.filter((d) => d.id !== updated.id))
+    refreshFolders()
   }
 
   const handleToggleImportant = async (doc: Document) => {
     const updated = await setImportant(doc.id, !doc.is_important)
     setDocuments((prev) => prev.map((d) => (d.id === updated.id ? updated : d)))
+  }
+
+  const handleMoveToFolder = async (doc: Document, newFolderId: string | null) => {
+    const updated = await setDocumentFolder(doc.id, newFolderId)
+    // If we're viewing a specific folder, a document moved out of it should
+    // disappear from the current list rather than show a stale folder badge.
+    setDocuments((prev) =>
+      folderId !== undefined && newFolderId !== folderId
+        ? prev.filter((d) => d.id !== doc.id)
+        : prev.map((d) => (d.id === updated.id ? updated : d)),
+    )
+    refreshFolders()
   }
 
   return (
@@ -62,31 +81,45 @@ export function DocumentsPage() {
         <UploadButton />
       </div>
 
-      <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-        <DocumentSearchBar value={search} onChange={setSearch} />
-        <DocumentFilters
-          category={category}
-          status={status}
-          importantOnly={importantOnly}
-          archived={archived}
-          onCategoryChange={setCategory}
-          onStatusChange={setStatus}
-          onImportantOnlyChange={setImportantOnly}
-          onArchivedChange={setArchivedFilter}
+      <div className="flex flex-col gap-6 sm:flex-row">
+        <FolderSidebar
+          folders={folders}
+          counts={counts}
+          selected={folderId}
+          onSelect={setFolderId}
+          onFoldersChanged={refreshFolders}
         />
-      </div>
 
-      {loading && <LoadingSpinner label="Loading documents…" />}
-      {!loading && error && <ErrorMessage message={error} onRetry={refresh} />}
-      {!loading && !error && (
-        <DocumentList
-          documents={documents}
-          onRename={setRenameTarget}
-          onDelete={setDeleteTarget}
-          onToggleArchive={handleToggleArchive}
-          onToggleImportant={handleToggleImportant}
-        />
-      )}
+        <div className="flex min-w-0 flex-1 flex-col gap-6">
+          <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+            <DocumentSearchBar value={search} onChange={setSearch} />
+            <DocumentFilters
+              category={category}
+              status={status}
+              importantOnly={importantOnly}
+              archived={archived}
+              onCategoryChange={setCategory}
+              onStatusChange={setStatus}
+              onImportantOnlyChange={setImportantOnly}
+              onArchivedChange={setArchivedFilter}
+            />
+          </div>
+
+          {loading && <LoadingSpinner label="Loading documents…" />}
+          {!loading && error && <ErrorMessage message={error} onRetry={refresh} />}
+          {!loading && !error && (
+            <DocumentList
+              documents={documents}
+              folders={folders}
+              onRename={setRenameTarget}
+              onDelete={setDeleteTarget}
+              onToggleArchive={handleToggleArchive}
+              onToggleImportant={handleToggleImportant}
+              onMoveToFolder={handleMoveToFolder}
+            />
+          )}
+        </div>
+      </div>
 
       {renameTarget && (
         <RenameDialog

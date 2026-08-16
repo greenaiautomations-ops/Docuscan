@@ -1,22 +1,26 @@
-import type { Document } from '../../types/document'
+import type { Document, Folder } from '../../types/document'
 import { DocumentCard } from './DocumentCard'
 import { EmptyState } from '../common/EmptyState'
 import { UploadButton } from './UploadButton'
 
 interface DocumentListProps {
   documents: Document[]
+  folders: Folder[]
   onRename: (doc: Document) => void
   onDelete: (doc: Document) => void
   onToggleArchive: (doc: Document) => void
   onToggleImportant: (doc: Document) => void
+  onMoveToFolder: (doc: Document, folderId: string | null) => void
 }
 
 export function DocumentList({
   documents,
+  folders,
   onRename,
   onDelete,
   onToggleArchive,
   onToggleImportant,
+  onMoveToFolder,
 }: DocumentListProps) {
   if (documents.length === 0) {
     return (
@@ -34,10 +38,12 @@ export function DocumentList({
         <DocumentCard
           key={doc.id}
           document={doc}
+          folders={folders}
           onRename={onRename}
           onDelete={onDelete}
           onToggleArchive={onToggleArchive}
           onToggleImportant={onToggleImportant}
+          onMoveToFolder={onMoveToFolder}
         />
       ))}
     </div>

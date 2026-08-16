@@ -16,6 +16,8 @@ export interface DocumentFilters {
   status?: string
   importantOnly?: boolean
   archived?: boolean
+  /** undefined = no folder filter, null = only unfiled documents, a folder id = only that folder. */
+  folderId?: string | null
 }
 
 /** Lists the current user's documents (RLS restricts rows to owner automatically). */
@@ -39,6 +41,9 @@ export async function listDocuments(filters: DocumentFilters = {}): Promise<Docu
   }
   if (filters.importantOnly) {
     query = query.eq('is_important', true)
+  }
+  if (filters.folderId !== undefined) {
+    query = filters.folderId === null ? query.is('folder_id', null) : query.eq('folder_id', filters.folderId)
   }
 
   const { data, error } = await query

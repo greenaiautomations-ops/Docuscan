@@ -6,6 +6,7 @@ import type {
   EventPriority,
   EventStatus,
   EventType,
+  FolderColor,
   NotificationType,
   OcrStatus,
   PaymentStatus,
@@ -19,6 +20,10 @@ import type {
 export type Document = Database['public']['Tables']['documents']['Row']
 export type DocumentInsert = Database['public']['Tables']['documents']['Insert']
 export type DocumentUpdate = Database['public']['Tables']['documents']['Update']
+
+export type Folder = Database['public']['Tables']['folders']['Row']
+export type FolderInsert = Database['public']['Tables']['folders']['Insert']
+export type FolderUpdate = Database['public']['Tables']['folders']['Update']
 
 export type DocumentPage = Database['public']['Tables']['document_pages']['Row']
 export type DocumentOcr = Database['public']['Tables']['document_ocr']['Row']
@@ -48,6 +53,7 @@ export type {
   PaymentStatus,
   RecurrenceInterval,
   ReminderType,
+  FolderColor,
 }
 
 export type Event = Database['public']['Tables']['events']['Row']
@@ -113,6 +119,23 @@ export const MAX_FILE_SIZE_BYTES = 25 * 1024 * 1024 // 25MB
 export interface DocumentWithTags extends Document {
   tags: Tag[]
 }
+
+export interface DocumentWithFolder extends Document {
+  folder: Folder | null
+}
+
+export const FOLDER_COLORS: FolderColor[] = [
+  'red',
+  'orange',
+  'amber',
+  'emerald',
+  'teal',
+  'blue',
+  'indigo',
+  'purple',
+  'pink',
+  'slate',
+]
 
 export interface DashboardStats {
   totalDocuments: number

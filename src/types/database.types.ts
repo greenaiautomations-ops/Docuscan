@@ -22,6 +22,17 @@ export type ChatRole = 'user' | 'assistant'
 export type TranslationLanguage = 'en' | 'de' | 'es' | 'zh' | 'ru'
 export type TranslationScope = 'full' | 'summary' | 'selection'
 export type OcrStatus = 'pending' | 'processing' | 'completed' | 'failed'
+export type FolderColor =
+  | 'red'
+  | 'orange'
+  | 'amber'
+  | 'emerald'
+  | 'teal'
+  | 'blue'
+  | 'indigo'
+  | 'purple'
+  | 'pink'
+  | 'slate'
 
 // ---- Phase 3 ----
 export type EventType = 'deadline' | 'appointment' | 'payment_due' | 'renewal' | 'expiration' | 'task' | 'other'
@@ -76,6 +87,7 @@ export interface Database {
           error_message: string | null
           issuer: string | null
           language: string | null
+          folder_id: string | null
           created_at: string
           updated_at: string
         }
@@ -97,10 +109,38 @@ export interface Database {
           error_message?: string | null
           issuer?: string | null
           language?: string | null
+          folder_id?: string | null
           created_at?: string
           updated_at?: string
         }
         Update: Partial<Database['public']['Tables']['documents']['Insert']>
+        Relationships: [
+          {
+            foreignKeyName: 'documents_folder_id_fkey'
+            columns: ['folder_id']
+            referencedRelation: 'folders'
+            referencedColumns: ['id']
+          },
+        ]
+      }
+      folders: {
+        Row: {
+          id: string
+          user_id: string
+          name: string
+          color: FolderColor
+          created_at: string
+          updated_at: string
+        }
+        Insert: {
+          id?: string
+          user_id: string
+          name: string
+          color?: FolderColor
+          created_at?: string
+          updated_at?: string
+        }
+        Update: Partial<Database['public']['Tables']['folders']['Insert']>
         Relationships: []
       }
       document_pages: {

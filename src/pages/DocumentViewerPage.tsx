@@ -33,6 +33,10 @@ import { EventModal } from '../components/events/EventModal'
 import { PaymentModal } from '../components/events/PaymentModal'
 import { getEventsForDocument, completeEvent, snoozeEvent } from '../services/eventService'
 import { getPaymentsForDocument, markPaymentPaid } from '../services/paymentService'
+import { setDocumentFolder } from '../services/folderService'
+import { FolderModal } from '../components/documents/FolderModal'
+import { useFolders } from '../hooks/useFolders'
+import { FOLDER_COLOR_STYLES } from '../utils/constants'
 import { formatDateTime, formatFileSize, friendlyProcessingError, titleCase } from '../utils/formatters'
 import type { DocumentAnalysis, DocumentOcr, Event, ExtractedData, Payment } from '../types/document'
 
@@ -55,6 +59,9 @@ export function DocumentViewerPage() {
   const [linkedPayments, setLinkedPayments] = useState<Payment[]>([])
   const [editingEvent, setEditingEvent] = useState<Event | null>(null)
   const [editingPayment, setEditingPayment] = useState<Payment | null>(null)
+  const [folderModalOpen, setFolderModalOpen] = useState(false)
+  const [folderChangeError, setFolderChangeError] = useState<string | null>(null)
+  const { folders, refresh: refreshFolders } = useFolders()
 
   const isAnalyzed = document?.status === 'analyzed' || document?.status === 'completed'
 
@@ -175,6 +182,17 @@ export function DocumentViewerPage() {
       updated ? prev.map((p) => (p.id === updated.id ? updated : p)) : prev.filter((p) => p.id !== editingPayment?.id),
     )
     setEditingPayment(null)
+  }
+
+  const handleFolderChange = async (newFolderId: string | null) => {
+    if (!document) return
+    setFolderChangeError(null)
+    try {
+      const updated = await setDocumentFolder(document.id, newFolderId)
+      setDocument(updated)
+    } catch (err) {
+      setFolderChangeError(err instanceof Error ? err.message : 'Could not change folder.')
+    }
   }
 
   if (loading) return <LoadingSpinner fullHeight label="Loading document…" />
@@ -378,6 +396,45 @@ export function DocumentViewerPage() {
       </div>
 
       <aside className="w-full shrink-0 lg:w-72">
+        <div className="mb-4 rounded-xl border border-slate-200 bg-white p-4">
+          <div className="mb-2 flex items-center justify-between">
+            <h2 className="text-sm font-semibold text-slate-700">Folder</h2>
+            <button
+              onClick={() => setFolderModalOpen(true)}
+              className="text-xs font-medium text-indigo-600 hover:text-indigo-700"
+            >
+              + New
+            </button>
+          </div>
+          <select
+            value={document.folder_id ?? ''}
+            onChange={(e) => handleFolderChange(e.target.value || null)}
+            className="w-full rounded-lg border border-slate-300 px-3 py-2 text-sm focus:border-indigo-500 focus:outline-none focus:ring-1 focus:ring-indigo-500"
+          >
+            <option value="">No folder</option>
+            {folders.map((f) => (
+              <option key={f.id} value={f.id}>
+                {f.name}
+              </option>
+            ))}
+          </select>
+          {document.folder_id &&
+            (() => {
+              const folder = folders.find((f) => f.id === document.folder_id)
+              if (!folder) return null
+              const styles = FOLDER_COLOR_STYLES[folder.color] ?? FOLDER_COLOR_STYLES.slate
+              return (
+                <span
+                  className={`mt-2 inline-flex w-fit items-center gap-1.5 rounded-full px-2 py-0.5 text-xs font-medium ${styles.bg} ${styles.text}`}
+                >
+                  <span className={`h-1.5 w-1.5 rounded-full ${styles.dot}`} />
+                  {folder.name}
+                </span>
+              )
+            })()}
+          {folderChangeError && <p className="mt-2 text-xs text-red-600">{folderChangeError}</p>}
+        </div>
+
         <div className="rounded-xl border border-slate-200 bg-white p-4">
           <h2 className="mb-3 text-sm font-semibold text-slate-700">File information</h2>
           <dl className="flex flex-col gap-2 text-sm">
@@ -449,6 +506,17 @@ export function DocumentViewerPage() {
         open={!!editingPayment}
         onClose={() => setEditingPayment(null)}
         onChanged={handleLinkedPaymentChanged}
+      />
+
+      <FolderModal
+        open={folderModalOpen}
+        folder={null}
+        onClose={() => setFolderModalOpen(false)}
+        onSaved={(folder) => {
+          setFolderModalOpen(false)
+          refreshFolders()
+          handleFolderChange(folder.id)
+        }}
       />
     </div>
   )

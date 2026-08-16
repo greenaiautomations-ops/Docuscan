@@ -32,11 +32,13 @@ Payments → Reminders → Scheduled Notifications → Calendar**
 
 ```
 src/
-  components/     UI, grouped by feature: layout, documents, scan,
-                   dashboard, analysis, chat, translation, events
-                   (EventCard, PaymentCard, DeadlineCard, AppointmentCard,
-                   NotificationCard, EventModal, PaymentModal,
-                   ReminderSettings, EventTypeBadge), common
+  components/     UI, grouped by feature: layout, documents (incl.
+                   FolderSidebar, FolderModal for user-created, colored
+                   document folders), scan, dashboard, analysis, chat,
+                   translation, events (EventCard, PaymentCard,
+                   DeadlineCard, AppointmentCard, NotificationCard,
+                   EventModal, PaymentModal, ReminderSettings,
+                   EventTypeBadge), common
   pages/          Route-level views, incl. Phase 3: PaymentsPage,
                    DeadlinesPage, upgraded CalendarPage/NotificationsPage/
                    DashboardPage
@@ -143,6 +145,12 @@ npm install
   actual `cron.schedule(...)` call is a manual step — see below — because
   it needs your project's own URL and a secret that must never be committed
   to git)
+- `0009_document_folders.sql` — user-created document folders (name +
+  one of 10 preset colors); adds `folder_id` to `documents` (on delete set
+  null, so deleting a folder never deletes its documents); a trigger blocks
+  filing a document into a folder owned by someone else, as defense in
+  depth beyond RLS
+- `0010_document_folders_rls.sql` — RLS for the `folders` table
 
 ```bash
 supabase login
@@ -356,6 +364,15 @@ overrides on every editable field, permanently protected from being
 overwritten by future AI reprocessing via an `is_user_edited` flag; and
 full RLS parity — a user can never read, edit, or delete another user's
 events, payments, reminders, or notifications.
+
+**Document folders:** user-created folders (e.g. "Taxes", "Finance",
+"Marketing") for organizing the Documents library, each with a name and a
+color picked from a 10-color palette. Manage folders (create, rename,
+recolor, delete) from a sidebar on the Documents page — deleting a folder
+never deletes the documents in it, they just become unfiled. Assign or
+change a document's folder from its card in the library or from the
+document viewer. A trigger enforces that a document can only be filed into
+a folder owned by the same user, on top of RLS.
 
 ## What's intentionally NOT in Phase 3
 
