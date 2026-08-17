@@ -13,10 +13,10 @@ export function EventTypeBadge({ type, status }: { type: string; status?: Event[
 
 export function PriorityBadge({ priority }: { priority: string }) {
   const styles: Record<string, string> = {
-    critical: 'bg-red-100 text-red-700',
-    high: 'bg-orange-100 text-orange-700',
-    medium: 'bg-amber-100 text-amber-700',
-    low: 'bg-slate-100 text-slate-600',
+    critical: 'bg-red-100 dark:bg-red-500/15 text-red-700 dark:text-red-400',
+    high: 'bg-orange-100 dark:bg-orange-500/15 text-orange-700 dark:text-orange-400',
+    medium: 'bg-amber-100 dark:bg-amber-500/15 text-amber-700 dark:text-amber-400',
+    low: 'bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-400',
   }
   return (
     <span className={`inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-medium capitalize ${styles[priority] ?? styles.low}`}>

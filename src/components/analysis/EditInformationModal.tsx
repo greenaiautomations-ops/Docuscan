@@ -65,27 +65,27 @@ export function EditInformationModal({ open, analysis, onClose, onSaved }: EditI
   return (
     <Modal open={open} title="Edit information" onClose={onClose}>
       <form onSubmit={handleSubmit} className="flex max-h-[60vh] flex-col gap-3 overflow-y-auto pr-1">
-        <p className="text-xs text-slate-400">
+        <p className="text-xs text-slate-400 dark:text-slate-500">
           Corrections you make here are saved as-is and marked as user-verified.
         </p>
         {EDITABLE_FIELDS.map(({ key, label }) => (
           <div key={key}>
-            <label className="mb-1 block text-xs font-medium text-slate-600">{label}</label>
+            <label className="mb-1 block text-xs font-medium text-slate-600 dark:text-slate-400">{label}</label>
             <input
               value={values[key] ?? ''}
               onChange={(e) => setValues((prev) => ({ ...prev, [key]: e.target.value }))}
-              className="w-full rounded-lg border border-slate-300 px-3 py-2 text-sm focus:border-indigo-500 focus:outline-none focus:ring-1 focus:ring-indigo-500"
+              className="w-full rounded-lg border border-slate-300 dark:border-slate-600 px-3 py-2 text-sm focus:border-indigo-500 focus:outline-none focus:ring-1 focus:ring-indigo-500"
             />
           </div>
         ))}
 
-        {error && <p className="text-sm text-red-600">{error}</p>}
+        {error && <p className="text-sm text-red-600 dark:text-red-400">{error}</p>}
 
         <div className="mt-2 flex justify-end gap-2">
           <button
             type="button"
             onClick={onClose}
-            className="rounded-lg border border-slate-300 px-4 py-2 text-sm font-medium text-slate-700 hover:bg-slate-50"
+            className="rounded-lg border border-slate-300 dark:border-slate-600 px-4 py-2 text-sm font-medium text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-800"
           >
             Cancel
           </button>

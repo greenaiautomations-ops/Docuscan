@@ -47,19 +47,19 @@ export function FolderModal({ open, folder, onClose, onSaved }: FolderModalProps
     <Modal open={open} title={folder ? 'Edit folder' : 'New folder'} onClose={onClose}>
       <div className="flex flex-col gap-4">
         <div>
-          <label className="mb-1 block text-xs font-medium text-slate-600">Name</label>
+          <label className="mb-1 block text-xs font-medium text-slate-600 dark:text-slate-400">Name</label>
           <input
             autoFocus
             value={name}
             onChange={(e) => setName(e.target.value)}
             onKeyDown={(e) => e.key === 'Enter' && handleSave()}
             placeholder="e.g. Taxes, Finance, Marketing"
-            className="w-full rounded-lg border border-slate-300 px-3 py-2 text-sm focus:border-indigo-500 focus:outline-none focus:ring-1 focus:ring-indigo-500"
+            className="w-full rounded-lg border border-slate-300 dark:border-slate-600 px-3 py-2 text-sm focus:border-indigo-500 focus:outline-none focus:ring-1 focus:ring-indigo-500"
           />
         </div>
 
         <div>
-          <label className="mb-1 block text-xs font-medium text-slate-600">Color</label>
+          <label className="mb-1 block text-xs font-medium text-slate-600 dark:text-slate-400">Color</label>
           <div className="flex flex-wrap gap-2">
             {FOLDER_COLORS.map((c) => (
               <button
@@ -68,14 +68,14 @@ export function FolderModal({ open, folder, onClose, onSaved }: FolderModalProps
                 aria-label={c}
                 onClick={() => setColor(c)}
                 className={`h-7 w-7 rounded-full ${FOLDER_COLOR_STYLES[c].solid} ${
-                  color === c ? `ring-2 ring-offset-2 ${FOLDER_COLOR_STYLES[c].ring}` : ''
+                  color === c ? `ring-2 ring-offset-2 dark:ring-offset-slate-900 ${FOLDER_COLOR_STYLES[c].ring}` : ''
                 }`}
               />
             ))}
           </div>
         </div>
 
-        {error && <p className="text-sm text-red-600">{error}</p>}
+        {error && <p className="text-sm text-red-600 dark:text-red-400">{error}</p>}
 
         <button
           onClick={handleSave}

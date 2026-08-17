@@ -69,26 +69,26 @@ export function PaymentsPage() {
   return (
     <div className="flex flex-col gap-6">
       <div>
-        <h1 className="text-2xl font-semibold text-slate-900">Payments</h1>
-        <p className="text-sm text-slate-500">Track bills, invoices, and dues detected from your documents.</p>
+        <h1 className="text-2xl font-semibold text-slate-900 dark:text-slate-100">Payments</h1>
+        <p className="text-sm text-slate-500 dark:text-slate-400">Track bills, invoices, and dues detected from your documents.</p>
       </div>
 
       <div className="grid grid-cols-2 gap-4 sm:grid-cols-4">
-        <div className="rounded-xl border border-slate-200 bg-white p-4">
-          <p className="text-xs font-medium text-slate-500">Total upcoming</p>
-          <p className="mt-1 text-lg font-semibold text-slate-900">{upcomingTotalLabel}</p>
+        <div className="rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 p-4">
+          <p className="text-xs font-medium text-slate-500 dark:text-slate-400">Total upcoming</p>
+          <p className="mt-1 text-lg font-semibold text-slate-900 dark:text-slate-100">{upcomingTotalLabel}</p>
         </div>
-        <div className="rounded-xl border border-slate-200 bg-white p-4">
-          <p className="text-xs font-medium text-slate-500">Overdue</p>
-          <p className="mt-1 text-lg font-semibold text-red-600">{totals?.overdueCount ?? 0}</p>
+        <div className="rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 p-4">
+          <p className="text-xs font-medium text-slate-500 dark:text-slate-400">Overdue</p>
+          <p className="mt-1 text-lg font-semibold text-red-600 dark:text-red-400">{totals?.overdueCount ?? 0}</p>
         </div>
-        <div className="rounded-xl border border-slate-200 bg-white p-4">
-          <p className="text-xs font-medium text-slate-500">Upcoming</p>
-          <p className="mt-1 text-lg font-semibold text-slate-900">{grouped.upcoming.length}</p>
+        <div className="rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 p-4">
+          <p className="text-xs font-medium text-slate-500 dark:text-slate-400">Upcoming</p>
+          <p className="mt-1 text-lg font-semibold text-slate-900 dark:text-slate-100">{grouped.upcoming.length}</p>
         </div>
-        <div className="rounded-xl border border-slate-200 bg-white p-4">
-          <p className="text-xs font-medium text-slate-500">Paid</p>
-          <p className="mt-1 text-lg font-semibold text-slate-900">{grouped.paid.length}</p>
+        <div className="rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 p-4">
+          <p className="text-xs font-medium text-slate-500 dark:text-slate-400">Paid</p>
+          <p className="mt-1 text-lg font-semibold text-slate-900 dark:text-slate-100">{grouped.paid.length}</p>
         </div>
       </div>
 
@@ -97,15 +97,15 @@ export function PaymentsPage() {
           value={search}
           onChange={(e) => setSearch(e.target.value)}
           placeholder="Search by recipient or reference…"
-          className="w-full max-w-sm rounded-lg border border-slate-300 px-3 py-2 text-sm focus:border-indigo-500 focus:outline-none focus:ring-1 focus:ring-indigo-500"
+          className="w-full max-w-sm rounded-lg border border-slate-300 dark:border-slate-600 px-3 py-2 text-sm focus:border-indigo-500 focus:outline-none focus:ring-1 focus:ring-indigo-500"
         />
-        <div className="flex flex-wrap gap-1 rounded-lg border border-slate-200 bg-slate-50 p-1">
+        <div className="flex flex-wrap gap-1 rounded-lg border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 p-1">
           {STATUS_TABS.map((t) => (
             <button
               key={t.key}
               onClick={() => setTab(t.key)}
               className={`rounded-md px-3 py-1.5 text-xs font-medium transition-colors ${
-                tab === t.key ? 'bg-white text-indigo-600 shadow-sm' : 'text-slate-500 hover:text-slate-700'
+                tab === t.key ? 'bg-white dark:bg-slate-900 text-indigo-600 dark:text-indigo-400 shadow-sm' : 'text-slate-500 dark:text-slate-400 hover:text-slate-700 dark:hover:text-slate-300'
               }`}
             >
               {t.label}

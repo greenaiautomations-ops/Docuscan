@@ -51,16 +51,16 @@ export function FolderSidebar({ folders, counts, selected, onSelect, onFoldersCh
 
   const rowClass = (isActive: boolean) =>
     `group flex w-full items-center gap-2 rounded-lg px-2.5 py-1.5 text-sm transition-colors ${
-      isActive ? 'bg-indigo-50 text-indigo-700 font-medium' : 'text-slate-600 hover:bg-slate-100'
+      isActive ? 'bg-indigo-50 dark:bg-indigo-500/10 text-indigo-700 dark:text-indigo-300 font-medium' : 'text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800'
     }`
 
   return (
     <div className="flex w-full shrink-0 flex-col gap-1 sm:w-56">
       <div className="mb-1 flex items-center justify-between px-1">
-        <h2 className="text-xs font-semibold uppercase tracking-wide text-slate-400">Folders</h2>
+        <h2 className="text-xs font-semibold uppercase tracking-wide text-slate-400 dark:text-slate-500">Folders</h2>
         <button
           onClick={openCreate}
-          className="text-xs font-medium text-indigo-600 hover:text-indigo-700"
+          className="text-xs font-medium text-indigo-600 dark:text-indigo-400 hover:text-indigo-700 dark:hover:text-indigo-300"
           title="New folder"
         >
           + New
@@ -68,15 +68,15 @@ export function FolderSidebar({ folders, counts, selected, onSelect, onFoldersCh
       </div>
 
       <button onClick={() => onSelect(undefined)} className={rowClass(selected === undefined)}>
-        <span className="h-2.5 w-2.5 rounded-full bg-slate-300" />
+        <span className="h-2.5 w-2.5 rounded-full bg-slate-300 dark:bg-slate-600" />
         <span className="flex-1 truncate text-left">All Documents</span>
-        <span className="text-xs text-slate-400">{counts.total}</span>
+        <span className="text-xs text-slate-400 dark:text-slate-500">{counts.total}</span>
       </button>
 
-      <div className="my-1 border-t border-slate-100" />
+      <div className="my-1 border-t border-slate-100 dark:border-slate-800" />
 
       {folders.length === 0 && (
-        <p className="px-2.5 py-2 text-xs text-slate-400">
+        <p className="px-2.5 py-2 text-xs text-slate-400 dark:text-slate-500">
           No folders yet. Create one to start organizing, e.g. "Taxes" or "Finance".
         </p>
       )}
@@ -88,20 +88,20 @@ export function FolderSidebar({ folders, counts, selected, onSelect, onFoldersCh
             <button onClick={() => onSelect(folder.id)} className="flex flex-1 items-center gap-2 overflow-hidden text-left">
               <span className={`h-2.5 w-2.5 shrink-0 rounded-full ${styles.dot}`} />
               <span className="flex-1 truncate">{folder.name}</span>
-              <span className="shrink-0 text-xs text-slate-400">{counts.byFolder[folder.id] ?? 0}</span>
+              <span className="shrink-0 text-xs text-slate-400 dark:text-slate-500">{counts.byFolder[folder.id] ?? 0}</span>
             </button>
             <span className="hidden shrink-0 items-center gap-1 group-hover:flex">
               <button
                 onClick={() => openEdit(folder)}
                 title="Edit folder"
-                className="rounded p-0.5 text-slate-400 hover:text-slate-600"
+                className="rounded p-0.5 text-slate-400 dark:text-slate-500 hover:text-slate-600 dark:hover:text-slate-400"
               >
                 ✎
               </button>
               <button
                 onClick={() => setDeleteTarget(folder)}
                 title="Delete folder"
-                className="rounded p-0.5 text-slate-400 hover:text-red-500"
+                className="rounded p-0.5 text-slate-400 dark:text-slate-500 hover:text-red-500 dark:hover:text-red-400"
               >
                 ✕
               </button>

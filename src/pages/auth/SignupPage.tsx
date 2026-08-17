@@ -44,20 +44,20 @@ export function SignupPage() {
   }
 
   return (
-    <div className="flex min-h-screen items-center justify-center bg-slate-50 px-4">
-      <div className="w-full max-w-sm rounded-2xl border border-slate-200 bg-white p-8 shadow-sm">
-        <h1 className="text-xl font-semibold text-slate-900">{APP_NAME}</h1>
-        <p className="mt-1 text-sm text-slate-500">Create your account</p>
+    <div className="flex min-h-screen items-center justify-center bg-slate-50 dark:bg-slate-800 px-4">
+      <div className="w-full max-w-sm rounded-2xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 p-8 shadow-sm">
+        <h1 className="text-xl font-semibold text-slate-900 dark:text-slate-100">{APP_NAME}</h1>
+        <p className="mt-1 text-sm text-slate-500 dark:text-slate-400">Create your account</p>
 
         {success ? (
-          <p className="mt-6 rounded-lg bg-emerald-50 p-3 text-sm text-emerald-700">
+          <p className="mt-6 rounded-lg bg-emerald-50 dark:bg-emerald-500/10 p-3 text-sm text-emerald-700 dark:text-emerald-400">
             Account created. If email confirmation is required, check your inbox. Redirecting to
             sign in…
           </p>
         ) : (
           <form onSubmit={handleSubmit} className="mt-6 flex flex-col gap-4">
             <div>
-              <label htmlFor="name" className="mb-1 block text-sm font-medium text-slate-700">
+              <label htmlFor="name" className="mb-1 block text-sm font-medium text-slate-700 dark:text-slate-300">
                 Name
               </label>
               <input
@@ -66,12 +66,12 @@ export function SignupPage() {
                 autoComplete="name"
                 value={name}
                 onChange={(e) => setName(e.target.value)}
-                className="w-full rounded-lg border border-slate-300 px-3 py-2 text-sm focus:border-indigo-500 focus:outline-none focus:ring-1 focus:ring-indigo-500"
+                className="w-full rounded-lg border border-slate-300 dark:border-slate-600 px-3 py-2 text-sm focus:border-indigo-500 focus:outline-none focus:ring-1 focus:ring-indigo-500"
                 required
               />
             </div>
             <div>
-              <label htmlFor="email" className="mb-1 block text-sm font-medium text-slate-700">
+              <label htmlFor="email" className="mb-1 block text-sm font-medium text-slate-700 dark:text-slate-300">
                 Email
               </label>
               <input
@@ -80,12 +80,12 @@ export function SignupPage() {
                 autoComplete="email"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
-                className="w-full rounded-lg border border-slate-300 px-3 py-2 text-sm focus:border-indigo-500 focus:outline-none focus:ring-1 focus:ring-indigo-500"
+                className="w-full rounded-lg border border-slate-300 dark:border-slate-600 px-3 py-2 text-sm focus:border-indigo-500 focus:outline-none focus:ring-1 focus:ring-indigo-500"
                 required
               />
             </div>
             <div>
-              <label htmlFor="password" className="mb-1 block text-sm font-medium text-slate-700">
+              <label htmlFor="password" className="mb-1 block text-sm font-medium text-slate-700 dark:text-slate-300">
                 Password
               </label>
               <input
@@ -94,13 +94,13 @@ export function SignupPage() {
                 autoComplete="new-password"
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
-                className="w-full rounded-lg border border-slate-300 px-3 py-2 text-sm focus:border-indigo-500 focus:outline-none focus:ring-1 focus:ring-indigo-500"
+                className="w-full rounded-lg border border-slate-300 dark:border-slate-600 px-3 py-2 text-sm focus:border-indigo-500 focus:outline-none focus:ring-1 focus:ring-indigo-500"
                 required
               />
-              <p className="mt-1 text-xs text-slate-400">At least 8 characters.</p>
+              <p className="mt-1 text-xs text-slate-400 dark:text-slate-500">At least 8 characters.</p>
             </div>
 
-            {error && <p className="text-sm text-red-600">{error}</p>}
+            {error && <p className="text-sm text-red-600 dark:text-red-400">{error}</p>}
 
             <button
               type="submit"
@@ -112,9 +112,9 @@ export function SignupPage() {
           </form>
         )}
 
-        <p className="mt-6 text-center text-sm text-slate-500">
+        <p className="mt-6 text-center text-sm text-slate-500 dark:text-slate-400">
           Already have an account?{' '}
-          <Link to="/login" className="font-medium text-indigo-600 hover:text-indigo-700">
+          <Link to="/login" className="font-medium text-indigo-600 dark:text-indigo-400 hover:text-indigo-700 dark:hover:text-indigo-300">
             Sign in
           </Link>
         </p>

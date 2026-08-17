@@ -86,12 +86,12 @@ export function CameraCapture({ onCapture }: CameraCaptureProps) {
   return (
     <div className="flex flex-col items-center gap-4">
       {error && (
-        <p className="w-full rounded-lg border border-red-200 bg-red-50 p-3 text-sm text-red-700">
+        <p className="w-full rounded-lg border border-red-200 dark:border-red-500/30 bg-red-50 dark:bg-red-500/10 p-3 text-sm text-red-700 dark:text-red-400">
           {error} You can also use the Upload page to add a photo from your device.
         </p>
       )}
 
-      <div className="relative w-full max-w-lg overflow-hidden rounded-xl border border-slate-200 bg-slate-900">
+      <div className="relative w-full max-w-lg overflow-hidden rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-900">
         {!capturedUrl && (
           <video ref={videoRef} className="w-full" playsInline muted autoPlay />
         )}
@@ -112,7 +112,7 @@ export function CameraCapture({ onCapture }: CameraCaptureProps) {
           <>
             <button
               onClick={handleRetake}
-              className="rounded-lg border border-slate-300 px-5 py-2 text-sm font-medium text-slate-700 hover:bg-slate-50"
+              className="rounded-lg border border-slate-300 dark:border-slate-600 px-5 py-2 text-sm font-medium text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-800"
             >
               Retake
             </button>

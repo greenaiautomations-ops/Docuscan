@@ -167,8 +167,8 @@ export function CalendarPage() {
     <div className="flex flex-col gap-6">
       <div className="flex flex-wrap items-center justify-between gap-4">
         <div>
-          <h1 className="text-2xl font-semibold text-slate-900">Calendar</h1>
-          <p className="text-sm text-slate-500">Dates, deadlines, and payments extracted from your documents.</p>
+          <h1 className="text-2xl font-semibold text-slate-900 dark:text-slate-100">Calendar</h1>
+          <p className="text-sm text-slate-500 dark:text-slate-400">Dates, deadlines, and payments extracted from your documents.</p>
         </div>
         <button
           onClick={() => handleOpenNew()}
@@ -182,33 +182,33 @@ export function CalendarPage() {
         <div className="flex items-center gap-2">
           <button
             onClick={() => navigate(-1)}
-            className="rounded-lg border border-slate-300 px-2.5 py-1.5 text-sm text-slate-600 hover:bg-slate-50"
+            className="rounded-lg border border-slate-300 dark:border-slate-600 px-2.5 py-1.5 text-sm text-slate-600 dark:text-slate-400 hover:bg-slate-50 dark:hover:bg-slate-800"
           >
             ←
           </button>
           <button
             onClick={() => setAnchor(new Date())}
-            className="rounded-lg border border-slate-300 px-3 py-1.5 text-sm text-slate-600 hover:bg-slate-50"
+            className="rounded-lg border border-slate-300 dark:border-slate-600 px-3 py-1.5 text-sm text-slate-600 dark:text-slate-400 hover:bg-slate-50 dark:hover:bg-slate-800"
           >
             Today
           </button>
           <button
             onClick={() => navigate(1)}
-            className="rounded-lg border border-slate-300 px-2.5 py-1.5 text-sm text-slate-600 hover:bg-slate-50"
+            className="rounded-lg border border-slate-300 dark:border-slate-600 px-2.5 py-1.5 text-sm text-slate-600 dark:text-slate-400 hover:bg-slate-50 dark:hover:bg-slate-800"
           >
             →
           </button>
-          <h2 className="ml-2 text-sm font-semibold text-slate-700">
+          <h2 className="ml-2 text-sm font-semibold text-slate-700 dark:text-slate-300">
             {view === 'day' ? anchor.toLocaleDateString(undefined, { weekday: 'long', month: 'long', day: 'numeric', year: 'numeric' }) : monthLabel}
           </h2>
         </div>
-        <div className="flex gap-1 rounded-lg border border-slate-200 bg-slate-50 p-1">
+        <div className="flex gap-1 rounded-lg border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 p-1">
           {(['month', 'week', 'day', 'agenda'] as ViewMode[]).map((v) => (
             <button
               key={v}
               onClick={() => setView(v)}
               className={`rounded-md px-3 py-1.5 text-xs font-medium capitalize transition-colors ${
-                view === v ? 'bg-white text-indigo-600 shadow-sm' : 'text-slate-500 hover:text-slate-700'
+                view === v ? 'bg-white dark:bg-slate-900 text-indigo-600 dark:text-indigo-400 shadow-sm' : 'text-slate-500 dark:text-slate-400 hover:text-slate-700 dark:hover:text-slate-300'
               }`}
             >
               {v}
@@ -217,7 +217,7 @@ export function CalendarPage() {
         </div>
       </div>
 
-      <div className="flex flex-wrap gap-3 text-xs text-slate-500">
+      <div className="flex flex-wrap gap-3 text-xs text-slate-500 dark:text-slate-400">
         {EVENT_TYPES.map((type) => (
           <span key={type} className="flex items-center gap-1.5">
             <span className={`h-2 w-2 rounded-full ${EVENT_TYPE_COLORS[type]?.dot}`} />
@@ -234,8 +234,8 @@ export function CalendarPage() {
       {!loading && error && <ErrorMessage message={error} onRetry={refresh} />}
 
       {!loading && !error && view === 'month' && (
-        <div className="rounded-xl border border-slate-200 bg-white p-5">
-          <div className="grid grid-cols-7 gap-1 text-center text-xs font-medium text-slate-400">
+        <div className="rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 p-5">
+          <div className="grid grid-cols-7 gap-1 text-center text-xs font-medium text-slate-400 dark:text-slate-500">
             {WEEKDAYS.map((day) => (
               <div key={day} className="py-1">
                 {day}
@@ -252,16 +252,16 @@ export function CalendarPage() {
                 <div
                   key={idx}
                   className={`flex min-h-[90px] flex-col gap-1 rounded-lg border p-1.5 ${
-                    isToday ? 'border-indigo-300 bg-indigo-50/40' : 'border-slate-100'
+                    isToday ? 'border-indigo-300 dark:border-indigo-500/40 bg-indigo-50/40 dark:bg-indigo-500/10' : 'border-slate-100 dark:border-slate-800'
                   }`}
                 >
                   <div className="flex items-center justify-between">
-                    <span className={`text-xs ${isToday ? 'font-semibold text-indigo-600' : 'text-slate-500'}`}>
+                    <span className={`text-xs ${isToday ? 'font-semibold text-indigo-600 dark:text-indigo-400' : 'text-slate-500 dark:text-slate-400'}`}>
                       {date.getDate()}
                     </span>
                     <button
                       onClick={() => handleOpenNew(key)}
-                      className="text-xs text-slate-300 hover:text-indigo-500"
+                      className="text-xs text-slate-300 dark:text-slate-600 hover:text-indigo-500 dark:hover:text-indigo-400"
                       title="Add event"
                     >
                       +
@@ -272,7 +272,7 @@ export function CalendarPage() {
                       <EventChip key={event.id} event={event} onClick={() => setSelectedEvent(event)} />
                     ))}
                     {dayEvents.length > 3 && (
-                      <span className="text-[11px] text-slate-400">+{dayEvents.length - 3} more</span>
+                      <span className="text-[11px] text-slate-400 dark:text-slate-500">+{dayEvents.length - 3} more</span>
                     )}
                   </div>
                 </div>
@@ -292,19 +292,19 @@ export function CalendarPage() {
               <div
                 key={key}
                 className={`flex flex-col gap-2 rounded-xl border p-3 ${
-                  isToday ? 'border-indigo-300 bg-indigo-50/40' : 'border-slate-200 bg-white'
+                  isToday ? 'border-indigo-300 dark:border-indigo-500/40 bg-indigo-50/40 dark:bg-indigo-500/10' : 'border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900'
                 }`}
               >
                 <div className="flex items-center justify-between">
-                  <p className={`text-xs font-semibold ${isToday ? 'text-indigo-600' : 'text-slate-500'}`}>
+                  <p className={`text-xs font-semibold ${isToday ? 'text-indigo-600 dark:text-indigo-400' : 'text-slate-500 dark:text-slate-400'}`}>
                     {date.toLocaleDateString(undefined, { weekday: 'short', day: 'numeric' })}
                   </p>
-                  <button onClick={() => handleOpenNew(key)} className="text-xs text-slate-300 hover:text-indigo-500">
+                  <button onClick={() => handleOpenNew(key)} className="text-xs text-slate-300 dark:text-slate-600 hover:text-indigo-500 dark:hover:text-indigo-400">
                     +
                   </button>
                 </div>
                 <div className="flex flex-col gap-1">
-                  {dayEvents.length === 0 && <p className="text-[11px] text-slate-300">No events</p>}
+                  {dayEvents.length === 0 && <p className="text-[11px] text-slate-300 dark:text-slate-600">No events</p>}
                   {dayEvents.map((event) => (
                     <EventChip key={event.id} event={event} onClick={() => setSelectedEvent(event)} />
                   ))}
@@ -316,7 +316,7 @@ export function CalendarPage() {
       )}
 
       {!loading && !error && view === 'day' && (
-        <div className="rounded-xl border border-slate-200 bg-white p-5">
+        <div className="rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 p-5">
           {(eventsByDate.get(toDateKey(anchor)) ?? []).length === 0 && (
             <EmptyState title="Nothing scheduled" description="No events on this day." />
           )}
@@ -327,12 +327,12 @@ export function CalendarPage() {
                 <button
                   key={event.id}
                   onClick={() => setSelectedEvent(event)}
-                  className="flex items-center gap-3 rounded-lg border border-slate-100 p-3 text-left hover:bg-slate-50"
+                  className="flex items-center gap-3 rounded-lg border border-slate-100 dark:border-slate-800 p-3 text-left hover:bg-slate-50 dark:hover:bg-slate-800"
                 >
                   <span className={`h-2.5 w-2.5 shrink-0 rounded-full ${colors.dot}`} />
                   <div>
-                    <p className="text-sm font-medium text-slate-800">{event.title}</p>
-                    <p className="text-xs text-slate-400">
+                    <p className="text-sm font-medium text-slate-800 dark:text-slate-200">{event.title}</p>
+                    <p className="text-xs text-slate-400 dark:text-slate-500">
                       {formatTimeOnly(event.event_time) ?? 'All day'}
                       {event.location ? ` · ${event.location}` : ''}
                     </p>
@@ -353,12 +353,12 @@ export function CalendarPage() {
               <button
                 key={event.id}
                 onClick={() => setSelectedEvent(event)}
-                className="flex items-center gap-3 rounded-lg border border-slate-200 bg-white p-3 text-left hover:bg-slate-50"
+                className="flex items-center gap-3 rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 p-3 text-left hover:bg-slate-50 dark:hover:bg-slate-800"
               >
                 <span className={`h-2.5 w-2.5 shrink-0 rounded-full ${colors.dot}`} />
                 <div className="min-w-0 flex-1">
-                  <p className="truncate text-sm font-medium text-slate-800">{event.title}</p>
-                  <p className="text-xs text-slate-400">
+                  <p className="truncate text-sm font-medium text-slate-800 dark:text-slate-200">{event.title}</p>
+                  <p className="text-xs text-slate-400 dark:text-slate-500">
                     {formatDateOnly(event.event_date)}
                     {formatTimeOnly(event.event_time) ? ` · ${formatTimeOnly(event.event_time)}` : ''}
                     {event.location ? ` · ${event.location}` : ''}
@@ -378,19 +378,19 @@ export function CalendarPage() {
       <Modal open={creating} title="New event" onClose={() => setCreating(false)}>
         <div className="flex flex-col gap-4">
           <div>
-            <label className="mb-1 block text-xs font-medium text-slate-600">Title</label>
+            <label className="mb-1 block text-xs font-medium text-slate-600 dark:text-slate-400">Title</label>
             <input
               value={newTitle}
               onChange={(e) => setNewTitle(e.target.value)}
-              className="w-full rounded-lg border border-slate-300 px-3 py-2 text-sm focus:border-indigo-500 focus:outline-none focus:ring-1 focus:ring-indigo-500"
+              className="w-full rounded-lg border border-slate-300 dark:border-slate-600 px-3 py-2 text-sm focus:border-indigo-500 focus:outline-none focus:ring-1 focus:ring-indigo-500"
             />
           </div>
           <div>
-            <label className="mb-1 block text-xs font-medium text-slate-600">Type</label>
+            <label className="mb-1 block text-xs font-medium text-slate-600 dark:text-slate-400">Type</label>
             <select
               value={newType}
               onChange={(e) => setNewType(e.target.value as EventType)}
-              className="w-full rounded-lg border border-slate-300 px-3 py-2 text-sm focus:border-indigo-500 focus:outline-none focus:ring-1 focus:ring-indigo-500"
+              className="w-full rounded-lg border border-slate-300 dark:border-slate-600 px-3 py-2 text-sm focus:border-indigo-500 focus:outline-none focus:ring-1 focus:ring-indigo-500"
             >
               {EVENT_TYPES.map((type) => (
                 <option key={type} value={type}>
@@ -401,33 +401,33 @@ export function CalendarPage() {
           </div>
           <div className="grid grid-cols-2 gap-3">
             <div>
-              <label className="mb-1 block text-xs font-medium text-slate-600">Date</label>
+              <label className="mb-1 block text-xs font-medium text-slate-600 dark:text-slate-400">Date</label>
               <input
                 type="date"
                 value={newDate}
                 onChange={(e) => setNewDate(e.target.value)}
-                className="w-full rounded-lg border border-slate-300 px-3 py-2 text-sm focus:border-indigo-500 focus:outline-none focus:ring-1 focus:ring-indigo-500"
+                className="w-full rounded-lg border border-slate-300 dark:border-slate-600 px-3 py-2 text-sm focus:border-indigo-500 focus:outline-none focus:ring-1 focus:ring-indigo-500"
               />
             </div>
             <div>
-              <label className="mb-1 block text-xs font-medium text-slate-600">Time</label>
+              <label className="mb-1 block text-xs font-medium text-slate-600 dark:text-slate-400">Time</label>
               <input
                 type="time"
                 value={newTime}
                 onChange={(e) => setNewTime(e.target.value)}
-                className="w-full rounded-lg border border-slate-300 px-3 py-2 text-sm focus:border-indigo-500 focus:outline-none focus:ring-1 focus:ring-indigo-500"
+                className="w-full rounded-lg border border-slate-300 dark:border-slate-600 px-3 py-2 text-sm focus:border-indigo-500 focus:outline-none focus:ring-1 focus:ring-indigo-500"
               />
             </div>
           </div>
           <div>
-            <label className="mb-1 block text-xs font-medium text-slate-600">Location</label>
+            <label className="mb-1 block text-xs font-medium text-slate-600 dark:text-slate-400">Location</label>
             <input
               value={newLocation}
               onChange={(e) => setNewLocation(e.target.value)}
-              className="w-full rounded-lg border border-slate-300 px-3 py-2 text-sm focus:border-indigo-500 focus:outline-none focus:ring-1 focus:ring-indigo-500"
+              className="w-full rounded-lg border border-slate-300 dark:border-slate-600 px-3 py-2 text-sm focus:border-indigo-500 focus:outline-none focus:ring-1 focus:ring-indigo-500"
             />
           </div>
-          {createError && <p className="text-sm text-red-600">{createError}</p>}
+          {createError && <p className="text-sm text-red-600 dark:text-red-400">{createError}</p>}
           <button
             onClick={handleCreate}
             disabled={creatingSaving}

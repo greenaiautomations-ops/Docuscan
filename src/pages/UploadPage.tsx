@@ -27,15 +27,15 @@ function UploadItemRow({
   const { document } = useDocumentProcessing(item.documentId)
 
   return (
-    <div className="flex items-center justify-between gap-3 rounded-lg border border-slate-200 bg-white px-4 py-3">
+    <div className="flex items-center justify-between gap-3 rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 px-4 py-3">
       <div className="min-w-0 flex-1">
-        <p className="truncate text-sm font-medium text-slate-800">{item.file.name}</p>
-        {item.error && <p className="text-xs text-red-600">{friendlyProcessingError(item.error)}</p>}
+        <p className="truncate text-sm font-medium text-slate-800 dark:text-slate-200">{item.file.name}</p>
+        {item.error && <p className="text-xs text-red-600 dark:text-red-400">{friendlyProcessingError(item.error)}</p>}
       </div>
       {document ? (
         <ProcessingStatus document={document} onRetry={() => onRetry(item)} />
       ) : (
-        <span className="text-xs text-slate-400">Starting…</span>
+        <span className="text-xs text-slate-400 dark:text-slate-500">Starting…</span>
       )}
     </div>
   )
@@ -98,22 +98,22 @@ export function UploadPage() {
   return (
     <div className="mx-auto flex max-w-2xl flex-col gap-6">
       <div>
-        <h1 className="text-2xl font-semibold text-slate-900">Upload documents</h1>
-        <p className="text-sm text-slate-500">
+        <h1 className="text-2xl font-semibold text-slate-900 dark:text-slate-100">Upload documents</h1>
+        <p className="text-sm text-slate-500 dark:text-slate-400">
           Upload PDF, JPG, PNG, or WEBP files up to 25MB each. AI processing (OCR, classification,
           summary) continues in the background — feel free to move on once uploads finish.
         </p>
       </div>
 
       <div>
-        <label htmlFor="category" className="mb-1 block text-sm font-medium text-slate-700">
+        <label htmlFor="category" className="mb-1 block text-sm font-medium text-slate-700 dark:text-slate-300">
           Category
         </label>
         <select
           id="category"
           value={category}
           onChange={(e) => setCategory(e.target.value as DocumentCategory)}
-          className="w-full max-w-xs rounded-lg border border-slate-300 px-3 py-2 text-sm focus:border-indigo-500 focus:outline-none focus:ring-1 focus:ring-indigo-500"
+          className="w-full max-w-xs rounded-lg border border-slate-300 dark:border-slate-600 px-3 py-2 text-sm focus:border-indigo-500 focus:outline-none focus:ring-1 focus:ring-indigo-500"
         >
           {DOCUMENT_CATEGORIES.map((c) => (
             <option key={c} value={c}>
@@ -127,28 +127,28 @@ export function UploadPage() {
 
       {items.length > 0 && (
         <div className="flex flex-col gap-2">
-          <h2 className="text-sm font-semibold text-slate-700">Upload progress</h2>
+          <h2 className="text-sm font-semibold text-slate-700 dark:text-slate-300">Upload progress</h2>
           {items.map((item) =>
             item.documentId ? (
               <UploadItemRow key={item.id} item={item} onRetry={handleRetry} />
             ) : (
               <div
                 key={item.id}
-                className="flex items-center justify-between gap-3 rounded-lg border border-slate-200 bg-white px-4 py-3"
+                className="flex items-center justify-between gap-3 rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 px-4 py-3"
               >
                 <div className="min-w-0 flex-1">
-                  <p className="truncate text-sm font-medium text-slate-800">{item.file.name}</p>
-                  {item.error && <p className="text-xs text-red-600">{friendlyProcessingError(item.error)}</p>}
+                  <p className="truncate text-sm font-medium text-slate-800 dark:text-slate-200">{item.file.name}</p>
+                  {item.error && <p className="text-xs text-red-600 dark:text-red-400">{friendlyProcessingError(item.error)}</p>}
                 </div>
                 {item.failedBeforeUpload ? (
                   <button
                     onClick={() => handleRetry(item)}
-                    className="text-xs font-medium text-indigo-600 hover:text-indigo-700"
+                    className="text-xs font-medium text-indigo-600 dark:text-indigo-400 hover:text-indigo-700 dark:hover:text-indigo-300"
                   >
                     Retry
                   </button>
                 ) : (
-                  <span className="text-xs text-slate-400">Uploading…</span>
+                  <span className="text-xs text-slate-400 dark:text-slate-500">Uploading…</span>
                 )}
               </div>
             ),

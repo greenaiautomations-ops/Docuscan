@@ -14,42 +14,42 @@ export function DeadlineCard({ event, onComplete, onEdit, onSnooze }: DeadlineCa
   const isOverdue = event.event_date ? relativeDateLabel(event.event_date).includes('overdue') : false
 
   return (
-    <div className="flex flex-col gap-2 rounded-xl border border-slate-200 bg-white p-4 shadow-sm">
+    <div className="flex flex-col gap-2 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 p-4 shadow-sm">
       <div className="flex items-start justify-between gap-2">
-        <p className="text-sm font-semibold text-slate-900">{event.title}</p>
+        <p className="text-sm font-semibold text-slate-900 dark:text-slate-100">{event.title}</p>
         <PriorityBadge priority={event.priority} />
       </div>
 
-      {event.description && <p className="text-sm text-slate-500">{event.description}</p>}
+      {event.description && <p className="text-sm text-slate-500 dark:text-slate-400">{event.description}</p>}
 
       <div className="flex flex-wrap items-center gap-2">
         <EventTypeBadge type={event.type} status={event.status} />
-        <span className={`text-xs font-medium ${isOverdue ? 'text-red-600' : 'text-slate-400'}`}>
+        <span className={`text-xs font-medium ${isOverdue ? 'text-red-600 dark:text-red-400' : 'text-slate-400 dark:text-slate-500'}`}>
           {event.event_date ? `${relativeDateLabel(event.event_date)} · ${formatDateOnly(event.event_date)}` : 'No date set'}
         </span>
         {event.status === 'needs_review' && (
-          <span className="rounded-full bg-amber-50 px-2 py-0.5 text-xs font-medium text-amber-700">
+          <span className="rounded-full bg-amber-50 dark:bg-amber-500/10 px-2 py-0.5 text-xs font-medium text-amber-700 dark:text-amber-400">
             Please verify
           </span>
         )}
       </div>
 
-      <div className="mt-1 flex flex-wrap items-center gap-3 border-t border-slate-100 pt-2 text-xs">
+      <div className="mt-1 flex flex-wrap items-center gap-3 border-t border-slate-100 dark:border-slate-800 pt-2 text-xs">
         {event.status !== 'completed' && (
-          <button onClick={() => onComplete(event)} className="font-medium text-emerald-600 hover:text-emerald-700">
+          <button onClick={() => onComplete(event)} className="font-medium text-emerald-600 dark:text-emerald-400 hover:text-emerald-700 dark:hover:text-emerald-400">
             Complete
           </button>
         )}
-        <button onClick={() => onEdit(event)} className="text-slate-500 hover:text-slate-700">
+        <button onClick={() => onEdit(event)} className="text-slate-500 dark:text-slate-400 hover:text-slate-700 dark:hover:text-slate-300">
           Edit
         </button>
         {event.status !== 'completed' && (
-          <button onClick={() => onSnooze(event)} className="text-slate-500 hover:text-slate-700">
+          <button onClick={() => onSnooze(event)} className="text-slate-500 dark:text-slate-400 hover:text-slate-700 dark:hover:text-slate-300">
             Snooze
           </button>
         )}
         {event.document_id && (
-          <Link to={`/documents/${event.document_id}`} className="ml-auto text-slate-500 hover:text-slate-700">
+          <Link to={`/documents/${event.document_id}`} className="ml-auto text-slate-500 dark:text-slate-400 hover:text-slate-700 dark:hover:text-slate-300">
             Open Document
           </Link>
         )}

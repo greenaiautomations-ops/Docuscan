@@ -26,26 +26,26 @@ export function NotificationsPage() {
     <div className="flex flex-col gap-6">
       <div className="flex flex-wrap items-center justify-between gap-4">
         <div>
-          <h1 className="text-2xl font-semibold text-slate-900">Notifications</h1>
-          <p className="text-sm text-slate-500">Reminders and updates about your documents, deadlines, and payments.</p>
+          <h1 className="text-2xl font-semibold text-slate-900 dark:text-slate-100">Notifications</h1>
+          <p className="text-sm text-slate-500 dark:text-slate-400">Reminders and updates about your documents, deadlines, and payments.</p>
         </div>
         {unreadCount > 0 && (
           <button
             onClick={markAllRead}
-            className="rounded-lg border border-slate-300 px-3 py-1.5 text-sm font-medium text-slate-700 hover:bg-slate-50"
+            className="rounded-lg border border-slate-300 dark:border-slate-600 px-3 py-1.5 text-sm font-medium text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-800"
           >
             Mark all as read
           </button>
         )}
       </div>
 
-      <div className="flex gap-1 rounded-lg border border-slate-200 bg-slate-50 p-1 self-start">
+      <div className="flex gap-1 rounded-lg border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 p-1 self-start">
         {TABS.map((t) => (
           <button
             key={t.key}
             onClick={() => setTab(t.key)}
             className={`rounded-md px-3 py-1.5 text-xs font-medium transition-colors ${
-              tab === t.key ? 'bg-white text-indigo-600 shadow-sm' : 'text-slate-500 hover:text-slate-700'
+              tab === t.key ? 'bg-white dark:bg-slate-900 text-indigo-600 dark:text-indigo-400 shadow-sm' : 'text-slate-500 dark:text-slate-400 hover:text-slate-700 dark:hover:text-slate-300'
             }`}
           >
             {t.label}
@@ -68,7 +68,7 @@ export function NotificationsPage() {
               </div>
               <button
                 onClick={() => remove(n)}
-                className="shrink-0 rounded-lg px-2 py-1 text-xs font-medium text-slate-400 hover:text-red-600"
+                className="shrink-0 rounded-lg px-2 py-1 text-xs font-medium text-slate-400 dark:text-slate-500 hover:text-red-600 dark:hover:text-red-400"
               >
                 Delete
               </button>

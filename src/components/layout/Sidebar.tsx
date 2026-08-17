@@ -12,15 +12,15 @@ export function Sidebar({ open, onNavigate }: SidebarProps) {
 
   return (
     <aside
-      className={`fixed inset-y-0 left-0 z-40 w-64 transform border-r border-slate-200 bg-white transition-transform duration-200 ease-in-out lg:static lg:translate-x-0 ${
+      className={`fixed inset-y-0 left-0 z-40 w-64 transform border-r border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 transition-transform duration-200 ease-in-out lg:static lg:translate-x-0 ${
         open ? 'translate-x-0' : '-translate-x-full'
       }`}
     >
-      <div className="flex h-16 items-center gap-2 border-b border-slate-200 px-6">
+      <div className="flex h-16 items-center gap-2 border-b border-slate-200 dark:border-slate-700 px-6">
         <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-indigo-600 text-sm font-bold text-white">
           D
         </div>
-        <span className="text-lg font-semibold text-slate-900">{APP_NAME}</span>
+        <span className="text-lg font-semibold text-slate-900 dark:text-slate-100">{APP_NAME}</span>
       </div>
       <nav className="flex flex-col gap-1 p-3">
         {NAV_ITEMS.map((item) => (
@@ -32,8 +32,8 @@ export function Sidebar({ open, onNavigate }: SidebarProps) {
             className={({ isActive }) =>
               `flex items-center justify-between rounded-lg px-3 py-2 text-sm font-medium transition-colors ${
                 isActive
-                  ? 'bg-indigo-50 text-indigo-700'
-                  : 'text-slate-600 hover:bg-slate-100 hover:text-slate-900'
+                  ? 'bg-indigo-50 dark:bg-indigo-500/10 text-indigo-700 dark:text-indigo-300'
+                  : 'text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800 hover:text-slate-900 dark:hover:text-slate-100'
               }`
             }
           >

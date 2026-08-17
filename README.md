@@ -38,19 +38,21 @@ src/
                    translation, events (EventCard, PaymentCard,
                    DeadlineCard, AppointmentCard, NotificationCard,
                    EventModal, PaymentModal, ReminderSettings,
-                   EventTypeBadge), common
+                   EventTypeBadge), common (incl. ThemeToggle)
   pages/          Route-level views, incl. Phase 3: PaymentsPage,
                    DeadlinesPage, upgraded CalendarPage/NotificationsPage/
                    DashboardPage
   hooks/          Data-fetching + polling hooks (useAuth, useDocuments,
                    useDocumentProcessing, useDashboardStats, useEvents,
                    usePayments, useUnifiedNotifications,
-                   useUnreadNotificationCount)
+                   useUnreadNotificationCount, useTheme)
   services/       All Supabase reads/writes + Edge Function calls
                    (documents, storage, profile, tags, notifications,
                    upload, processing, chat, translation, events, payments,
-                   reminders, notificationPreferences)
-  contexts/       AuthContext (session, profile, sign in/up/out)
+                   reminders, notificationPreferences, folders)
+  contexts/       AuthContext (session, profile, sign in/up/out),
+                   ThemeContext (light/dark/system, persisted + synced with
+                   the OS)
   lib/            Supabase client singleton
   types/          Database types + domain types (AI extraction shapes,
                    events/payments/reminders/notifications)
@@ -373,6 +375,18 @@ never deletes the documents in it, they just become unfiled. Assign or
 change a document's folder from its card in the library or from the
 document viewer. A trigger enforces that a document can only be filed into
 a folder owned by the same user, on top of RLS.
+
+**Dark mode:** a full light/dark theme, toggled from the header icon
+(instant light↔dark flip) or set explicitly to Light/Dark/System from
+Settings → Appearance. The preference is stored in `localStorage` and
+applied before React even mounts (via a small inline script in
+`index.html`), so there's no flash of the wrong theme on load. Built on
+Tailwind v4's CSS-first `@custom-variant dark` (in `src/index.css`), driven
+by a `.dark` class on `<html>` rather than the OS media query alone, so the
+in-app toggle can override the system preference; `ThemeContext`/`useTheme`
+also still track and react to OS-level changes when "System" is selected.
+Native form controls (inputs, checkboxes, scrollbars) pick up a matching
+dark appearance via the CSS `color-scheme` property.
 
 ## What's intentionally NOT in Phase 3
 

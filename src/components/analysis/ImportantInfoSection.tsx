@@ -3,9 +3,9 @@ import type { ExtractedData } from '../../types/document'
 
 export function ImportantInfoSection({ data }: { data: ExtractedData }) {
   return (
-    <div className="rounded-xl border border-slate-200 bg-white p-5">
-      <h2 className="mb-2 text-sm font-semibold text-slate-700">Important Information</h2>
-      <div className="divide-y divide-slate-100">
+    <div className="rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 p-5">
+      <h2 className="mb-2 text-sm font-semibold text-slate-700 dark:text-slate-300">Important Information</h2>
+      <div className="divide-y divide-slate-100 dark:divide-slate-800">
         <ExtractedFieldRow label="Document title" field={data.document_title} />
         <ExtractedFieldRow label="Issuer" field={data.issuer} />
         <ExtractedFieldRow label="Recipient" field={data.recipient} />

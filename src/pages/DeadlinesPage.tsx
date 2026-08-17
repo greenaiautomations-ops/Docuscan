@@ -110,8 +110,8 @@ export function DeadlinesPage() {
   return (
     <div className="flex flex-col gap-6">
       <div>
-        <h1 className="text-2xl font-semibold text-slate-900">Deadlines</h1>
-        <p className="text-sm text-slate-500">Tasks and deadlines detected from your documents.</p>
+        <h1 className="text-2xl font-semibold text-slate-900 dark:text-slate-100">Deadlines</h1>
+        <p className="text-sm text-slate-500 dark:text-slate-400">Tasks and deadlines detected from your documents.</p>
       </div>
 
       <div className="flex flex-wrap items-center gap-3">
@@ -119,12 +119,12 @@ export function DeadlinesPage() {
           value={search}
           onChange={(e) => setSearch(e.target.value)}
           placeholder="Search deadlines…"
-          className="w-full max-w-sm rounded-lg border border-slate-300 px-3 py-2 text-sm focus:border-indigo-500 focus:outline-none focus:ring-1 focus:ring-indigo-500"
+          className="w-full max-w-sm rounded-lg border border-slate-300 dark:border-slate-600 px-3 py-2 text-sm focus:border-indigo-500 focus:outline-none focus:ring-1 focus:ring-indigo-500"
         />
         <select
           value={priority}
           onChange={(e) => setPriority(e.target.value)}
-          className="rounded-lg border border-slate-300 px-3 py-2 text-sm focus:border-indigo-500 focus:outline-none focus:ring-1 focus:ring-indigo-500"
+          className="rounded-lg border border-slate-300 dark:border-slate-600 px-3 py-2 text-sm focus:border-indigo-500 focus:outline-none focus:ring-1 focus:ring-indigo-500"
         >
           <option value="all">All priorities</option>
           <option value="critical">Critical</option>
@@ -135,7 +135,7 @@ export function DeadlinesPage() {
         <select
           value={type}
           onChange={(e) => setType(e.target.value)}
-          className="rounded-lg border border-slate-300 px-3 py-2 text-sm focus:border-indigo-500 focus:outline-none focus:ring-1 focus:ring-indigo-500"
+          className="rounded-lg border border-slate-300 dark:border-slate-600 px-3 py-2 text-sm focus:border-indigo-500 focus:outline-none focus:ring-1 focus:ring-indigo-500"
         >
           <option value="all">All types</option>
           {Object.entries(EVENT_TYPE_LABELS).map(([key, label]) => (
@@ -158,8 +158,8 @@ export function DeadlinesPage() {
           {SECTIONS.map(({ key, label }) =>
             grouped[key].length > 0 ? (
               <div key={key} className="flex flex-col gap-3">
-                <h2 className="text-sm font-semibold uppercase tracking-wide text-slate-400">
-                  {label} <span className="text-slate-300">({grouped[key].length})</span>
+                <h2 className="text-sm font-semibold uppercase tracking-wide text-slate-400 dark:text-slate-500">
+                  {label} <span className="text-slate-300 dark:text-slate-600">({grouped[key].length})</span>
                 </h2>
                 <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
                   {grouped[key].map((event) => (
@@ -182,25 +182,25 @@ export function DeadlinesPage() {
 
       <Modal open={!!snoozing} title="Snooze deadline" onClose={() => setSnoozing(null)}>
         <div className="flex flex-col gap-4">
-          <p className="text-sm text-slate-500">Push "{snoozing?.title}" to a new date.</p>
+          <p className="text-sm text-slate-500 dark:text-slate-400">Push "{snoozing?.title}" to a new date.</p>
           <div className="flex flex-wrap gap-2">
             {[1, 3, 7].map((days) => (
               <button
                 key={days}
                 onClick={() => applySnooze(addDays(todayStr(), days))}
-                className="rounded-lg border border-slate-300 px-3 py-1.5 text-xs font-medium text-slate-700 hover:bg-slate-50"
+                className="rounded-lg border border-slate-300 dark:border-slate-600 px-3 py-1.5 text-xs font-medium text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-800"
               >
                 +{days} day{days > 1 ? 's' : ''}
               </button>
             ))}
           </div>
           <div>
-            <label className="mb-1 block text-xs font-medium text-slate-600">Or pick a date</label>
+            <label className="mb-1 block text-xs font-medium text-slate-600 dark:text-slate-400">Or pick a date</label>
             <input
               type="date"
               value={snoozeDate}
               onChange={(e) => setSnoozeDate(e.target.value)}
-              className="w-full rounded-lg border border-slate-300 px-3 py-2 text-sm focus:border-indigo-500 focus:outline-none focus:ring-1 focus:ring-indigo-500"
+              className="w-full rounded-lg border border-slate-300 dark:border-slate-600 px-3 py-2 text-sm focus:border-indigo-500 focus:outline-none focus:ring-1 focus:ring-indigo-500"
             />
           </div>
           <button

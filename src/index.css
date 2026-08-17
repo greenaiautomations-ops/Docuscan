@@ -1,9 +1,19 @@
 @import "tailwindcss";
 
+/* Tailwind v4 uses CSS-first config: this makes `dark:` variants apply
+   based on a `.dark` class on <html> (toggled by ThemeContext) instead of
+   the OS-level `prefers-color-scheme` media query, so the in-app theme
+   toggle can override the system preference. */
+@custom-variant dark (&:where(.dark, .dark *));
+
 :root {
   color-scheme: light;
 }
 
+:root.dark {
+  color-scheme: dark;
+}
+
 body {
-  @apply antialiased;
+  @apply antialiased bg-slate-50 text-slate-900 dark:bg-slate-800 dark:text-slate-100;
 }

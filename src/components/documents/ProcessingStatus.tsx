@@ -25,18 +25,18 @@ export function ProcessingStatus({ document, onRetry, retrying }: ProcessingStat
   return (
     <div className="flex items-center gap-2 text-sm">
       {isActive && (
-        <span className="h-3 w-3 animate-spin rounded-full border-2 border-slate-200 border-t-indigo-600" />
+        <span className="h-3 w-3 animate-spin rounded-full border-2 border-slate-200 dark:border-slate-700 border-t-indigo-600" />
       )}
-      {isDone && <span className="text-emerald-600">●</span>}
-      {isFailed && <span className="text-red-500">●</span>}
-      <span className={isFailed ? 'text-red-600' : isDone ? 'text-emerald-700' : 'text-slate-600'}>
+      {isDone && <span className="text-emerald-600 dark:text-emerald-400">●</span>}
+      {isFailed && <span className="text-red-500 dark:text-red-400">●</span>}
+      <span className={isFailed ? 'text-red-600 dark:text-red-400' : isDone ? 'text-emerald-700 dark:text-emerald-400' : 'text-slate-600 dark:text-slate-400'}>
         {stageLabel(document)}
       </span>
       {isFailed && onRetry && (
         <button
           onClick={onRetry}
           disabled={retrying}
-          className="ml-1 text-xs font-medium text-indigo-600 hover:text-indigo-700 disabled:opacity-60"
+          className="ml-1 text-xs font-medium text-indigo-600 dark:text-indigo-400 hover:text-indigo-700 dark:hover:text-indigo-300 disabled:opacity-60"
         >
           {retrying ? 'Retrying…' : 'Retry'}
         </button>

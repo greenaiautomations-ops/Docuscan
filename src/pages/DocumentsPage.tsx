@@ -75,8 +75,8 @@ export function DocumentsPage() {
     <div className="flex flex-col gap-6">
       <div className="flex flex-wrap items-center justify-between gap-4">
         <div>
-          <h1 className="text-2xl font-semibold text-slate-900">Documents</h1>
-          <p className="text-sm text-slate-500">Manage and organize all of your documents.</p>
+          <h1 className="text-2xl font-semibold text-slate-900 dark:text-slate-100">Documents</h1>
+          <p className="text-sm text-slate-500 dark:text-slate-400">Manage and organize all of your documents.</p>
         </div>
         <UploadButton />
       </div>

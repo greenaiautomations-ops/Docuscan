@@ -5,6 +5,19 @@
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Docuscan</title>
+    <script>
+      // Applied before React mounts, so there's no flash of the wrong theme
+      // on load. Mirrors the logic in ThemeContext.tsx — keep them in sync.
+      (function () {
+        try {
+          var stored = localStorage.getItem('docuscan-theme')
+          var isDark =
+            stored === 'dark' ||
+            (stored !== 'light' && window.matchMedia('(prefers-color-scheme: dark)').matches)
+          document.documentElement.classList.toggle('dark', isDark)
+        } catch (e) {}
+      })()
+    </script>
   </head>
   <body>
     <div id="root"></div>

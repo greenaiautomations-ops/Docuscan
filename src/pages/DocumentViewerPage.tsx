@@ -208,7 +208,7 @@ export function DocumentViewerPage() {
       <div className="flex-1">
         <div className="mb-4 flex flex-wrap items-center justify-between gap-3">
           <div>
-            <h1 className="text-2xl font-semibold text-slate-900">{document.title}</h1>
+            <h1 className="text-2xl font-semibold text-slate-900 dark:text-slate-100">{document.title}</h1>
             <div className="mt-1 flex items-center gap-2">
               <StatusBadge status={document.status} />
               <ImportanceBadge importance={document.importance} />
@@ -219,26 +219,26 @@ export function DocumentViewerPage() {
               <a
                 href={previewUrl}
                 download
-                className="rounded-lg border border-slate-300 px-3 py-1.5 text-sm font-medium text-slate-700 hover:bg-slate-50"
+                className="rounded-lg border border-slate-300 dark:border-slate-600 px-3 py-1.5 text-sm font-medium text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-800"
               >
                 Download
               </a>
             )}
             <button
               onClick={handleToggleImportant}
-              className="rounded-lg border border-slate-300 px-3 py-1.5 text-sm font-medium text-slate-700 hover:bg-slate-50"
+              className="rounded-lg border border-slate-300 dark:border-slate-600 px-3 py-1.5 text-sm font-medium text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-800"
             >
               {document.is_important ? 'Unmark important' : 'Mark important'}
             </button>
             <button
               onClick={handleToggleArchive}
-              className="rounded-lg border border-slate-300 px-3 py-1.5 text-sm font-medium text-slate-700 hover:bg-slate-50"
+              className="rounded-lg border border-slate-300 dark:border-slate-600 px-3 py-1.5 text-sm font-medium text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-800"
             >
               {document.is_archived ? 'Unarchive' : 'Archive'}
             </button>
             <button
               onClick={() => setDeleteOpen(true)}
-              className="rounded-lg border border-red-300 px-3 py-1.5 text-sm font-medium text-red-600 hover:bg-red-50"
+              className="rounded-lg border border-red-300 dark:border-red-500/40 px-3 py-1.5 text-sm font-medium text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-500/10"
             >
               Delete
             </button>
@@ -246,8 +246,8 @@ export function DocumentViewerPage() {
         </div>
 
         {/* Document preview */}
-        <div className="flex min-h-[320px] items-center justify-center overflow-hidden rounded-xl border border-slate-200 bg-slate-100">
-          {!previewUrl && <p className="text-sm text-slate-400">Preview unavailable.</p>}
+        <div className="flex min-h-[320px] items-center justify-center overflow-hidden rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-100 dark:bg-slate-800">
+          {!previewUrl && <p className="text-sm text-slate-400 dark:text-slate-500">Preview unavailable.</p>}
           {previewUrl && isImage && (
             <img src={previewUrl} alt={document.title} className="max-h-[60vh] w-auto object-contain" />
           )}
@@ -255,17 +255,17 @@ export function DocumentViewerPage() {
             <iframe title={document.title} src={previewUrl} className="h-[60vh] w-full" />
           )}
           {previewUrl && !isImage && !isPdf && (
-            <p className="text-sm text-slate-500">Preview not supported for this file type.</p>
+            <p className="text-sm text-slate-500 dark:text-slate-400">Preview not supported for this file type.</p>
           )}
         </div>
 
         {/* Processing status / AI pipeline output */}
         <div className="mt-6 flex flex-col gap-4">
           {!isAnalyzed && (
-            <div className="rounded-xl border border-slate-200 bg-white p-5">
-              <h2 className="mb-2 text-sm font-semibold text-slate-700">Processing</h2>
+            <div className="rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 p-5">
+              <h2 className="mb-2 text-sm font-semibold text-slate-700 dark:text-slate-300">Processing</h2>
               <ProcessingStatus document={document} onRetry={handleRetry} retrying={retrying} />
-              {retryError && <p className="mt-2 text-sm text-red-600">{friendlyProcessingError(retryError)}</p>}
+              {retryError && <p className="mt-2 text-sm text-red-600 dark:text-red-400">{friendlyProcessingError(retryError)}</p>}
             </div>
           )}
 
@@ -287,12 +287,12 @@ export function DocumentViewerPage() {
           {isAnalyzed && extractedData && <RequiredActionSection data={extractedData} />}
 
           {(linkedEvents.length > 0 || linkedPayments.length > 0) && (
-            <div className="rounded-xl border border-slate-200 bg-white p-5">
-              <h2 className="mb-3 text-sm font-semibold text-slate-700">Dates, payments &amp; tasks</h2>
+            <div className="rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 p-5">
+              <h2 className="mb-3 text-sm font-semibold text-slate-700 dark:text-slate-300">Dates, payments &amp; tasks</h2>
               <div className="flex flex-col gap-4">
                 {linkedEvents.filter((e) => e.type === 'appointment').length > 0 && (
                   <div>
-                    <h3 className="mb-2 text-xs font-semibold uppercase tracking-wide text-slate-400">Appointments</h3>
+                    <h3 className="mb-2 text-xs font-semibold uppercase tracking-wide text-slate-400 dark:text-slate-500">Appointments</h3>
                     <div className="flex flex-col gap-2">
                       {linkedEvents
                         .filter((e) => e.type === 'appointment')
@@ -305,7 +305,7 @@ export function DocumentViewerPage() {
 
                 {linkedEvents.filter((e) => e.type !== 'appointment').length > 0 && (
                   <div>
-                    <h3 className="mb-2 text-xs font-semibold uppercase tracking-wide text-slate-400">Deadlines &amp; tasks</h3>
+                    <h3 className="mb-2 text-xs font-semibold uppercase tracking-wide text-slate-400 dark:text-slate-500">Deadlines &amp; tasks</h3>
                     <div className="flex flex-col gap-2">
                       {linkedEvents
                         .filter((e) => e.type !== 'appointment')
@@ -324,7 +324,7 @@ export function DocumentViewerPage() {
 
                 {linkedPayments.length > 0 && (
                   <div>
-                    <h3 className="mb-2 text-xs font-semibold uppercase tracking-wide text-slate-400">Payments</h3>
+                    <h3 className="mb-2 text-xs font-semibold uppercase tracking-wide text-slate-400 dark:text-slate-500">Payments</h3>
                     <div className="grid grid-cols-1 gap-2 sm:grid-cols-2">
                       {linkedPayments.map((payment) => (
                         <PaymentCard
@@ -347,26 +347,26 @@ export function DocumentViewerPage() {
             <div className="flex flex-wrap gap-2">
               <button
                 onClick={openExplain}
-                className="rounded-lg border border-slate-300 px-3 py-1.5 text-sm font-medium text-slate-700 hover:bg-slate-50"
+                className="rounded-lg border border-slate-300 dark:border-slate-600 px-3 py-1.5 text-sm font-medium text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-800"
               >
                 Explain
               </button>
               <button
                 onClick={() => setTranslateOpen(true)}
-                className="rounded-lg border border-slate-300 px-3 py-1.5 text-sm font-medium text-slate-700 hover:bg-slate-50"
+                className="rounded-lg border border-slate-300 dark:border-slate-600 px-3 py-1.5 text-sm font-medium text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-800"
               >
                 Translate
               </button>
               <button
                 onClick={openAskAi}
-                className="rounded-lg border border-slate-300 px-3 py-1.5 text-sm font-medium text-slate-700 hover:bg-slate-50"
+                className="rounded-lg border border-slate-300 dark:border-slate-600 px-3 py-1.5 text-sm font-medium text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-800"
               >
                 Ask AI
               </button>
               {analysis && (
                 <button
                   onClick={() => setEditOpen(true)}
-                  className="rounded-lg border border-slate-300 px-3 py-1.5 text-sm font-medium text-slate-700 hover:bg-slate-50"
+                  className="rounded-lg border border-slate-300 dark:border-slate-600 px-3 py-1.5 text-sm font-medium text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-800"
                 >
                   Edit Information
                 </button>
@@ -374,20 +374,20 @@ export function DocumentViewerPage() {
               <button
                 onClick={handleRetry}
                 disabled={retrying}
-                className="rounded-lg border border-slate-300 px-3 py-1.5 text-sm font-medium text-slate-700 hover:bg-slate-50 disabled:opacity-60"
+                className="rounded-lg border border-slate-300 dark:border-slate-600 px-3 py-1.5 text-sm font-medium text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-800 disabled:opacity-60"
               >
                 {retrying ? 'Retrying…' : 'Retry Processing'}
               </button>
             </div>
           )}
-          {retryError && isAnalyzed && <p className="text-sm text-red-600">{friendlyProcessingError(retryError)}</p>}
+          {retryError && isAnalyzed && <p className="text-sm text-red-600 dark:text-red-400">{friendlyProcessingError(retryError)}</p>}
 
           {ocr?.raw_text && (
-            <details className="rounded-xl border border-slate-200 bg-white p-5">
-              <summary className="cursor-pointer text-sm font-semibold text-slate-700">
+            <details className="rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 p-5">
+              <summary className="cursor-pointer text-sm font-semibold text-slate-700 dark:text-slate-300">
                 Raw OCR text
               </summary>
-              <pre className="mt-3 max-h-96 overflow-auto whitespace-pre-wrap text-xs text-slate-600">
+              <pre className="mt-3 max-h-96 overflow-auto whitespace-pre-wrap text-xs text-slate-600 dark:text-slate-400">
                 {ocr.raw_text}
               </pre>
             </details>
@@ -396,12 +396,12 @@ export function DocumentViewerPage() {
       </div>
 
       <aside className="w-full shrink-0 lg:w-72">
-        <div className="mb-4 rounded-xl border border-slate-200 bg-white p-4">
+        <div className="mb-4 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 p-4">
           <div className="mb-2 flex items-center justify-between">
-            <h2 className="text-sm font-semibold text-slate-700">Folder</h2>
+            <h2 className="text-sm font-semibold text-slate-700 dark:text-slate-300">Folder</h2>
             <button
               onClick={() => setFolderModalOpen(true)}
-              className="text-xs font-medium text-indigo-600 hover:text-indigo-700"
+              className="text-xs font-medium text-indigo-600 dark:text-indigo-400 hover:text-indigo-700 dark:hover:text-indigo-300"
             >
               + New
             </button>
@@ -409,7 +409,7 @@ export function DocumentViewerPage() {
           <select
             value={document.folder_id ?? ''}
             onChange={(e) => handleFolderChange(e.target.value || null)}
-            className="w-full rounded-lg border border-slate-300 px-3 py-2 text-sm focus:border-indigo-500 focus:outline-none focus:ring-1 focus:ring-indigo-500"
+            className="w-full rounded-lg border border-slate-300 dark:border-slate-600 px-3 py-2 text-sm focus:border-indigo-500 focus:outline-none focus:ring-1 focus:ring-indigo-500"
           >
             <option value="">No folder</option>
             {folders.map((f) => (
@@ -432,34 +432,34 @@ export function DocumentViewerPage() {
                 </span>
               )
             })()}
-          {folderChangeError && <p className="mt-2 text-xs text-red-600">{folderChangeError}</p>}
+          {folderChangeError && <p className="mt-2 text-xs text-red-600 dark:text-red-400">{folderChangeError}</p>}
         </div>
 
-        <div className="rounded-xl border border-slate-200 bg-white p-4">
-          <h2 className="mb-3 text-sm font-semibold text-slate-700">File information</h2>
+        <div className="rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 p-4">
+          <h2 className="mb-3 text-sm font-semibold text-slate-700 dark:text-slate-300">File information</h2>
           <dl className="flex flex-col gap-2 text-sm">
             <div className="flex justify-between">
-              <dt className="text-slate-400">Category</dt>
-              <dd className="text-slate-700">{titleCase(document.category)}</dd>
+              <dt className="text-slate-400 dark:text-slate-500">Category</dt>
+              <dd className="text-slate-700 dark:text-slate-300">{titleCase(document.category)}</dd>
             </div>
             <div className="flex justify-between">
-              <dt className="text-slate-400">Type</dt>
-              <dd className="text-slate-700">{document.file_type}</dd>
+              <dt className="text-slate-400 dark:text-slate-500">Type</dt>
+              <dd className="text-slate-700 dark:text-slate-300">{document.file_type}</dd>
             </div>
             <div className="flex justify-between">
-              <dt className="text-slate-400">Size</dt>
-              <dd className="text-slate-700">{formatFileSize(document.file_size)}</dd>
+              <dt className="text-slate-400 dark:text-slate-500">Size</dt>
+              <dd className="text-slate-700 dark:text-slate-300">{formatFileSize(document.file_size)}</dd>
             </div>
             <div className="flex justify-between">
-              <dt className="text-slate-400">Uploaded</dt>
-              <dd className="text-slate-700">{formatDateTime(document.created_at)}</dd>
+              <dt className="text-slate-400 dark:text-slate-500">Uploaded</dt>
+              <dd className="text-slate-700 dark:text-slate-300">{formatDateTime(document.created_at)}</dd>
             </div>
             <div className="flex justify-between">
-              <dt className="text-slate-400">Updated</dt>
-              <dd className="text-slate-700">{formatDateTime(document.updated_at)}</dd>
+              <dt className="text-slate-400 dark:text-slate-500">Updated</dt>
+              <dd className="text-slate-700 dark:text-slate-300">{formatDateTime(document.updated_at)}</dd>
             </div>
             <div className="flex justify-between">
-              <dt className="text-slate-400">Status</dt>
+              <dt className="text-slate-400 dark:text-slate-500">Status</dt>
               <dd><StatusBadge status={document.status} /></dd>
             </div>
           </dl>

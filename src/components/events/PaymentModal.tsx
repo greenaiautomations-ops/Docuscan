@@ -89,58 +89,58 @@ export function PaymentModal({ payment, open, onClose, onChanged }: PaymentModal
       <Modal open={open} title="Payment" onClose={onClose}>
         <div className="flex flex-col gap-4">
           {payment.status === 'unknown' && (
-            <div className="rounded-lg border border-amber-200 bg-amber-50 p-3 text-sm text-amber-800">
+            <div className="rounded-lg border border-amber-200 dark:border-amber-500/30 bg-amber-50 dark:bg-amber-500/10 p-3 text-sm text-amber-800 dark:text-amber-300">
               This payment's status couldn't be determined automatically — please review and confirm the details below.
             </div>
           )}
 
           <div>
-            <label className="mb-1 block text-xs font-medium text-slate-600">Recipient</label>
+            <label className="mb-1 block text-xs font-medium text-slate-600 dark:text-slate-400">Recipient</label>
             <input
               value={recipient}
               onChange={(e) => setRecipient(e.target.value)}
-              className="w-full rounded-lg border border-slate-300 px-3 py-2 text-sm focus:border-indigo-500 focus:outline-none focus:ring-1 focus:ring-indigo-500"
+              className="w-full rounded-lg border border-slate-300 dark:border-slate-600 px-3 py-2 text-sm focus:border-indigo-500 focus:outline-none focus:ring-1 focus:ring-indigo-500"
             />
           </div>
 
           <div className="grid grid-cols-2 gap-3">
             <div>
-              <label className="mb-1 block text-xs font-medium text-slate-600">Amount</label>
+              <label className="mb-1 block text-xs font-medium text-slate-600 dark:text-slate-400">Amount</label>
               <input
                 value={amount}
                 onChange={(e) => setAmount(e.target.value)}
                 inputMode="decimal"
-                className="w-full rounded-lg border border-slate-300 px-3 py-2 text-sm focus:border-indigo-500 focus:outline-none focus:ring-1 focus:ring-indigo-500"
+                className="w-full rounded-lg border border-slate-300 dark:border-slate-600 px-3 py-2 text-sm focus:border-indigo-500 focus:outline-none focus:ring-1 focus:ring-indigo-500"
               />
             </div>
             <div>
-              <label className="mb-1 block text-xs font-medium text-slate-600">Currency</label>
+              <label className="mb-1 block text-xs font-medium text-slate-600 dark:text-slate-400">Currency</label>
               <input
                 value={currency}
                 onChange={(e) => setCurrency(e.target.value.toUpperCase())}
                 placeholder="USD"
                 maxLength={3}
-                className="w-full rounded-lg border border-slate-300 px-3 py-2 text-sm focus:border-indigo-500 focus:outline-none focus:ring-1 focus:ring-indigo-500"
+                className="w-full rounded-lg border border-slate-300 dark:border-slate-600 px-3 py-2 text-sm focus:border-indigo-500 focus:outline-none focus:ring-1 focus:ring-indigo-500"
               />
             </div>
           </div>
 
           <div>
-            <label className="mb-1 block text-xs font-medium text-slate-600">Due date</label>
+            <label className="mb-1 block text-xs font-medium text-slate-600 dark:text-slate-400">Due date</label>
             <input
               type="date"
               value={dueDate}
               onChange={(e) => setDueDate(e.target.value)}
-              className="w-full rounded-lg border border-slate-300 px-3 py-2 text-sm focus:border-indigo-500 focus:outline-none focus:ring-1 focus:ring-indigo-500"
+              className="w-full rounded-lg border border-slate-300 dark:border-slate-600 px-3 py-2 text-sm focus:border-indigo-500 focus:outline-none focus:ring-1 focus:ring-indigo-500"
             />
           </div>
 
           <div>
-            <label className="mb-1 block text-xs font-medium text-slate-600">Reference number</label>
+            <label className="mb-1 block text-xs font-medium text-slate-600 dark:text-slate-400">Reference number</label>
             <input
               value={referenceNumber}
               onChange={(e) => setReferenceNumber(e.target.value)}
-              className="w-full rounded-lg border border-slate-300 px-3 py-2 text-sm focus:border-indigo-500 focus:outline-none focus:ring-1 focus:ring-indigo-500"
+              className="w-full rounded-lg border border-slate-300 dark:border-slate-600 px-3 py-2 text-sm focus:border-indigo-500 focus:outline-none focus:ring-1 focus:ring-indigo-500"
             />
           </div>
 
@@ -150,20 +150,20 @@ export function PaymentModal({ payment, open, onClose, onChanged }: PaymentModal
               type="checkbox"
               checked={recurring}
               onChange={(e) => setRecurring(e.target.checked)}
-              className="h-4 w-4 rounded border-slate-300 text-indigo-600 focus:ring-indigo-500"
+              className="h-4 w-4 rounded border-slate-300 dark:border-slate-600 text-indigo-600 dark:text-indigo-400 focus:ring-indigo-500"
             />
-            <label htmlFor="payment-recurring" className="text-sm text-slate-700">
+            <label htmlFor="payment-recurring" className="text-sm text-slate-700 dark:text-slate-300">
               This is a recurring payment
             </label>
           </div>
 
           {recurring && (
             <div>
-              <label className="mb-1 block text-xs font-medium text-slate-600">Recurrence</label>
+              <label className="mb-1 block text-xs font-medium text-slate-600 dark:text-slate-400">Recurrence</label>
               <select
                 value={recurrenceInterval}
                 onChange={(e) => setRecurrenceInterval(e.target.value as RecurrenceInterval)}
-                className="w-full rounded-lg border border-slate-300 px-3 py-2 text-sm focus:border-indigo-500 focus:outline-none focus:ring-1 focus:ring-indigo-500"
+                className="w-full rounded-lg border border-slate-300 dark:border-slate-600 px-3 py-2 text-sm focus:border-indigo-500 focus:outline-none focus:ring-1 focus:ring-indigo-500"
               >
                 <option value="">Select interval…</option>
                 <option value="weekly">Weekly</option>
@@ -171,27 +171,27 @@ export function PaymentModal({ payment, open, onClose, onChanged }: PaymentModal
                 <option value="quarterly">Quarterly</option>
                 <option value="yearly">Yearly</option>
               </select>
-              <p className="mt-1 text-xs text-slate-400">
+              <p className="mt-1 text-xs text-slate-400 dark:text-slate-500">
                 Confirming a recurrence here does not create future payments automatically — each one is created as its own document is processed.
               </p>
             </div>
           )}
 
           {payment.document_id && (
-            <Link to={`/documents/${payment.document_id}`} className="text-sm font-medium text-indigo-600 hover:text-indigo-700">
+            <Link to={`/documents/${payment.document_id}`} className="text-sm font-medium text-indigo-600 dark:text-indigo-400 hover:text-indigo-700 dark:hover:text-indigo-300">
               Open source document
             </Link>
           )}
 
-          {error && <p className="text-sm text-red-600">{error}</p>}
+          {error && <p className="text-sm text-red-600 dark:text-red-400">{error}</p>}
 
-          <div className="flex flex-wrap items-center justify-between gap-2 border-t border-slate-100 pt-3">
+          <div className="flex flex-wrap items-center justify-between gap-2 border-t border-slate-100 dark:border-slate-800 pt-3">
             <div className="flex flex-wrap gap-2">
               {payment.status === 'pending' && (
                 <button
                   onClick={() => runAction(() => markPaymentPaid(payment.id))}
                   disabled={saving}
-                  className="rounded-lg border border-emerald-300 px-3 py-1.5 text-sm font-medium text-emerald-700 hover:bg-emerald-50 disabled:opacity-60"
+                  className="rounded-lg border border-emerald-300 dark:border-emerald-500/40 px-3 py-1.5 text-sm font-medium text-emerald-700 dark:text-emerald-400 hover:bg-emerald-50 dark:hover:bg-emerald-500/10 disabled:opacity-60"
                 >
                   Mark paid
                 </button>
@@ -200,14 +200,14 @@ export function PaymentModal({ payment, open, onClose, onChanged }: PaymentModal
                 <button
                   onClick={() => runAction(() => ignorePayment(payment.id))}
                   disabled={saving}
-                  className="rounded-lg border border-slate-300 px-3 py-1.5 text-sm font-medium text-slate-700 hover:bg-slate-50 disabled:opacity-60"
+                  className="rounded-lg border border-slate-300 dark:border-slate-600 px-3 py-1.5 text-sm font-medium text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-800 disabled:opacity-60"
                 >
                   Ignore
                 </button>
               )}
               <button
                 onClick={() => setDeleteOpen(true)}
-                className="rounded-lg border border-red-300 px-3 py-1.5 text-sm font-medium text-red-600 hover:bg-red-50"
+                className="rounded-lg border border-red-300 dark:border-red-500/40 px-3 py-1.5 text-sm font-medium text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-500/10"
               >
                 Delete
               </button>

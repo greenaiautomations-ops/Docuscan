@@ -15,12 +15,12 @@ export function NotificationCard({ notification, onMarkRead }: NotificationCardP
       : null
 
   const body = (
-    <div className={`flex items-start gap-3 rounded-xl border p-3 ${notification.read ? 'border-slate-200 bg-white' : 'border-indigo-200 bg-indigo-50/60'}`}>
+    <div className={`flex items-start gap-3 rounded-xl border p-3 ${notification.read ? 'border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900' : 'border-indigo-200 dark:border-indigo-500/30 bg-indigo-50/60 dark:bg-indigo-500/10'}`}>
       {!notification.read && <span className="mt-1.5 h-2 w-2 shrink-0 rounded-full bg-indigo-500" />}
       <div className="min-w-0 flex-1">
-        <p className={`text-sm ${notification.read ? 'text-slate-700' : 'font-medium text-slate-900'}`}>{notification.title}</p>
-        {notification.message && <p className="mt-0.5 text-xs text-slate-500">{notification.message}</p>}
-        <p className="mt-1 text-xs text-slate-400">{relativeDateLabel(notification.createdAt.slice(0, 10))}</p>
+        <p className={`text-sm ${notification.read ? 'text-slate-700 dark:text-slate-300' : 'font-medium text-slate-900 dark:text-slate-100'}`}>{notification.title}</p>
+        {notification.message && <p className="mt-0.5 text-xs text-slate-500 dark:text-slate-400">{notification.message}</p>}
+        <p className="mt-1 text-xs text-slate-400 dark:text-slate-500">{relativeDateLabel(notification.createdAt.slice(0, 10))}</p>
       </div>
       {!notification.read && onMarkRead && (
         <button
@@ -29,7 +29,7 @@ export function NotificationCard({ notification, onMarkRead }: NotificationCardP
             e.stopPropagation()
             onMarkRead(notification)
           }}
-          className="shrink-0 rounded-lg border border-slate-300 px-2 py-1 text-xs font-medium text-slate-600 hover:bg-slate-50"
+          className="shrink-0 rounded-lg border border-slate-300 dark:border-slate-600 px-2 py-1 text-xs font-medium text-slate-600 dark:text-slate-400 hover:bg-slate-50 dark:hover:bg-slate-800"
         >
           Mark read
         </button>

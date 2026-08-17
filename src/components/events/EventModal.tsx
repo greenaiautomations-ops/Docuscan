@@ -96,12 +96,12 @@ export function EventModal({ event, open, onClose, onChanged }: EventModalProps)
       <Modal open={open} title={EVENT_TYPE_LABELS[event.type] ?? 'Event'} onClose={onClose}>
         <div className="flex flex-col gap-4">
           {event.status === 'needs_review' && (
-            <div className="rounded-lg border border-amber-200 bg-amber-50 p-3">
-              <p className="text-sm font-medium text-amber-800">
+            <div className="rounded-lg border border-amber-200 dark:border-amber-500/30 bg-amber-50 dark:bg-amber-500/10 p-3">
+              <p className="text-sm font-medium text-amber-800 dark:text-amber-300">
                 Possible {EVENT_TYPE_LABELS[event.type]?.toLowerCase() ?? 'event'} detected — please verify.
               </p>
               {typeof event.source_confidence === 'number' && (
-                <p className="mt-0.5 text-xs text-amber-700">
+                <p className="mt-0.5 text-xs text-amber-700 dark:text-amber-400">
                   AI confidence: {Math.round(event.source_confidence * 100)}%
                 </p>
               )}
@@ -109,21 +109,21 @@ export function EventModal({ event, open, onClose, onChanged }: EventModalProps)
                 <button
                   onClick={() => runAction(() => confirmEvent(event.id))}
                   disabled={saving}
-                  className="rounded-lg bg-amber-600 px-3 py-1.5 text-xs font-semibold text-white hover:bg-amber-700 disabled:opacity-60"
+                  className="rounded-lg bg-amber-600 dark:bg-amber-500 px-3 py-1.5 text-xs font-semibold text-white hover:bg-amber-700 dark:hover:bg-amber-600 disabled:opacity-60"
                 >
                   Confirm
                 </button>
                 <button
                   onClick={handleSave}
                   disabled={saving}
-                  className="rounded-lg border border-amber-300 px-3 py-1.5 text-xs font-medium text-amber-800 hover:bg-amber-100"
+                  className="rounded-lg border border-amber-300 dark:border-amber-500/40 px-3 py-1.5 text-xs font-medium text-amber-800 dark:text-amber-300 hover:bg-amber-100 dark:hover:bg-amber-500/15"
                 >
                   Edit &amp; Confirm
                 </button>
                 <button
                   onClick={() => runAction(() => dismissEvent(event.id))}
                   disabled={saving}
-                  className="rounded-lg border border-amber-300 px-3 py-1.5 text-xs font-medium text-amber-800 hover:bg-amber-100"
+                  className="rounded-lg border border-amber-300 dark:border-amber-500/40 px-3 py-1.5 text-xs font-medium text-amber-800 dark:text-amber-300 hover:bg-amber-100 dark:hover:bg-amber-500/15"
                 >
                   Ignore
                 </button>
@@ -132,60 +132,60 @@ export function EventModal({ event, open, onClose, onChanged }: EventModalProps)
           )}
 
           <div>
-            <label className="mb-1 block text-xs font-medium text-slate-600">Title</label>
+            <label className="mb-1 block text-xs font-medium text-slate-600 dark:text-slate-400">Title</label>
             <input
               value={title}
               onChange={(e) => setTitle(e.target.value)}
-              className="w-full rounded-lg border border-slate-300 px-3 py-2 text-sm focus:border-indigo-500 focus:outline-none focus:ring-1 focus:ring-indigo-500"
+              className="w-full rounded-lg border border-slate-300 dark:border-slate-600 px-3 py-2 text-sm focus:border-indigo-500 focus:outline-none focus:ring-1 focus:ring-indigo-500"
             />
           </div>
 
           <div>
-            <label className="mb-1 block text-xs font-medium text-slate-600">Description</label>
+            <label className="mb-1 block text-xs font-medium text-slate-600 dark:text-slate-400">Description</label>
             <textarea
               value={description}
               onChange={(e) => setDescription(e.target.value)}
               rows={2}
-              className="w-full rounded-lg border border-slate-300 px-3 py-2 text-sm focus:border-indigo-500 focus:outline-none focus:ring-1 focus:ring-indigo-500"
+              className="w-full rounded-lg border border-slate-300 dark:border-slate-600 px-3 py-2 text-sm focus:border-indigo-500 focus:outline-none focus:ring-1 focus:ring-indigo-500"
             />
           </div>
 
           <div className="grid grid-cols-2 gap-3">
             <div>
-              <label className="mb-1 block text-xs font-medium text-slate-600">Date</label>
+              <label className="mb-1 block text-xs font-medium text-slate-600 dark:text-slate-400">Date</label>
               <input
                 type="date"
                 value={eventDate}
                 onChange={(e) => setEventDate(e.target.value)}
-                className="w-full rounded-lg border border-slate-300 px-3 py-2 text-sm focus:border-indigo-500 focus:outline-none focus:ring-1 focus:ring-indigo-500"
+                className="w-full rounded-lg border border-slate-300 dark:border-slate-600 px-3 py-2 text-sm focus:border-indigo-500 focus:outline-none focus:ring-1 focus:ring-indigo-500"
               />
             </div>
             <div>
-              <label className="mb-1 block text-xs font-medium text-slate-600">Time</label>
+              <label className="mb-1 block text-xs font-medium text-slate-600 dark:text-slate-400">Time</label>
               <input
                 type="time"
                 value={eventTime}
                 onChange={(e) => setEventTime(e.target.value)}
-                className="w-full rounded-lg border border-slate-300 px-3 py-2 text-sm focus:border-indigo-500 focus:outline-none focus:ring-1 focus:ring-indigo-500"
+                className="w-full rounded-lg border border-slate-300 dark:border-slate-600 px-3 py-2 text-sm focus:border-indigo-500 focus:outline-none focus:ring-1 focus:ring-indigo-500"
               />
             </div>
           </div>
 
           <div>
-            <label className="mb-1 block text-xs font-medium text-slate-600">Location</label>
+            <label className="mb-1 block text-xs font-medium text-slate-600 dark:text-slate-400">Location</label>
             <input
               value={location}
               onChange={(e) => setLocation(e.target.value)}
-              className="w-full rounded-lg border border-slate-300 px-3 py-2 text-sm focus:border-indigo-500 focus:outline-none focus:ring-1 focus:ring-indigo-500"
+              className="w-full rounded-lg border border-slate-300 dark:border-slate-600 px-3 py-2 text-sm focus:border-indigo-500 focus:outline-none focus:ring-1 focus:ring-indigo-500"
             />
           </div>
 
           <div>
-            <label className="mb-1 block text-xs font-medium text-slate-600">Priority</label>
+            <label className="mb-1 block text-xs font-medium text-slate-600 dark:text-slate-400">Priority</label>
             <select
               value={priority}
               onChange={(e) => setPriority(e.target.value as EventPriority)}
-              className="w-full rounded-lg border border-slate-300 px-3 py-2 text-sm focus:border-indigo-500 focus:outline-none focus:ring-1 focus:ring-indigo-500"
+              className="w-full rounded-lg border border-slate-300 dark:border-slate-600 px-3 py-2 text-sm focus:border-indigo-500 focus:outline-none focus:ring-1 focus:ring-indigo-500"
             >
               <option value="critical">Critical</option>
               <option value="high">High</option>
@@ -196,15 +196,15 @@ export function EventModal({ event, open, onClose, onChanged }: EventModalProps)
 
           {reminders.length > 0 && (
             <div>
-              <label className="mb-1 block text-xs font-medium text-slate-600">Reminders</label>
+              <label className="mb-1 block text-xs font-medium text-slate-600 dark:text-slate-400">Reminders</label>
               <ul className="flex flex-col gap-1">
                 {reminders.map((r) => (
-                  <li key={r.id} className="flex items-center justify-between rounded-lg bg-slate-50 px-3 py-1.5 text-xs text-slate-600">
+                  <li key={r.id} className="flex items-center justify-between rounded-lg bg-slate-50 dark:bg-slate-800 px-3 py-1.5 text-xs text-slate-600 dark:text-slate-400">
                     <span>
                       {REMINDER_LABELS[r.reminder_type] ?? r.reminder_type} — {formatDateOnly(r.reminder_date)}
                       {r.sent ? ' (sent)' : ''}
                     </span>
-                    <button onClick={() => handleRemoveReminder(r.id)} className="text-red-500 hover:text-red-700">
+                    <button onClick={() => handleRemoveReminder(r.id)} className="text-red-500 dark:text-red-400 hover:text-red-700 dark:hover:text-red-400">
                       Remove
                     </button>
                   </li>
@@ -214,27 +214,27 @@ export function EventModal({ event, open, onClose, onChanged }: EventModalProps)
           )}
 
           {event.document_id && (
-            <Link to={`/documents/${event.document_id}`} className="text-sm font-medium text-indigo-600 hover:text-indigo-700">
+            <Link to={`/documents/${event.document_id}`} className="text-sm font-medium text-indigo-600 dark:text-indigo-400 hover:text-indigo-700 dark:hover:text-indigo-300">
               Open source document
             </Link>
           )}
 
-          {error && <p className="text-sm text-red-600">{error}</p>}
+          {error && <p className="text-sm text-red-600 dark:text-red-400">{error}</p>}
 
-          <div className="flex flex-wrap items-center justify-between gap-2 border-t border-slate-100 pt-3">
+          <div className="flex flex-wrap items-center justify-between gap-2 border-t border-slate-100 dark:border-slate-800 pt-3">
             <div className="flex flex-wrap gap-2">
               {event.status !== 'completed' && (
                 <button
                   onClick={() => runAction(() => completeEvent(event.id))}
                   disabled={saving}
-                  className="rounded-lg border border-slate-300 px-3 py-1.5 text-sm font-medium text-slate-700 hover:bg-slate-50 disabled:opacity-60"
+                  className="rounded-lg border border-slate-300 dark:border-slate-600 px-3 py-1.5 text-sm font-medium text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-800 disabled:opacity-60"
                 >
                   Mark complete
                 </button>
               )}
               <button
                 onClick={() => setDeleteOpen(true)}
-                className="rounded-lg border border-red-300 px-3 py-1.5 text-sm font-medium text-red-600 hover:bg-red-50"
+                className="rounded-lg border border-red-300 dark:border-red-500/40 px-3 py-1.5 text-sm font-medium text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-500/10"
               >
                 Delete
               </button>

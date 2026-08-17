@@ -36,8 +36,8 @@ export function ScanPage() {
   return (
     <div className="mx-auto flex max-w-2xl flex-col gap-6">
       <div>
-        <h1 className="text-2xl font-semibold text-slate-900">Scan a document</h1>
-        <p className="text-sm text-slate-500">
+        <h1 className="text-2xl font-semibold text-slate-900 dark:text-slate-100">Scan a document</h1>
+        <p className="text-sm text-slate-500 dark:text-slate-400">
           Use your camera to capture a document. Edge detection and cleanup arrive in Phase 2.
         </p>
       </div>
@@ -45,12 +45,12 @@ export function ScanPage() {
       <CameraCapture onCapture={handleCapture} />
 
       {saving && (
-        <div className="flex items-center gap-2 text-sm text-slate-600">
+        <div className="flex items-center gap-2 text-sm text-slate-600 dark:text-slate-400">
           <span>Saving scan…</span>
           {status && <StatusBadge status={status} />}
         </div>
       )}
-      {error && <p className="text-sm text-red-600">{error}</p>}
+      {error && <p className="text-sm text-red-600 dark:text-red-400">{error}</p>}
     </div>
   )
 }

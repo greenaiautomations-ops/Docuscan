@@ -74,10 +74,10 @@ export function DashboardPage() {
     <div className="flex flex-col gap-6">
       <div className="flex flex-wrap items-center justify-between gap-4">
         <div>
-          <h1 className="text-2xl font-semibold text-slate-900">
+          <h1 className="text-2xl font-semibold text-slate-900 dark:text-slate-100">
             Welcome back{profile?.name ? `, ${profile.name}` : ''}
           </h1>
-          <p className="text-sm text-slate-500">Here&apos;s what&apos;s happening with your documents.</p>
+          <p className="text-sm text-slate-500 dark:text-slate-400">Here&apos;s what&apos;s happening with your documents.</p>
         </div>
         <UploadButton />
       </div>
@@ -90,12 +90,12 @@ export function DashboardPage() {
       </div>
 
       <div className="grid grid-cols-1 gap-4 lg:grid-cols-2">
-        <div className="rounded-xl border border-slate-200 bg-white p-5">
-          <h2 className="mb-3 text-sm font-semibold text-slate-700">Today</h2>
+        <div className="rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 p-5">
+          <h2 className="mb-3 text-sm font-semibold text-slate-700 dark:text-slate-300">Today</h2>
           {phase3Loading ? (
             <LoadingSpinner label="Loading…" />
           ) : todaysEvents.length === 0 ? (
-            <p className="text-sm text-slate-400">Nothing scheduled for today.</p>
+            <p className="text-sm text-slate-400 dark:text-slate-500">Nothing scheduled for today.</p>
           ) : (
             <div className="flex flex-col gap-2">
               {todaysEvents.map((event) => (
@@ -105,12 +105,12 @@ export function DashboardPage() {
           )}
         </div>
 
-        <div className="rounded-xl border border-slate-200 bg-white p-5">
-          <h2 className="mb-3 text-sm font-semibold text-slate-700">Upcoming (next 7 days)</h2>
+        <div className="rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 p-5">
+          <h2 className="mb-3 text-sm font-semibold text-slate-700 dark:text-slate-300">Upcoming (next 7 days)</h2>
           {phase3Loading ? (
             <LoadingSpinner label="Loading…" />
           ) : laterEvents.length === 0 ? (
-            <p className="text-sm text-slate-400">Nothing else coming up this week.</p>
+            <p className="text-sm text-slate-400 dark:text-slate-500">Nothing else coming up this week.</p>
           ) : (
             <div className="flex flex-col gap-2">
               {laterEvents.slice(0, 5).map((event) => (
@@ -127,10 +127,10 @@ export function DashboardPage() {
           documents={stats.recentDocuments}
           emptyText="No documents yet. Upload your first one to get started."
         />
-        <div className="rounded-xl border border-slate-200 bg-white p-5">
-          <h2 className="mb-3 text-sm font-semibold text-slate-700">Action required</h2>
+        <div className="rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 p-5">
+          <h2 className="mb-3 text-sm font-semibold text-slate-700 dark:text-slate-300">Action required</h2>
           {actionRequiredEvents.length === 0 && stats.actionRequiredDocuments.length === 0 ? (
-            <p className="text-sm text-slate-400">Nothing needs your attention right now.</p>
+            <p className="text-sm text-slate-400 dark:text-slate-500">Nothing needs your attention right now.</p>
           ) : (
             <div className="flex flex-col gap-2">
               {actionRequiredEvents.map((event) => (
@@ -140,7 +140,7 @@ export function DashboardPage() {
                 <Link
                   key={doc.id}
                   to={`/documents/${doc.id}`}
-                  className="rounded-lg border border-amber-200 bg-amber-50 px-3 py-2 text-sm font-medium text-amber-800 hover:bg-amber-100"
+                  className="rounded-lg border border-amber-200 dark:border-amber-500/30 bg-amber-50 dark:bg-amber-500/10 px-3 py-2 text-sm font-medium text-amber-800 dark:text-amber-300 hover:bg-amber-100 dark:hover:bg-amber-500/15"
                 >
                   {doc.title}
                 </Link>
@@ -148,10 +148,10 @@ export function DashboardPage() {
             </div>
           )}
         </div>
-        <div className="rounded-xl border border-slate-200 bg-white p-5">
-          <h2 className="mb-3 text-sm font-semibold text-slate-700">Notifications</h2>
+        <div className="rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 p-5">
+          <h2 className="mb-3 text-sm font-semibold text-slate-700 dark:text-slate-300">Notifications</h2>
           {unreadNotifications.length === 0 ? (
-            <p className="text-sm text-slate-400">You&apos;re all caught up.</p>
+            <p className="text-sm text-slate-400 dark:text-slate-500">You&apos;re all caught up.</p>
           ) : (
             <div className="flex flex-col gap-2">
               {unreadNotifications.map((n) => (

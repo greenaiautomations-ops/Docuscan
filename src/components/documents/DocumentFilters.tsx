@@ -29,7 +29,7 @@ export function DocumentFilters({
       <select
         value={category}
         onChange={(e) => onCategoryChange(e.target.value)}
-        className="rounded-lg border border-slate-300 px-3 py-2 text-sm focus:border-indigo-500 focus:outline-none focus:ring-1 focus:ring-indigo-500"
+        className="rounded-lg border border-slate-300 dark:border-slate-600 px-3 py-2 text-sm focus:border-indigo-500 focus:outline-none focus:ring-1 focus:ring-indigo-500"
       >
         <option value="all">All categories</option>
         {DOCUMENT_CATEGORIES.map((c) => (
@@ -42,7 +42,7 @@ export function DocumentFilters({
       <select
         value={status}
         onChange={(e) => onStatusChange(e.target.value)}
-        className="rounded-lg border border-slate-300 px-3 py-2 text-sm focus:border-indigo-500 focus:outline-none focus:ring-1 focus:ring-indigo-500"
+        className="rounded-lg border border-slate-300 dark:border-slate-600 px-3 py-2 text-sm focus:border-indigo-500 focus:outline-none focus:ring-1 focus:ring-indigo-500"
       >
         {STATUSES.map((s) => (
           <option key={s} value={s}>
@@ -51,22 +51,22 @@ export function DocumentFilters({
         ))}
       </select>
 
-      <label className="flex items-center gap-1.5 text-sm text-slate-600">
+      <label className="flex items-center gap-1.5 text-sm text-slate-600 dark:text-slate-400">
         <input
           type="checkbox"
           checked={importantOnly}
           onChange={(e) => onImportantOnlyChange(e.target.checked)}
-          className="rounded border-slate-300 text-indigo-600 focus:ring-indigo-500"
+          className="rounded border-slate-300 dark:border-slate-600 text-indigo-600 dark:text-indigo-400 focus:ring-indigo-500"
         />
         Important only
       </label>
 
-      <label className="flex items-center gap-1.5 text-sm text-slate-600">
+      <label className="flex items-center gap-1.5 text-sm text-slate-600 dark:text-slate-400">
         <input
           type="checkbox"
           checked={archived}
           onChange={(e) => onArchivedChange(e.target.checked)}
-          className="rounded border-slate-300 text-indigo-600 focus:ring-indigo-500"
+          className="rounded border-slate-300 dark:border-slate-600 text-indigo-600 dark:text-indigo-400 focus:ring-indigo-500"
         />
         Show archived
       </label>
