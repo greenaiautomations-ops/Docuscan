@@ -1,4 +1,5 @@
 import { Link } from 'react-router-dom'
+import { useTranslation } from 'react-i18next'
 import type { Document } from '../../types/document'
 import { StatusBadge } from '../common/Badge'
 import { formatRelativeTime } from '../../utils/formatters'
@@ -10,6 +11,7 @@ interface RecentDocumentsListProps {
 }
 
 export function RecentDocumentsList({ title, documents, emptyText }: RecentDocumentsListProps) {
+  const { t } = useTranslation()
   return (
     <div className="rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 p-5">
       <h2 className="mb-3 text-sm font-semibold text-slate-700 dark:text-slate-300">{title}</h2>
@@ -26,7 +28,7 @@ export function RecentDocumentsList({ title, documents, emptyText }: RecentDocum
                 {doc.title}
               </Link>
               <span className="shrink-0 text-xs text-slate-400 dark:text-slate-500">
-                {formatRelativeTime(doc.created_at)}
+                {formatRelativeTime(doc.created_at, t)}
               </span>
               <StatusBadge status={doc.status} />
             </li>

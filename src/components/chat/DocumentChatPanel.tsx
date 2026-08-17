@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState } from 'react'
 import { Link } from 'react-router-dom'
+import { useTranslation } from 'react-i18next'
 import { listChatMessages, sendChatMessage } from '../../services/chatService'
 import { LoadingSpinner } from '../common/LoadingSpinner'
 import { friendlyProcessingError, isUpgradeError } from '../../utils/formatters'
@@ -15,6 +16,7 @@ interface DocumentChatPanelProps {
 }
 
 export function DocumentChatPanel({ documentId, open, onClose, initialQuestion, mode = 'chat' }: DocumentChatPanelProps) {
+  const { t } = useTranslation()
   const [messages, setMessages] = useState<ChatMessage[]>([])
   const [loading, setLoading] = useState(true)
   const [sending, setSending] = useState(false)
@@ -28,7 +30,7 @@ export function DocumentChatPanel({ documentId, open, onClose, initialQuestion, 
     setLoading(true)
     listChatMessages(documentId)
       .then(setMessages)
-      .catch((err) => setError(err instanceof Error ? err.message : 'Failed to load chat.'))
+      .catch((err) => setError(err instanceof Error ? err.message : t('chatPanel.loadFailed')))
       .finally(() => setLoading(false))
   }, [open, documentId])
 
@@ -64,7 +66,7 @@ export function DocumentChatPanel({ documentId, open, onClose, initialQuestion, 
       const fresh = await listChatMessages(documentId)
       setMessages(fresh)
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'Failed to send message.')
+      setError(err instanceof Error ? err.message : t('chatPanel.sendFailed'))
       setMessages((prev) => prev.filter((m) => !m.id.startsWith('optimistic-')))
     } finally {
       setSending(false)
@@ -76,19 +78,17 @@ export function DocumentChatPanel({ documentId, open, onClose, initialQuestion, 
   return (
     <div className="fixed inset-y-0 right-0 z-50 flex w-full max-w-sm flex-col border-l border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 shadow-xl">
       <div className="flex items-center justify-between border-b border-slate-200 dark:border-slate-700 px-4 py-3">
-        <h2 className="text-sm font-semibold text-slate-800 dark:text-slate-200">Ask AI about this document</h2>
-        <button onClick={onClose} className="text-slate-400 dark:text-slate-500 hover:text-slate-600 dark:hover:text-slate-400" aria-label="Close chat">
+        <h2 className="text-sm font-semibold text-slate-800 dark:text-slate-200">{t('chatPanel.title')}</h2>
+        <button onClick={onClose} className="text-slate-400 dark:text-slate-500 hover:text-slate-600 dark:hover:text-slate-400" aria-label={t('chatPanel.closeChat')}>
           ✕
         </button>
       </div>
 
       <div ref={scrollRef} className="flex-1 overflow-y-auto px-4 py-3">
         {loading ? (
-          <LoadingSpinner label="Loading chat…" />
+          <LoadingSpinner label={t('chatPanel.loading')} />
         ) : messages.length === 0 ? (
-          <p className="text-sm text-slate-400 dark:text-slate-500">
-            Ask things like &quot;What is this document about?&quot; or &quot;When is the deadline?&quot;
-          </p>
+          <p className="text-sm text-slate-400 dark:text-slate-500">{t('chatPanel.emptyPrompt')}</p>
         ) : (
           <div className="flex flex-col gap-3">
             {messages
@@ -105,17 +105,17 @@ export function DocumentChatPanel({ documentId, open, onClose, initialQuestion, 
                   {m.content}
                 </div>
               ))}
-            {sending && <div className="mr-auto text-xs text-slate-400 dark:text-slate-500">Thinking…</div>}
+            {sending && <div className="mr-auto text-xs text-slate-400 dark:text-slate-500">{t('chatPanel.thinking')}</div>}
           </div>
         )}
         {error && (
           <p className="mt-2 text-xs text-red-600 dark:text-red-400">
-            {friendlyProcessingError(error)}
+            {friendlyProcessingError(error, t)}
             {isUpgradeError(error) && (
               <>
                 {' '}
                 <Link to="/billing" className="font-medium underline underline-offset-2" onClick={onClose}>
-                  View plans
+                  {t('common.viewPlans')}
                 </Link>
               </>
             )}
@@ -133,7 +133,7 @@ export function DocumentChatPanel({ documentId, open, onClose, initialQuestion, 
         <input
           value={input}
           onChange={(e) => setInput(e.target.value)}
-          placeholder="Ask a question…"
+          placeholder={t('chatPanel.inputPlaceholder')}
           disabled={sending}
           className="flex-1 rounded-lg border border-slate-300 dark:border-slate-600 px-3 py-2 text-sm focus:border-indigo-500 focus:outline-none focus:ring-1 focus:ring-indigo-500"
         />
@@ -142,7 +142,7 @@ export function DocumentChatPanel({ documentId, open, onClose, initialQuestion, 
           disabled={sending || !input.trim()}
           className="rounded-lg bg-indigo-600 px-3 py-2 text-sm font-medium text-white hover:bg-indigo-700 disabled:opacity-60"
         >
-          Send
+          {t('chatPanel.send')}
         </button>
       </form>
     </div>

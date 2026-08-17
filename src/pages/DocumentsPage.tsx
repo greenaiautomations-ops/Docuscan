@@ -1,4 +1,5 @@
 import { useMemo, useState } from 'react'
+import { useTranslation } from 'react-i18next'
 import { useDocuments } from '../hooks/useDocuments'
 import { useFolders } from '../hooks/useFolders'
 import { DocumentList } from '../components/documents/DocumentList'
@@ -16,6 +17,7 @@ import { removeDocument } from '../services/uploadService'
 import type { Document } from '../types/document'
 
 export function DocumentsPage() {
+  const { t } = useTranslation()
   const [search, setSearch] = useState('')
   const [category, setCategory] = useState('all')
   const [status, setStatus] = useState('all')
@@ -75,8 +77,8 @@ export function DocumentsPage() {
     <div className="flex flex-col gap-6">
       <div className="flex flex-wrap items-center justify-between gap-4">
         <div>
-          <h1 className="text-2xl font-semibold text-slate-900 dark:text-slate-100">Documents</h1>
-          <p className="text-sm text-slate-500 dark:text-slate-400">Manage and organize all of your documents.</p>
+          <h1 className="text-2xl font-semibold text-slate-900 dark:text-slate-100">{t('documentsPage.title')}</h1>
+          <p className="text-sm text-slate-500 dark:text-slate-400">{t('documentsPage.subtitle')}</p>
         </div>
         <UploadButton />
       </div>
@@ -105,7 +107,7 @@ export function DocumentsPage() {
             />
           </div>
 
-          {loading && <LoadingSpinner label="Loading documents…" />}
+          {loading && <LoadingSpinner label={t('documentsPage.loading')} />}
           {!loading && error && <ErrorMessage message={error} onRetry={refresh} />}
           {!loading && !error && (
             <DocumentList
@@ -132,9 +134,9 @@ export function DocumentsPage() {
 
       <ConfirmDialog
         open={!!deleteTarget}
-        title="Delete document"
-        message={`Are you sure you want to delete "${deleteTarget?.title}"? This cannot be undone.`}
-        confirmLabel="Delete"
+        title={t('documentsPage.deleteDocument.title')}
+        message={t('documentsPage.deleteDocument.message', { title: deleteTarget?.title })}
+        confirmLabel={t('common.delete')}
         danger
         onConfirm={handleDelete}
         onCancel={() => setDeleteTarget(null)}

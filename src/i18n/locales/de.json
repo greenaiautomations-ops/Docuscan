@@ -1,0 +1,943 @@
+{
+  "common": {
+    "save": "Speichern",
+    "saveChanges": "Änderungen speichern",
+    "saving": "Speichern…",
+    "cancel": "Abbrechen",
+    "delete": "Löschen",
+    "edit": "Bearbeiten",
+    "close": "Schließen",
+    "retry": "Erneut versuchen",
+    "tryAgain": "Erneut versuchen",
+    "loading": "Wird geladen…",
+    "back": "Zurück",
+    "next": "Weiter",
+    "search": "Suchen",
+    "confirm": "Bestätigen",
+    "yes": "Ja",
+    "no": "Nein",
+    "new": "Neu",
+    "viewPlans": "Tarife ansehen",
+    "upgrade": "Upgrade",
+    "uploadDocument": "Dokument hochladen"
+  },
+  "nav": {
+    "home": "Startseite",
+    "dashboard": "Übersicht",
+    "documents": "Dokumente",
+    "scan": "Scannen",
+    "upload": "Hochladen",
+    "calendar": "Kalender",
+    "deadlines": "Fristen",
+    "payments": "Zahlungen",
+    "notifications": "Benachrichtigungen",
+    "billing": "Abrechnung",
+    "settings": "Einstellungen",
+    "admin": "Admin"
+  },
+  "theme": {
+    "label": "Design",
+    "light": "Hell",
+    "dark": "Dunkel",
+    "system": "System",
+    "switchToLight": "Zum hellen Modus wechseln",
+    "switchToDark": "Zum dunklen Modus wechseln"
+  },
+  "language": {
+    "label": "Sprache",
+    "en": "Englisch",
+    "de": "Deutsch"
+  },
+  "topbar": {
+    "account": "Konto",
+    "openMenu": "Menü öffnen",
+    "signOut": "Abmelden"
+  },
+  "home": {
+    "nav": {
+      "signIn": "Anmelden",
+      "getStarted": "Kostenlos starten",
+      "goToDashboard": "Zur Übersicht"
+    },
+    "hero": {
+      "eyebrow": "KI-gestütztes Dokumentenmanagement",
+      "title": "Alle deine Dokumente – endlich von selbst organisiert.",
+      "subtitle": "DocVault liest, sortiert und versteht deine Unterlagen automatisch — Fristen, Zahlungen und wichtige Details werden erkannt, bevor du überhaupt fragst.",
+      "ctaPrimary": "Kostenlos starten",
+      "ctaSecondary": "Anmelden",
+      "trustNote": "Keine Kreditkarte für den kostenlosen Tarif nötig · 10 Dokumente inklusive"
+    },
+    "features": {
+      "title": "Alles, was deine Unterlagen brauchen — an einem Ort",
+      "subtitle": "Ab dem Moment des Hochladens übernimmt DocVault die lästige Arbeit.",
+      "item1": {
+        "title": "KI-gestütztes Lesen & Extrahieren",
+        "description": "OCR plus KI-Klassifizierung erkennt automatisch Daten, Beträge, Absender und erforderliche Maßnahmen aus jedem Dokument — ganz ohne manuelle Eingabe."
+      },
+      "item2": {
+        "title": "Intelligenter Kalender & Erinnerungen",
+        "description": "Fristen, Termine und Zahlungstermine werden von selbst zu Kalendereinträgen — mit Erinnerungen, damit nichts durchrutscht."
+      },
+      "item3": {
+        "title": "Ordner, die sich selbst aufräumen",
+        "description": "Gruppiere Dokumente in farbcodierte Ordner wie Steuern, Finanzen oder Marketing und finde alles in Sekunden per Volltextsuche."
+      },
+      "item4": {
+        "title": "Erklären, übersetzen & KI fragen",
+        "description": "Erhalte eine verständliche Erklärung jedes Dokuments, übersetze es in 5 Sprachen oder stelle direkt Rückfragen zum Inhalt."
+      },
+      "item5": {
+        "title": "Von Grund auf privat",
+        "description": "Jedes Dokument ist verschlüsselt und pro Konto zugriffsgeschützt — deine Dateien sind niemals für andere sichtbar oder werden zum Trainieren von Modellen genutzt."
+      },
+      "item6": {
+        "title": "Tarife, die mit dir wachsen",
+        "description": "Starte kostenlos, upgrade, wenn dein Archiv wächst, oder sprich mit uns über einen Enterprise-Tarif für Teams mit besonderen Anforderungen."
+      }
+    },
+    "benefits": {
+      "title": "Warum Menschen zu DocVault wechseln",
+      "item1": {
+        "title": "Nie wieder eine Frist verpassen",
+        "description": "Jeder von DocVault gefundene Termin wird automatisch zur Erinnerung — bevor daraus eine Mahngebühr wird."
+      },
+      "item2": {
+        "title": "Stundenlanges Ablegen entfällt",
+        "description": "Schluss mit manuellem Umbenennen, Sortieren und erneutem Lesen von Unterlagen. Hochladen und DocVault den Rest erledigen lassen."
+      },
+      "item3": {
+        "title": "Alles sofort verstehen",
+        "description": "Komplizierte Verträge und amtliche Schreiben erhalten sofort nach dem Hochladen eine verständliche Zusammenfassung."
+      },
+      "item4": {
+        "title": "Deine Daten bleiben deine",
+        "description": "Verschlüsselung auf Bankniveau und strikte kontobezogene Zugriffskontrollen — immer, ohne Ausnahme geteilt."
+      }
+    },
+    "howItWorks": {
+      "title": "So funktioniert DocVault",
+      "subtitle": "Vom Papierstapel zum organisierten Archiv in vier Schritten.",
+      "step1": {
+        "label": "Hochladen oder scannen",
+        "title": "Ein Dokument hinzufügen",
+        "description": "Ziehe ein PDF oder Foto hinein oder scanne direkt mit deiner Kamera. PDF, JPG, PNG und WEBP werden unterstützt."
+      },
+      "step2": {
+        "label": "KI liest es",
+        "title": "DocVault liest & versteht",
+        "description": "OCR extrahiert den Text, dann klassifiziert die KI den Dokumenttyp und erkennt die wichtigen Details."
+      },
+      "step3": {
+        "label": "Prüfen & bestätigen",
+        "title": "Erkanntes überprüfen",
+        "description": "Daten, Zahlungen und wichtige Fakten werden zur schnellen Prüfung angezeigt — bearbeite alles, bevor es in deinen Kalender übernommen wird."
+      },
+      "step4": {
+        "label": "Immer auf dem Laufenden",
+        "title": "Automatisch erinnert werden",
+        "description": "Fristen und Zahlungen erscheinen mit Erinnerungen in deinem Kalender, und jedes Dokument bleibt für immer durchsuchbar."
+      }
+    },
+    "pricing": {
+      "title": "Einfache Tarife, keine Überraschungen",
+      "subtitle": "Kostenlos starten. Nur upgraden, wenn du mehr brauchst.",
+      "cta": "Jetzt starten",
+      "contactCta": "Kontakt aufnehmen",
+      "documentsLabel": "Dokumente"
+    },
+    "finalCta": {
+      "title": "Bereit, den Überblick über deine Unterlagen zu behalten?",
+      "subtitle": "Erstelle dein kostenloses DocVault-Konto in unter einer Minute.",
+      "button": "Kostenlos starten"
+    },
+    "footer": {
+      "tagline": "Deine Dokumente, organisiert von KI.",
+      "rights": "Alle Rechte vorbehalten."
+    }
+  },
+  "billing": {
+    "contactUs": "Kontakt aufnehmen",
+    "free": "Kostenlos",
+    "perMonth": "/Monat",
+    "tiers": {
+      "free": {
+        "label": "Kostenlos",
+        "tagline": "Teste DocVault mit deinen ersten Dokumenten.",
+        "features": [
+          "Bis zu 10 Dokumente",
+          "OCR, Klassifizierung & Extraktion",
+          "KI-Zusammenfassung",
+          "Kalender, Fristen & Zahlungen"
+        ]
+      },
+      "basic": {
+        "label": "Basic",
+        "tagline": "Für die regelmäßige Organisation privater oder familiärer Unterlagen.",
+        "features": [
+          "Bis zu 100 Dokumente",
+          "Alles aus Kostenlos",
+          "Erklärung in einfacher Sprache",
+          "Dokumente übersetzen",
+          "Ask AI nicht enthalten"
+        ]
+      },
+      "pro": {
+        "label": "Pro",
+        "tagline": "Voller Zugriff für Power-User und kleine Teams.",
+        "features": [
+          "Bis zu 1.000 Dokumente",
+          "Alles aus Basic",
+          "Ask AI — mit jedem Dokument chatten",
+          "Priorisierter Support"
+        ]
+      },
+      "enterprise": {
+        "label": "Enterprise",
+        "tagline": "Individuelles Volumen, Sicherheit und Support — nach Absprache.",
+        "features": [
+          "Unbegrenzte Dokumente",
+          "Alles aus Pro",
+          "Persönliches Onboarding",
+          "Individuelle Vereinbarung & Rechnungsstellung"
+        ]
+      }
+    }
+  },
+  "billingPage": {
+    "title": "Abrechnung & Tarife",
+    "subtitle": "Verwalte dein Abo und sieh, was in jedem Tarif enthalten ist.",
+    "checkoutSuccess": "Danke! Dein Abo wird aktiviert — das kann unten ein paar Sekunden dauern, bis es angezeigt wird.",
+    "checkoutCanceled": "Der Checkout wurde abgebrochen — an deinem Tarif wurde nichts geändert.",
+    "yourPlan": "Dein Tarif",
+    "unlimitedDocuments": "Unbegrenzte Dokumente",
+    "documentLimit": "Dokumentenlimit: {{count}}",
+    "manageSubscription": "Abo verwalten",
+    "currentPlan": "Aktueller Tarif",
+    "youAreOnThisPlan": "Du bist in diesem Tarif",
+    "subscribeTo": "{{plan}} abonnieren",
+    "redirecting": "Weiterleitung…",
+    "adminFullAccess": "Admin — voller Zugriff",
+    "compAccess": "Kostenloser Zugang (vom Admin gewährt)",
+    "freePlan": "Kostenloser Tarif",
+    "planStatus": "Tarif {{plan}} — {{status}}",
+    "couldNotStartCheckout": "Checkout konnte nicht gestartet werden.",
+    "couldNotOpenPortal": "Kundenportal konnte nicht geöffnet werden.",
+    "status": {
+      "active": "Aktiv",
+      "trialing": "Testphase",
+      "past_due": "Zahlung überfällig — bitte Zahlungsmethode aktualisieren",
+      "canceled": "Gekündigt — du hast Zugriff auf den kostenlosen Tarif",
+      "incomplete": "Zahlung unvollständig",
+      "unknown": "Unbekannter Status"
+    }
+  },
+  "auth": {
+    "fields": {
+      "name": "Name",
+      "email": "E-Mail",
+      "password": "Passwort"
+    },
+    "login": {
+      "subtitle": "Melde dich in deinem Konto an",
+      "submit": "Anmelden",
+      "submitting": "Anmeldung läuft…",
+      "noAccount": "Noch kein Konto?",
+      "signUpLink": "Registrieren",
+      "errors": {
+        "invalidEmail": "Gib eine gültige E-Mail-Adresse ein.",
+        "emptyPassword": "Gib dein Passwort ein.",
+        "generic": "Anmeldung nicht möglich."
+      }
+    },
+    "signup": {
+      "subtitle": "Erstelle dein Konto",
+      "passwordHint": "Mindestens 8 Zeichen.",
+      "submit": "Registrieren",
+      "submitting": "Konto wird erstellt…",
+      "alreadyHaveAccount": "Bereits ein Konto?",
+      "signInLink": "Anmelden",
+      "success": "Konto erstellt. Falls eine E-Mail-Bestätigung erforderlich ist, prüfe dein Postfach. Weiterleitung zur Anmeldung…",
+      "errors": {
+        "emptyName": "Gib deinen Namen ein.",
+        "invalidEmail": "Gib eine gültige E-Mail-Adresse ein.",
+        "invalidPassword": "Das Passwort muss mindestens 8 Zeichen lang sein.",
+        "generic": "Konto konnte nicht erstellt werden."
+      }
+    }
+  },
+  "notFound": {
+    "title": "404",
+    "message": "Diese Seite existiert nicht.",
+    "backLink": "Zurück zur Startseite"
+  },
+  "layout": {
+    "checkingSession": "Sitzung wird geprüft…",
+    "checkingAccess": "Zugriff wird geprüft…"
+  },
+  "settingsPage": {
+    "title": "Einstellungen",
+    "subtitle": "Verwalte dein Profil und deine Einstellungen.",
+    "account": {
+      "heading": "Konto"
+    },
+    "profile": {
+      "heading": "Profil",
+      "nameLabel": "Name",
+      "documentLanguageLabel": "Bevorzugte Dokumentsprache",
+      "documentLanguageHint": "Wird als Standard-Zielsprache beim Übersetzen eines Dokuments verwendet.",
+      "timezoneLabel": "Zeitzone",
+      "saveError": "Änderungen konnten nicht gespeichert werden.",
+      "saved": "Gespeichert."
+    },
+    "appearance": {
+      "heading": "Erscheinungsbild",
+      "description": "Wähle, wie DocVault auf diesem Gerät aussieht."
+    },
+    "appLanguage": {
+      "heading": "App-Sprache",
+      "description": "Wähle die Sprache, in der DocVault angezeigt wird."
+    },
+    "reminders": {
+      "heading": "Erinnerungen"
+    }
+  },
+  "dashboardPage": {
+    "welcomeBack": "Willkommen zurück",
+    "subtitle": "Das passiert gerade mit deinen Dokumenten.",
+    "loading": "Übersicht wird geladen…",
+    "loadingShort": "Wird geladen…",
+    "stats": {
+      "totalDocuments": "Dokumente insgesamt",
+      "today": "Heute",
+      "actionRequired": "Handlungsbedarf",
+      "upcomingPayments": "Anstehende Zahlungen"
+    },
+    "today": {
+      "heading": "Heute",
+      "empty": "Für heute steht nichts an."
+    },
+    "upcoming": {
+      "heading": "Demnächst (nächste 7 Tage)",
+      "empty": "Diese Woche steht sonst nichts an."
+    },
+    "recentDocuments": {
+      "heading": "Neueste Dokumente",
+      "empty": "Noch keine Dokumente. Lade dein erstes hoch, um loszulegen."
+    },
+    "actionRequired": {
+      "heading": "Handlungsbedarf",
+      "empty": "Gerade ist nichts zu erledigen."
+    },
+    "notifications": {
+      "heading": "Benachrichtigungen",
+      "empty": "Du bist auf dem neuesten Stand."
+    }
+  },
+  "dateLabels": {
+    "noDate": "Kein Datum",
+    "noDateSet": "Kein Datum festgelegt",
+    "today": "Heute",
+    "tomorrow": "Morgen",
+    "overdue_one": "{{count}} Tag überfällig",
+    "overdue_other": "{{count}} Tage überfällig",
+    "inDays_one": "In {{count}} Tag",
+    "inDays_other": "In {{count}} Tagen",
+    "at": "um {{time}}"
+  },
+  "components": {
+    "pleaseVerify": "Bitte überprüfen",
+    "open": "Öffnen",
+    "openDocument": "Dokument öffnen",
+    "sourceDocument": "Quelldokument",
+    "complete": "Erledigt",
+    "snooze": "Verschieben",
+    "markPaid": "Als bezahlt markieren",
+    "markRead": "Als gelesen markieren",
+    "unknownRecipient": "Unbekannter Empfänger",
+    "amountUnknown": "Betrag unbekannt",
+    "ref": "Ref.: {{value}}",
+    "due": "Fällig {{date}}",
+    "noDate": "Kein Datum"
+  },
+  "paymentStatus": {
+    "pending": "ausstehend",
+    "paid": "bezahlt",
+    "cancelled": "storniert",
+    "disputed": "angefochten",
+    "unknown": "unbekannt",
+    "overdue": "überfällig"
+  },
+  "eventType": {
+    "deadline": "Frist",
+    "appointment": "Termin",
+    "payment_due": "Zahlung",
+    "renewal": "Verlängerung",
+    "expiration": "Ablauf",
+    "task": "Aufgabe",
+    "other": "Sonstiges"
+  },
+  "priority": {
+    "critical": "kritisch",
+    "high": "hoch",
+    "medium": "mittel",
+    "low": "niedrig"
+  },
+  "reminderLabel": {
+    "seven_days": "7 Tage vorher",
+    "three_days": "3 Tage vorher",
+    "one_day": "1 Tag vorher",
+    "same_day": "Am selben Tag",
+    "custom": "Individuell"
+  },
+  "eventModal": {
+    "defaultTitle": "Termin",
+    "possibleDetected": "Möglicherweise erkannt: {{type}} — bitte überprüfen.",
+    "aiConfidence": "KI-Konfidenz: {{value}}%",
+    "confirm": "Bestätigen",
+    "editAndConfirm": "Bearbeiten & Bestätigen",
+    "ignore": "Ignorieren",
+    "fields": {
+      "title": "Titel",
+      "description": "Beschreibung",
+      "date": "Datum",
+      "time": "Uhrzeit",
+      "location": "Ort",
+      "priority": "Priorität",
+      "reminders": "Erinnerungen"
+    },
+    "remove": "Entfernen",
+    "sent": " (gesendet)",
+    "openSourceDocument": "Quelldokument öffnen",
+    "markComplete": "Als erledigt markieren",
+    "errors": {
+      "generic": "Etwas ist schiefgelaufen.",
+      "deleteFailed": "Termin konnte nicht gelöscht werden."
+    },
+    "deleteEvent": {
+      "title": "Termin löschen",
+      "message": "„{{title}}“ löschen? Dies kann nicht rückgängig gemacht werden."
+    }
+  },
+  "deadlinesPage": {
+    "title": "Fristen",
+    "subtitle": "Aus deinen Dokumenten erkannte Aufgaben und Fristen.",
+    "searchPlaceholder": "Fristen durchsuchen…",
+    "allPriorities": "Alle Prioritäten",
+    "allTypes": "Alle Typen",
+    "loading": "Fristen werden geladen…",
+    "empty": {
+      "title": "Noch keine Fristen",
+      "description": "Aus deinen Dokumenten erkannte Fristen und Aufgaben erscheinen hier."
+    },
+    "sections": {
+      "overdue": "Überfällig",
+      "today": "Heute",
+      "week": "Diese Woche",
+      "upcoming": "Demnächst",
+      "undated": "Kein Datum festgelegt",
+      "completed": "Erledigt"
+    },
+    "snoozeModal": {
+      "title": "Frist verschieben",
+      "message": "„{{title}}“ auf ein neues Datum verschieben.",
+      "days_one": "+{{count}} Tag",
+      "days_other": "+{{count}} Tage",
+      "pickDate": "Oder ein Datum wählen",
+      "submit": "Verschieben"
+    }
+  },
+  "calendarPage": {
+    "title": "Kalender",
+    "subtitle": "Aus deinen Dokumenten extrahierte Termine, Fristen und Zahlungen.",
+    "newEvent": "+ Neuer Termin",
+    "today": "Heute",
+    "views": {
+      "month": "Monat",
+      "week": "Woche",
+      "day": "Tag",
+      "agenda": "Agenda"
+    },
+    "completed": "Erledigt",
+    "loading": "Kalender wird geladen…",
+    "addEvent": "Termin hinzufügen",
+    "more_one": "+{{count}} weiterer",
+    "more_other": "+{{count}} weitere",
+    "noEvents": "Keine Termine",
+    "allDay": "Ganztägig",
+    "nothingScheduled": {
+      "title": "Nichts geplant",
+      "description": "An diesem Tag stehen keine Termine an."
+    },
+    "noUpcoming": {
+      "title": "Keine anstehenden Termine",
+      "description": "Deine Agenda ist leer."
+    },
+    "newEventModal": {
+      "title": "Neuer Termin",
+      "fields": {
+        "title": "Titel",
+        "type": "Typ",
+        "date": "Datum",
+        "time": "Uhrzeit",
+        "location": "Ort"
+      },
+      "titleRequired": "Titel ist erforderlich.",
+      "createError": "Termin konnte nicht erstellt werden.",
+      "creating": "Wird erstellt…",
+      "submit": "Termin erstellen"
+    }
+  },
+  "paymentsPage": {
+    "title": "Zahlungen",
+    "subtitle": "Behalte Rechnungen, Belege und Fälligkeiten aus deinen Dokumenten im Blick.",
+    "stats": {
+      "totalUpcoming": "Anstehend gesamt",
+      "overdue": "Überfällig",
+      "upcoming": "Anstehend",
+      "paid": "Bezahlt"
+    },
+    "searchPlaceholder": "Nach Empfänger oder Referenz suchen…",
+    "tabs": {
+      "all": "Alle",
+      "upcoming": "Anstehend",
+      "overdue": "Überfällig",
+      "paid": "Bezahlt",
+      "unknown": "Unbekannt"
+    },
+    "loading": "Zahlungen werden geladen…",
+    "empty": {
+      "title": "Noch keine Zahlungen",
+      "description": "Aus deinen Dokumenten erkannte Zahlungen erscheinen hier."
+    }
+  },
+  "paymentModal": {
+    "title": "Zahlung",
+    "unknownWarning": "Der Status dieser Zahlung konnte nicht automatisch bestimmt werden — bitte prüfe und bestätige die Details unten.",
+    "fields": {
+      "recipient": "Empfänger",
+      "amount": "Betrag",
+      "currency": "Währung",
+      "dueDate": "Fälligkeitsdatum",
+      "referenceNumber": "Referenznummer",
+      "recurrence": "Wiederholung"
+    },
+    "recurringLabel": "Dies ist eine wiederkehrende Zahlung",
+    "selectInterval": "Intervall wählen…",
+    "intervals": {
+      "weekly": "Wöchentlich",
+      "monthly": "Monatlich",
+      "quarterly": "Vierteljährlich",
+      "yearly": "Jährlich"
+    },
+    "recurrenceHint": "Das Bestätigen einer Wiederholung erstellt hier keine zukünftigen Zahlungen automatisch — jede wird erstellt, sobald das jeweilige Dokument verarbeitet wird.",
+    "openSourceDocument": "Quelldokument öffnen",
+    "markPaid": "Als bezahlt markieren",
+    "ignore": "Ignorieren",
+    "errors": {
+      "generic": "Etwas ist schiefgelaufen.",
+      "invalidAmount": "Der Betrag muss eine Zahl sein.",
+      "deleteFailed": "Zahlung konnte nicht gelöscht werden."
+    },
+    "deletePayment": {
+      "title": "Zahlung löschen",
+      "message": "Diese Zahlung{{recipient}} löschen? Dies kann nicht rückgängig gemacht werden.",
+      "toRecipient": " an {{name}}"
+    }
+  },
+  "reminderSettings": {
+    "intro": "Wähle, wann du vor anstehenden Fristen, Zahlungen und Terminen erinnert werden möchtest.",
+    "loading": "Erinnerungseinstellungen werden geladen…",
+    "unavailable": "Erinnerungseinstellungen nicht verfügbar.",
+    "loadError": "Erinnerungseinstellungen konnten nicht geladen werden.",
+    "saveError": "Änderung konnte nicht gespeichert werden.",
+    "options": {
+      "seven_days": {
+        "label": "7 Tage vorher",
+        "hint": "Früher Hinweis auf Fristen und Zahlungen"
+      },
+      "three_days": {
+        "label": "3 Tage vorher",
+        "hint": "Zweite Erinnerung"
+      },
+      "one_day": {
+        "label": "1 Tag vorher",
+        "hint": "Letzte Warnung"
+      },
+      "same_day": {
+        "label": "Am selben Tag",
+        "hint": "Erinnerung am Tag selbst"
+      }
+    }
+  },
+  "notificationsPage": {
+    "title": "Benachrichtigungen",
+    "subtitle": "Erinnerungen und Updates zu deinen Dokumenten, Fristen und Zahlungen.",
+    "markAllRead": "Alle als gelesen markieren",
+    "tabs": {
+      "all": "Alle",
+      "unread": "Ungelesen",
+      "read": "Gelesen"
+    },
+    "loading": "Benachrichtigungen werden geladen…",
+    "empty": {
+      "title": "Keine Benachrichtigungen",
+      "description": "Hier erscheinen Erinnerungen und Dokumentaktivitäten."
+    },
+    "delete": "Löschen"
+  },
+  "documentCategory": {
+    "uncategorized": "Unkategorisiert",
+    "identification": "Ausweisdokumente",
+    "financial": "Finanzen",
+    "medical": "Medizinisch",
+    "legal": "Rechtliches",
+    "insurance": "Versicherung",
+    "education": "Bildung",
+    "property": "Immobilien",
+    "employment": "Beschäftigung",
+    "other": "Sonstiges"
+  },
+  "documentStatus": {
+    "all": "Alle Status",
+    "uploading": "Wird hochgeladen",
+    "uploaded": "Hochgeladen",
+    "processing": "Wird verarbeitet",
+    "analyzed": "Analysiert",
+    "completed": "Abgeschlossen",
+    "failed": "Fehlgeschlagen"
+  },
+  "aiDocumentType": {
+    "invoice": "Rechnung",
+    "contract": "Vertrag",
+    "government_letter": "Behördenschreiben",
+    "university_document": "Hochschuldokument",
+    "employment_document": "Arbeitsdokument",
+    "bank_document": "Bankdokument",
+    "insurance": "Versicherung",
+    "tax": "Steuern",
+    "rental": "Miete",
+    "utility_bill": "Nebenkostenabrechnung",
+    "appointment": "Termin",
+    "certificate": "Zertifikat",
+    "receipt": "Beleg",
+    "subscription": "Abonnement",
+    "other": "Sonstiges"
+  },
+  "documentsPage": {
+    "title": "Dokumente",
+    "subtitle": "Verwalte und organisiere alle deine Dokumente.",
+    "loading": "Dokumente werden geladen…",
+    "deleteDocument": {
+      "title": "Dokument löschen",
+      "message": "Möchtest du „{{title}}“ wirklich löschen? Dies kann nicht rückgängig gemacht werden."
+    }
+  },
+  "documentFilters": {
+    "allCategories": "Alle Kategorien",
+    "importantOnly": "Nur wichtige",
+    "showArchived": "Archivierte anzeigen"
+  },
+  "documentSearchBar": {
+    "placeholder": "Dokumente nach Titel durchsuchen…"
+  },
+  "documentList": {
+    "empty": {
+      "title": "Keine Dokumente gefunden",
+      "description": "Passe deine Suche oder Filter an oder lade dein erstes Dokument hoch."
+    }
+  },
+  "renameDialog": {
+    "title": "Dokument umbenennen",
+    "save": "Speichern"
+  },
+  "documentCard": {
+    "markImportant": "Als wichtig markieren",
+    "unmarkImportant": "Markierung als wichtig entfernen",
+    "folderLabel": "Ordner",
+    "noFolder": "Kein Ordner",
+    "open": "Öffnen",
+    "rename": "Umbenennen",
+    "archive": "Archivieren",
+    "unarchive": "Aus Archiv holen"
+  },
+  "folderSidebar": {
+    "heading": "Ordner",
+    "newFolder": "+ Neu",
+    "newFolderTitle": "Neuer Ordner",
+    "allDocuments": "Alle Dokumente",
+    "empty": "Noch keine Ordner. Erstelle einen, um mit dem Organisieren zu beginnen, z. B. „Steuern“ oder „Finanzen“.",
+    "editFolder": "Ordner bearbeiten",
+    "deleteFolder": "Ordner löschen",
+    "deleteConfirm": {
+      "title": "Ordner löschen",
+      "message": "„{{name}}“ löschen? Dokumente in diesem Ordner werden nicht gelöscht — sie wandern zurück zu „Kein Ordner“."
+    },
+    "deleting": "Wird gelöscht…"
+  },
+  "folderModal": {
+    "editTitle": "Ordner bearbeiten",
+    "newTitle": "Neuer Ordner",
+    "nameLabel": "Name",
+    "namePlaceholder": "z. B. Steuern, Finanzen, Marketing",
+    "colorLabel": "Farbe",
+    "nameRequired": "Gib dem Ordner einen Namen.",
+    "saveError": "Ordner konnte nicht gespeichert werden.",
+    "createFolder": "Ordner erstellen"
+  },
+  "documentViewerPage": {
+    "download": "Herunterladen",
+    "markImportant": "Als wichtig markieren",
+    "unmarkImportant": "Markierung aufheben",
+    "archive": "Archivieren",
+    "unarchive": "Archivierung aufheben",
+    "delete": "Löschen",
+    "previewUnavailable": "Vorschau nicht verfügbar.",
+    "previewNotSupported": "Vorschau für diesen Dateityp nicht unterstützt.",
+    "loading": "Dokument wird geladen…",
+    "processing": "Verarbeitung",
+    "retrying": "Wird wiederholt…",
+    "retryProcessing": "Verarbeitung wiederholen",
+    "datesPaymentsTasks": "Termine, Zahlungen & Aufgaben",
+    "appointments": "Termine",
+    "deadlinesTasks": "Fristen & Aufgaben",
+    "payments": "Zahlungen",
+    "rawOcrText": "Roher OCR-Text",
+    "explain": "Erklären",
+    "translate": "Übersetzen",
+    "askAi": "KI fragen",
+    "editInformation": "Informationen bearbeiten",
+    "upgradeExplainTitle": "Ab dem Basic-Plan enthalten — klicken zum Upgrade",
+    "upgradeTranslateTitle": "Ab dem Basic-Plan enthalten — klicken zum Upgrade",
+    "upgradeAskAiTitle": "Ab dem Pro-Plan enthalten — klicken zum Upgrade",
+    "folder": "Ordner",
+    "newFolder": "+ Neu",
+    "noFolder": "Kein Ordner",
+    "fileInformation": "Dateiinformationen",
+    "category": "Kategorie",
+    "type": "Typ",
+    "size": "Größe",
+    "uploaded": "Hochgeladen",
+    "updated": "Aktualisiert",
+    "status": "Status",
+    "deleteDocument": "Dokument löschen",
+    "deleteConfirmMessage": "Möchten Sie „{{title}}\" wirklich löschen? Dies kann nicht rückgängig gemacht werden.",
+    "retryFailed": "Wiederholung fehlgeschlagen.",
+    "folderChangeError": "Ordner konnte nicht geändert werden.",
+    "explainPrompt": "Erkläre mir dieses Dokument in einfachen Worten."
+  },
+  "uploadPage": {
+    "title": "Dokumente hochladen",
+    "subtitle": "Laden Sie PDF-, JPG-, PNG- oder WEBP-Dateien mit bis zu 25 MB pro Datei hoch. Die KI-Verarbeitung (OCR, Klassifizierung, Zusammenfassung) läuft im Hintergrund weiter — Sie können fortfahren, sobald die Uploads abgeschlossen sind.",
+    "category": "Kategorie",
+    "uploadProgress": "Upload-Fortschritt",
+    "starting": "Wird gestartet…",
+    "uploading": "Wird hochgeladen…",
+    "retry": "Wiederholen",
+    "viewPlans": "Pläne ansehen",
+    "goToDocuments": "Zu Dokumenten",
+    "uploadFailed": "Upload fehlgeschlagen.",
+    "originalNotFound": "Ursprünglicher Dokumenteintrag wurde nicht gefunden."
+  },
+  "scanPage": {
+    "title": "Dokument scannen",
+    "subtitle": "Verwenden Sie Ihre Kamera, um ein Dokument zu erfassen. Kantenerkennung und Bereinigung folgen in Phase 2.",
+    "savingScan": "Scan wird gespeichert…",
+    "scannedTitle": "Gescanntes Dokument {{datetime}}",
+    "saveFailed": "Der Scan konnte nicht gespeichert werden."
+  },
+  "cameraCapture": {
+    "cameraErrorPrefix": "Kamerazugriff nicht möglich:",
+    "cameraErrorGeneric": "Kamerazugriff nicht möglich.",
+    "cameraErrorHint": "Sie können auch die Upload-Seite verwenden, um ein Foto von Ihrem Gerät hinzuzufügen.",
+    "capturedAlt": "Erfasstes Dokument",
+    "capture": "Aufnehmen",
+    "retake": "Erneut aufnehmen",
+    "usePhoto": "Dieses Foto verwenden"
+  },
+  "uploadDropzone": {
+    "dragDrop": "Dateien hierher ziehen oder klicken, um sie auszuwählen",
+    "fileTypes": "PDF, JPG, PNG oder WEBP — bis zu 25 MB pro Datei",
+    "invalidFile": "Eine oder mehrere Dateien sind ungültig."
+  },
+  "documentImportance": {
+    "low": "niedrig",
+    "normal": "normal",
+    "high": "hoch"
+  },
+  "analysis": {
+    "aiSummary": {
+      "title": "KI-Zusammenfassung",
+      "aiInterpretation": "KI-Interpretation",
+      "whatIsThis": "Was ist das?",
+      "whoSentIt": "Wer hat es gesendet?",
+      "whatItMeans": "Was bedeutet das?",
+      "whatToDo": "Was müssen Sie tun?",
+      "deadlineLabel": "Frist?",
+      "deadlineYes": "Ja",
+      "noDeadline": "Keine Frist erwähnt",
+      "moneyLabel": "Geld involviert?",
+      "moneyYes": "Ja",
+      "noPayment": "Keine Zahlung erwähnt",
+      "nextAction": "Nächster Schritt"
+    },
+    "documentType": {
+      "title": "Dokumenttyp",
+      "unclassified": "Nicht klassifiziert",
+      "language": "Sprache: {{language}}",
+      "confidence": "{{confidence}} Konfidenz"
+    },
+    "editInfo": {
+      "title": "Informationen bearbeiten",
+      "note": "Hier vorgenommene Korrekturen werden unverändert gespeichert und als benutzerverifiziert markiert.",
+      "cancel": "Abbrechen",
+      "saveChanges": "Änderungen speichern",
+      "saving": "Wird gespeichert…",
+      "saveError": "Ihre Änderungen konnten nicht gespeichert werden.",
+      "fields": {
+        "document_title": "Dokumententitel",
+        "issuer": "Aussteller",
+        "recipient": "Empfänger",
+        "document_date": "Dokumentdatum",
+        "deadline": "Frist",
+        "payment_amount": "Zahlungsbetrag",
+        "currency": "Währung",
+        "payment_due_date": "Zahlungsfälligkeitsdatum",
+        "required_action": "Erforderliche Maßnahme"
+      }
+    },
+    "extractedDataRaw": {
+      "title": "Extrahierte Daten",
+      "hideJson": "Rohes JSON ausblenden",
+      "showJson": "Rohes JSON anzeigen"
+    },
+    "fieldRow": {
+      "notFound": "Nicht gefunden"
+    },
+    "importantInfo": {
+      "title": "Wichtige Informationen",
+      "documentTitle": "Dokumententitel",
+      "issuer": "Aussteller",
+      "recipient": "Empfänger",
+      "names": "Namen",
+      "organizations": "Organisationen",
+      "addresses": "Adressen",
+      "referenceNumber": "Referenznummer",
+      "invoiceNumber": "Rechnungsnummer",
+      "contractNumber": "Vertragsnummer",
+      "customerNumber": "Kundennummer",
+      "phone": "Telefon",
+      "email": "E-Mail",
+      "iban": "IBAN"
+    },
+    "dates": {
+      "title": "Termine",
+      "documentDate": "Dokumentdatum",
+      "effectiveDate": "Gültig ab",
+      "expiryDate": "Ablaufdatum",
+      "deadline": "Frist",
+      "appointmentDatetime": "Termin (Datum/Uhrzeit)"
+    },
+    "payments": {
+      "title": "Zahlungen",
+      "noPaymentInfo": "Keine Zahlungsinformationen gefunden.",
+      "amount": "Betrag",
+      "currency": "Währung",
+      "paymentDueDate": "Zahlungsfälligkeitsdatum"
+    },
+    "requiredAction": {
+      "title": "Erforderliche Maßnahme",
+      "priorityLabel": "Priorität: {{priority}}",
+      "noAction": "Keine bestimmte Maßnahme erforderlich."
+    }
+  },
+  "chatPanel": {
+    "title": "KI zu diesem Dokument fragen",
+    "closeChat": "Chat schließen",
+    "loading": "Chat wird geladen…",
+    "emptyPrompt": "Fragen Sie zum Beispiel „Worum geht es in diesem Dokument?\" oder „Wann ist die Frist?\"",
+    "thinking": "Denkt nach…",
+    "inputPlaceholder": "Stellen Sie eine Frage…",
+    "send": "Senden",
+    "loadFailed": "Chat konnte nicht geladen werden.",
+    "sendFailed": "Nachricht konnte nicht gesendet werden."
+  },
+  "translatePanel": {
+    "title": "Übersetzen",
+    "language": "Sprache",
+    "whatToTranslate": "Was übersetzt werden soll",
+    "scope": {
+      "summary": "Zusammenfassung",
+      "full": "vollständig",
+      "selection": "Eigener Text"
+    },
+    "customTextPlaceholder": "Fügen Sie den zu übersetzenden Text ein oder geben Sie ihn ein…",
+    "translating": "Wird übersetzt…",
+    "translate": "Übersetzen",
+    "translationFailed": "Übersetzung fehlgeschlagen."
+  },
+  "adminPage": {
+    "title": "Admin",
+    "subtitle": "Benutzer verwalten und kostenlosen Testzugang gewähren — bis zu {{limit}} Konten gleichzeitig.",
+    "loadFailed": "Benutzer konnten nicht geladen werden.",
+    "updateFailed": "Testzugang konnte nicht aktualisiert werden.",
+    "loadingUsers": "Benutzer werden geladen…",
+    "noUsersTitle": "Noch keine Benutzer",
+    "noUsersDescription": "Sobald sich Personen registrieren, erscheinen sie hier.",
+    "userCount_one": "{{count}} Benutzer",
+    "userCount_other": "{{count}} Benutzer",
+    "compAccessCount": "Testzugang: {{count}} / {{limit}}",
+    "colUser": "Benutzer",
+    "colRole": "Rolle",
+    "colPlan": "Plan",
+    "colStatus": "Status",
+    "colDocuments": "Dokumente",
+    "colCompAccess": "Testzugang",
+    "roleAdmin": "Admin",
+    "roleUser": "Benutzer",
+    "cannotChangeSelf": "Sie können Ihren eigenen Testzugang nicht ändern",
+    "compLimitReached": "Limit für Testzugang erreicht",
+    "saving": "Wird gespeichert…",
+    "granted": "Gewährt",
+    "grant": "Gewähren"
+  },
+  "subscriptionStatus": {
+    "active": "Aktiv",
+    "trialing": "Testphase",
+    "past_due": "Überfällig",
+    "canceled": "Gekündigt",
+    "incomplete": "Unvollständig",
+    "incomplete_expired": "Abgelaufen",
+    "unpaid": "Unbezahlt"
+  },
+  "formatters": {
+    "justNow": "gerade eben",
+    "minutesAgo": "vor {{count}} Min.",
+    "hoursAgo": "vor {{count}} Std.",
+    "daysAgo": "vor {{count}} T.",
+    "noDate": "Kein Datum",
+    "processingFailed": "Verarbeitung fehlgeschlagen.",
+    "aiQuotaLimit": "KI-Nutzungslimit für den Moment erreicht — das kostenlose KI-Kontingent dieser App setzt sich schnell zurück. Warten Sie eine Minute und klicken Sie dann auf Wiederholen.",
+    "aiServiceBusy": "Der KI-Dienst ist vorübergehend ausgelastet. Klicken Sie in ein paar Sekunden auf Wiederholen."
+  },
+  "processingStatus": {
+    "uploading": "Wird hochgeladen…",
+    "complete": "Fertig ✓",
+    "reading": "Wird gelesen…",
+    "creatingSummary": "Zusammenfassung wird erstellt…",
+    "processing": "Wird verarbeitet…",
+    "retrying": "Wird wiederholt…",
+    "retry": "Wiederholen"
+  },
+  "processingStage": {
+    "reading": "Wird gelesen…",
+    "extracting_text": "Text wird extrahiert…",
+    "understanding": "Wird analysiert…",
+    "finding_important_information": "Wichtige Informationen werden gesucht…",
+    "creating_summary": "Zusammenfassung wird erstellt…",
+    "creating_events": "Termine und Zahlungen werden gesucht…"
+  },
+  "dashboardWidgets": {
+    "recentNotifications": "Neueste Benachrichtigungen",
+    "allCaughtUp": "Sie sind auf dem neuesten Stand."
+  }
+}

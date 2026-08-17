@@ -1,3 +1,4 @@
+import { useTranslation } from 'react-i18next'
 import type { DocumentImportance, DocumentStatus } from '../../types/document'
 
 const STATUS_STYLES: Record<DocumentStatus, string> = {
@@ -16,22 +17,24 @@ const IMPORTANCE_STYLES: Record<DocumentImportance, string> = {
 }
 
 export function StatusBadge({ status }: { status: DocumentStatus }) {
+  const { t } = useTranslation()
   return (
     <span
       className={`inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-medium capitalize ${STATUS_STYLES[status]}`}
     >
-      {status}
+      {t(`documentStatus.${status}`, { defaultValue: status })}
     </span>
   )
 }
 
 export function ImportanceBadge({ importance }: { importance: DocumentImportance }) {
+  const { t } = useTranslation()
   if (importance === 'normal') return null
   return (
     <span
       className={`inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-medium capitalize ${IMPORTANCE_STYLES[importance]}`}
     >
-      {importance}
+      {t(`documentImportance.${importance}`, { defaultValue: importance })}
     </span>
   )
 }

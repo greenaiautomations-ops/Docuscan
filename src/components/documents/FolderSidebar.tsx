@@ -1,4 +1,5 @@
 import { useState } from 'react'
+import { useTranslation } from 'react-i18next'
 import { ConfirmDialog } from '../common/ConfirmDialog'
 import { FolderModal } from './FolderModal'
 import { FOLDER_COLOR_STYLES } from '../../utils/constants'
@@ -15,6 +16,7 @@ interface FolderSidebarProps {
 }
 
 export function FolderSidebar({ folders, counts, selected, onSelect, onFoldersChanged }: FolderSidebarProps) {
+  const { t } = useTranslation()
   const [modalOpen, setModalOpen] = useState(false)
   const [editingFolder, setEditingFolder] = useState<Folder | null>(null)
   const [deleteTarget, setDeleteTarget] = useState<Folder | null>(null)
@@ -57,28 +59,26 @@ export function FolderSidebar({ folders, counts, selected, onSelect, onFoldersCh
   return (
     <div className="flex w-full shrink-0 flex-col gap-1 sm:w-56">
       <div className="mb-1 flex items-center justify-between px-1">
-        <h2 className="text-xs font-semibold uppercase tracking-wide text-slate-400 dark:text-slate-500">Folders</h2>
+        <h2 className="text-xs font-semibold uppercase tracking-wide text-slate-400 dark:text-slate-500">{t('folderSidebar.heading')}</h2>
         <button
           onClick={openCreate}
           className="text-xs font-medium text-indigo-600 dark:text-indigo-400 hover:text-indigo-700 dark:hover:text-indigo-300"
-          title="New folder"
+          title={t('folderSidebar.newFolderTitle')}
         >
-          + New
+          {t('folderSidebar.newFolder')}
         </button>
       </div>
 
       <button onClick={() => onSelect(undefined)} className={rowClass(selected === undefined)}>
         <span className="h-2.5 w-2.5 rounded-full bg-slate-300 dark:bg-slate-600" />
-        <span className="flex-1 truncate text-left">All Documents</span>
+        <span className="flex-1 truncate text-left">{t('folderSidebar.allDocuments')}</span>
         <span className="text-xs text-slate-400 dark:text-slate-500">{counts.total}</span>
       </button>
 
       <div className="my-1 border-t border-slate-100 dark:border-slate-800" />
 
       {folders.length === 0 && (
-        <p className="px-2.5 py-2 text-xs text-slate-400 dark:text-slate-500">
-          No folders yet. Create one to start organizing, e.g. "Taxes" or "Finance".
-        </p>
+        <p className="px-2.5 py-2 text-xs text-slate-400 dark:text-slate-500">{t('folderSidebar.empty')}</p>
       )}
 
       {folders.map((folder) => {
@@ -93,14 +93,14 @@ export function FolderSidebar({ folders, counts, selected, onSelect, onFoldersCh
             <span className="hidden shrink-0 items-center gap-1 group-hover:flex">
               <button
                 onClick={() => openEdit(folder)}
-                title="Edit folder"
+                title={t('folderSidebar.editFolder')}
                 className="rounded p-0.5 text-slate-400 dark:text-slate-500 hover:text-slate-600 dark:hover:text-slate-400"
               >
                 ✎
               </button>
               <button
                 onClick={() => setDeleteTarget(folder)}
-                title="Delete folder"
+                title={t('folderSidebar.deleteFolder')}
                 className="rounded p-0.5 text-slate-400 dark:text-slate-500 hover:text-red-500 dark:hover:text-red-400"
               >
                 ✕
@@ -114,9 +114,9 @@ export function FolderSidebar({ folders, counts, selected, onSelect, onFoldersCh
 
       <ConfirmDialog
         open={!!deleteTarget}
-        title="Delete folder"
-        message={`Delete "${deleteTarget?.name}"? Documents in this folder will not be deleted — they'll just move back to "No Folder".`}
-        confirmLabel={deleting ? 'Deleting…' : 'Delete'}
+        title={t('folderSidebar.deleteConfirm.title')}
+        message={t('folderSidebar.deleteConfirm.message', { name: deleteTarget?.name })}
+        confirmLabel={deleting ? t('folderSidebar.deleting') : t('common.delete')}
         danger
         onConfirm={handleDelete}
         onCancel={() => setDeleteTarget(null)}

@@ -1,10 +1,12 @@
 import { useCallback, useEffect, useRef, useState } from 'react'
+import { useTranslation } from 'react-i18next'
 
 interface CameraCaptureProps {
   onCapture: (blob: Blob) => void
 }
 
 export function CameraCapture({ onCapture }: CameraCaptureProps) {
+  const { t } = useTranslation()
   const videoRef = useRef<HTMLVideoElement>(null)
   const canvasRef = useRef<HTMLCanvasElement>(null)
   const streamRef = useRef<MediaStream | null>(null)
@@ -34,11 +36,11 @@ export function CameraCapture({ onCapture }: CameraCaptureProps) {
     } catch (err) {
       setError(
         err instanceof Error
-          ? `Could not access the camera: ${err.message}`
-          : 'Could not access the camera.',
+          ? `${t('cameraCapture.cameraErrorPrefix')} ${err.message}`
+          : t('cameraCapture.cameraErrorGeneric'),
       )
     }
-  }, [])
+  }, [t])
 
   useEffect(() => {
     if (!capturedUrl) startCamera()
@@ -87,7 +89,7 @@ export function CameraCapture({ onCapture }: CameraCaptureProps) {
     <div className="flex flex-col items-center gap-4">
       {error && (
         <p className="w-full rounded-lg border border-red-200 dark:border-red-500/30 bg-red-50 dark:bg-red-500/10 p-3 text-sm text-red-700 dark:text-red-400">
-          {error} You can also use the Upload page to add a photo from your device.
+          {error} {t('cameraCapture.cameraErrorHint')}
         </p>
       )}
 
@@ -95,7 +97,7 @@ export function CameraCapture({ onCapture }: CameraCaptureProps) {
         {!capturedUrl && (
           <video ref={videoRef} className="w-full" playsInline muted autoPlay />
         )}
-        {capturedUrl && <img src={capturedUrl} alt="Captured document" className="w-full" />}
+        {capturedUrl && <img src={capturedUrl} alt={t('cameraCapture.capturedAlt')} className="w-full" />}
       </div>
       <canvas ref={canvasRef} className="hidden" />
 
@@ -106,7 +108,7 @@ export function CameraCapture({ onCapture }: CameraCaptureProps) {
             disabled={!ready}
             className="rounded-lg bg-indigo-600 px-5 py-2 text-sm font-semibold text-white hover:bg-indigo-700 disabled:opacity-50"
           >
-            Capture
+            {t('cameraCapture.capture')}
           </button>
         ) : (
           <>
@@ -114,13 +116,13 @@ export function CameraCapture({ onCapture }: CameraCaptureProps) {
               onClick={handleRetake}
               className="rounded-lg border border-slate-300 dark:border-slate-600 px-5 py-2 text-sm font-medium text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-800"
             >
-              Retake
+              {t('cameraCapture.retake')}
             </button>
             <button
               onClick={handleUse}
               className="rounded-lg bg-indigo-600 px-5 py-2 text-sm font-semibold text-white hover:bg-indigo-700"
             >
-              Use this photo
+              {t('cameraCapture.usePhoto')}
             </button>
           </>
         )}

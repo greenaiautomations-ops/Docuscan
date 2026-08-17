@@ -1,5 +1,6 @@
 import { useEffect, useMemo, useState } from 'react'
 import { useSearchParams } from 'react-router-dom'
+import { useTranslation } from 'react-i18next'
 import { useEvents } from '../hooks/useEvents'
 import { DeadlineCard } from '../components/events/DeadlineCard'
 import { EventModal } from '../components/events/EventModal'
@@ -7,7 +8,7 @@ import { Modal } from '../components/common/Modal'
 import { LoadingSpinner } from '../components/common/LoadingSpinner'
 import { ErrorMessage } from '../components/common/ErrorMessage'
 import { EmptyState } from '../components/common/EmptyState'
-import { EVENT_TYPE_LABELS } from '../utils/constants'
+import { EVENT_TYPES } from '../utils/constants'
 import { completeEvent, snoozeEvent, type EventFilters } from '../services/eventService'
 import type { Event } from '../types/document'
 
@@ -32,16 +33,10 @@ function bucketOf(event: Event): 'overdue' | 'today' | 'week' | 'upcoming' | 'co
   return 'upcoming'
 }
 
-const SECTIONS: { key: string; label: string }[] = [
-  { key: 'overdue', label: 'Overdue' },
-  { key: 'today', label: 'Today' },
-  { key: 'week', label: 'This week' },
-  { key: 'upcoming', label: 'Upcoming' },
-  { key: 'undated', label: 'No date set' },
-  { key: 'completed', label: 'Completed' },
-]
+const SECTION_KEYS = ['overdue', 'today', 'week', 'upcoming', 'undated', 'completed'] as const
 
 export function DeadlinesPage() {
+  const { t } = useTranslation()
   const [search, setSearch] = useState('')
   const [priority, setPriority] = useState('all')
   const [type, setType] = useState('all')
@@ -110,15 +105,15 @@ export function DeadlinesPage() {
   return (
     <div className="flex flex-col gap-6">
       <div>
-        <h1 className="text-2xl font-semibold text-slate-900 dark:text-slate-100">Deadlines</h1>
-        <p className="text-sm text-slate-500 dark:text-slate-400">Tasks and deadlines detected from your documents.</p>
+        <h1 className="text-2xl font-semibold text-slate-900 dark:text-slate-100">{t('deadlinesPage.title')}</h1>
+        <p className="text-sm text-slate-500 dark:text-slate-400">{t('deadlinesPage.subtitle')}</p>
       </div>
 
       <div className="flex flex-wrap items-center gap-3">
         <input
           value={search}
           onChange={(e) => setSearch(e.target.value)}
-          placeholder="Search deadlines…"
+          placeholder={t('deadlinesPage.searchPlaceholder')}
           className="w-full max-w-sm rounded-lg border border-slate-300 dark:border-slate-600 px-3 py-2 text-sm focus:border-indigo-500 focus:outline-none focus:ring-1 focus:ring-indigo-500"
         />
         <select
@@ -126,40 +121,40 @@ export function DeadlinesPage() {
           onChange={(e) => setPriority(e.target.value)}
           className="rounded-lg border border-slate-300 dark:border-slate-600 px-3 py-2 text-sm focus:border-indigo-500 focus:outline-none focus:ring-1 focus:ring-indigo-500"
         >
-          <option value="all">All priorities</option>
-          <option value="critical">Critical</option>
-          <option value="high">High</option>
-          <option value="medium">Medium</option>
-          <option value="low">Low</option>
+          <option value="all">{t('deadlinesPage.allPriorities')}</option>
+          <option value="critical">{t('priority.critical')}</option>
+          <option value="high">{t('priority.high')}</option>
+          <option value="medium">{t('priority.medium')}</option>
+          <option value="low">{t('priority.low')}</option>
         </select>
         <select
           value={type}
           onChange={(e) => setType(e.target.value)}
           className="rounded-lg border border-slate-300 dark:border-slate-600 px-3 py-2 text-sm focus:border-indigo-500 focus:outline-none focus:ring-1 focus:ring-indigo-500"
         >
-          <option value="all">All types</option>
-          {Object.entries(EVENT_TYPE_LABELS).map(([key, label]) => (
+          <option value="all">{t('deadlinesPage.allTypes')}</option>
+          {EVENT_TYPES.map((key) => (
             <option key={key} value={key}>
-              {label}
+              {t(`eventType.${key}`)}
             </option>
           ))}
         </select>
       </div>
 
-      {loading && <LoadingSpinner label="Loading deadlines…" />}
+      {loading && <LoadingSpinner label={t('deadlinesPage.loading')} />}
       {!loading && error && <ErrorMessage message={error} onRetry={refresh} />}
 
       {!loading && !error && events.length === 0 && (
-        <EmptyState title="No deadlines yet" description="Deadlines and tasks detected from your documents will show up here." />
+        <EmptyState title={t('deadlinesPage.empty.title')} description={t('deadlinesPage.empty.description')} />
       )}
 
       {!loading && !error && events.length > 0 && (
         <div className="flex flex-col gap-8">
-          {SECTIONS.map(({ key, label }) =>
+          {SECTION_KEYS.map((key) =>
             grouped[key].length > 0 ? (
               <div key={key} className="flex flex-col gap-3">
                 <h2 className="text-sm font-semibold uppercase tracking-wide text-slate-400 dark:text-slate-500">
-                  {label} <span className="text-slate-300 dark:text-slate-600">({grouped[key].length})</span>
+                  {t(`deadlinesPage.sections.${key}`)} <span className="text-slate-300 dark:text-slate-600">({grouped[key].length})</span>
                 </h2>
                 <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
                   {grouped[key].map((event) => (
@@ -180,9 +175,11 @@ export function DeadlinesPage() {
 
       <EventModal event={editing} open={!!editing} onClose={() => setEditing(null)} onChanged={handleEventChanged} />
 
-      <Modal open={!!snoozing} title="Snooze deadline" onClose={() => setSnoozing(null)}>
+      <Modal open={!!snoozing} title={t('deadlinesPage.snoozeModal.title')} onClose={() => setSnoozing(null)}>
         <div className="flex flex-col gap-4">
-          <p className="text-sm text-slate-500 dark:text-slate-400">Push "{snoozing?.title}" to a new date.</p>
+          <p className="text-sm text-slate-500 dark:text-slate-400">
+            {t('deadlinesPage.snoozeModal.message', { title: snoozing?.title })}
+          </p>
           <div className="flex flex-wrap gap-2">
             {[1, 3, 7].map((days) => (
               <button
@@ -190,12 +187,12 @@ export function DeadlinesPage() {
                 onClick={() => applySnooze(addDays(todayStr(), days))}
                 className="rounded-lg border border-slate-300 dark:border-slate-600 px-3 py-1.5 text-xs font-medium text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-800"
               >
-                +{days} day{days > 1 ? 's' : ''}
+                {t('deadlinesPage.snoozeModal.days', { count: days })}
               </button>
             ))}
           </div>
           <div>
-            <label className="mb-1 block text-xs font-medium text-slate-600 dark:text-slate-400">Or pick a date</label>
+            <label className="mb-1 block text-xs font-medium text-slate-600 dark:text-slate-400">{t('deadlinesPage.snoozeModal.pickDate')}</label>
             <input
               type="date"
               value={snoozeDate}
@@ -208,7 +205,7 @@ export function DeadlinesPage() {
             disabled={!snoozeDate}
             className="self-end rounded-lg bg-indigo-600 px-4 py-2 text-sm font-semibold text-white hover:bg-indigo-700 disabled:opacity-60"
           >
-            Snooze
+            {t('deadlinesPage.snoozeModal.submit')}
           </button>
         </div>
       </Modal>

@@ -1,0 +1,943 @@
+{
+  "common": {
+    "save": "Save",
+    "saveChanges": "Save changes",
+    "saving": "Saving…",
+    "cancel": "Cancel",
+    "delete": "Delete",
+    "edit": "Edit",
+    "close": "Close",
+    "retry": "Retry",
+    "tryAgain": "Try again",
+    "loading": "Loading…",
+    "back": "Back",
+    "next": "Next",
+    "search": "Search",
+    "confirm": "Confirm",
+    "yes": "Yes",
+    "no": "No",
+    "new": "New",
+    "viewPlans": "View plans",
+    "upgrade": "Upgrade",
+    "uploadDocument": "Upload document"
+  },
+  "nav": {
+    "home": "Home",
+    "dashboard": "Dashboard",
+    "documents": "Documents",
+    "scan": "Scan",
+    "upload": "Upload",
+    "calendar": "Calendar",
+    "deadlines": "Deadlines",
+    "payments": "Payments",
+    "notifications": "Notifications",
+    "billing": "Billing",
+    "settings": "Settings",
+    "admin": "Admin"
+  },
+  "theme": {
+    "label": "Theme",
+    "light": "Light",
+    "dark": "Dark",
+    "system": "System",
+    "switchToLight": "Switch to light mode",
+    "switchToDark": "Switch to dark mode"
+  },
+  "language": {
+    "label": "Language",
+    "en": "English",
+    "de": "German"
+  },
+  "topbar": {
+    "account": "Account",
+    "openMenu": "Open menu",
+    "signOut": "Sign out"
+  },
+  "home": {
+    "nav": {
+      "signIn": "Sign in",
+      "getStarted": "Get started free",
+      "goToDashboard": "Go to Dashboard"
+    },
+    "hero": {
+      "eyebrow": "AI-powered document management",
+      "title": "Every document you own, finally organized itself.",
+      "subtitle": "DocVault reads, sorts, and understands your paperwork automatically — deadlines, payments, and important details surfaced before you even ask.",
+      "ctaPrimary": "Get started free",
+      "ctaSecondary": "Sign in",
+      "trustNote": "No credit card required for the Free plan · 10 documents included"
+    },
+    "features": {
+      "title": "Everything your paperwork needs, in one place",
+      "subtitle": "From the moment you upload, DocVault takes over the busywork.",
+      "item1": {
+        "title": "AI-powered reading & extraction",
+        "description": "OCR plus AI classification pulls out dates, amounts, senders, and required actions from any document automatically — no manual data entry."
+      },
+      "item2": {
+        "title": "Smart calendar & reminders",
+        "description": "Deadlines, appointments, and payment due dates become calendar events on their own, with reminders so nothing slips through."
+      },
+      "item3": {
+        "title": "Folders that keep themselves tidy",
+        "description": "Group documents into color-coded folders like Taxes, Finance, or Marketing, and find anything with full-text search in seconds."
+      },
+      "item4": {
+        "title": "Explain, translate & ask AI",
+        "description": "Get a plain-language explanation of any document, translate it into 5 languages, or ask follow-up questions directly about its contents."
+      },
+      "item5": {
+        "title": "Private by design",
+        "description": "Every document is encrypted and access-controlled per account — your files are never visible to, or used to train models for, anyone else."
+      },
+      "item6": {
+        "title": "Plans that grow with you",
+        "description": "Start free, upgrade as your archive grows, or talk to us about an Enterprise plan for teams with custom needs."
+      }
+    },
+    "benefits": {
+      "title": "Why people switch to DocVault",
+      "item1": {
+        "title": "Never miss a deadline again",
+        "description": "Every due date DocVault finds becomes a reminder, automatically — before it becomes a late fee."
+      },
+      "item2": {
+        "title": "Hours of filing, gone",
+        "description": "Stop manually renaming, sorting, and re-reading paperwork. Upload it and let DocVault do the rest."
+      },
+      "item3": {
+        "title": "Understand anything instantly",
+        "description": "Dense contracts and official letters get a plain-language summary the moment they're uploaded."
+      },
+      "item4": {
+        "title": "Your data stays yours",
+        "description": "Bank-level encryption and strict per-account access controls, always — nothing is ever shared."
+      }
+    },
+    "howItWorks": {
+      "title": "How DocVault works",
+      "subtitle": "From paper pile to organized archive in four steps.",
+      "step1": {
+        "label": "Upload or scan",
+        "title": "Add a document",
+        "description": "Drag in a PDF or photo, or scan it straight from your camera. PDFs, JPGs, PNGs, and WEBPs are all supported."
+      },
+      "step2": {
+        "label": "AI reads it",
+        "title": "DocVault reads & understands",
+        "description": "OCR extracts the text, then AI classifies the document type and pulls out the details that matter."
+      },
+      "step3": {
+        "label": "Review & confirm",
+        "title": "Check what was found",
+        "description": "Dates, payments, and key facts are shown for a quick review — edit anything before it's added to your calendar."
+      },
+      "step4": {
+        "label": "Stay on top of it",
+        "title": "Get reminded automatically",
+        "description": "Deadlines and payments appear on your calendar with reminders, and every document stays searchable forever."
+      }
+    },
+    "pricing": {
+      "title": "Simple plans, no surprises",
+      "subtitle": "Start free. Upgrade only when you need more.",
+      "cta": "Get started",
+      "contactCta": "Contact us",
+      "documentsLabel": "documents"
+    },
+    "finalCta": {
+      "title": "Ready to stop losing track of paperwork?",
+      "subtitle": "Create your free DocVault account in under a minute.",
+      "button": "Get started free"
+    },
+    "footer": {
+      "tagline": "Your documents, organized by AI.",
+      "rights": "All rights reserved."
+    }
+  },
+  "billing": {
+    "contactUs": "Contact us",
+    "free": "Free",
+    "perMonth": "/mo",
+    "tiers": {
+      "free": {
+        "label": "Free",
+        "tagline": "Try DocVault with your first documents.",
+        "features": [
+          "Up to 10 documents",
+          "OCR, classification & extraction",
+          "AI summary",
+          "Calendar, deadlines & payments"
+        ]
+      },
+      "basic": {
+        "label": "Basic",
+        "tagline": "For regularly organizing personal or household documents.",
+        "features": [
+          "Up to 100 documents",
+          "Everything in Free",
+          "Explain in plain language",
+          "Translate documents",
+          "Ask AI not included"
+        ]
+      },
+      "pro": {
+        "label": "Pro",
+        "tagline": "Full access for power users and small teams.",
+        "features": [
+          "Up to 1,000 documents",
+          "Everything in Basic",
+          "Ask AI — chat with any document",
+          "Priority support"
+        ]
+      },
+      "enterprise": {
+        "label": "Enterprise",
+        "tagline": "Custom volume, security, and support — by consultation and agreement.",
+        "features": [
+          "Unlimited documents",
+          "Everything in Pro",
+          "Dedicated onboarding",
+          "Custom agreement & invoicing"
+        ]
+      }
+    }
+  },
+  "billingPage": {
+    "title": "Billing & plans",
+    "subtitle": "Manage your subscription and see what each plan includes.",
+    "checkoutSuccess": "Thanks! Your subscription is being activated — this can take a few seconds to reflect below.",
+    "checkoutCanceled": "Checkout was canceled — no changes were made to your plan.",
+    "yourPlan": "Your plan",
+    "unlimitedDocuments": "Unlimited documents",
+    "documentLimit": "Document limit: {{count}}",
+    "manageSubscription": "Manage subscription",
+    "currentPlan": "Current plan",
+    "youAreOnThisPlan": "You're on this plan",
+    "subscribeTo": "Subscribe to {{plan}}",
+    "redirecting": "Redirecting…",
+    "adminFullAccess": "Admin — full access",
+    "compAccess": "Complimentary access (granted by admin)",
+    "freePlan": "Free plan",
+    "planStatus": "{{plan}} plan — {{status}}",
+    "couldNotStartCheckout": "Could not start checkout.",
+    "couldNotOpenPortal": "Could not open the billing portal.",
+    "status": {
+      "active": "Active",
+      "trialing": "Trial",
+      "past_due": "Payment past due — please update your payment method",
+      "canceled": "Canceled — you have Free plan access",
+      "incomplete": "Payment incomplete",
+      "unknown": "Unknown status"
+    }
+  },
+  "auth": {
+    "fields": {
+      "name": "Name",
+      "email": "Email",
+      "password": "Password"
+    },
+    "login": {
+      "subtitle": "Sign in to your account",
+      "submit": "Sign in",
+      "submitting": "Signing in…",
+      "noAccount": "Don't have an account?",
+      "signUpLink": "Sign up",
+      "errors": {
+        "invalidEmail": "Enter a valid email address.",
+        "emptyPassword": "Enter your password.",
+        "generic": "Could not sign in."
+      }
+    },
+    "signup": {
+      "subtitle": "Create your account",
+      "passwordHint": "At least 8 characters.",
+      "submit": "Sign up",
+      "submitting": "Creating account…",
+      "alreadyHaveAccount": "Already have an account?",
+      "signInLink": "Sign in",
+      "success": "Account created. If email confirmation is required, check your inbox. Redirecting to sign in…",
+      "errors": {
+        "emptyName": "Enter your name.",
+        "invalidEmail": "Enter a valid email address.",
+        "invalidPassword": "Password must be at least 8 characters.",
+        "generic": "Could not create your account."
+      }
+    }
+  },
+  "notFound": {
+    "title": "404",
+    "message": "This page doesn't exist.",
+    "backLink": "Back to home"
+  },
+  "layout": {
+    "checkingSession": "Checking your session…",
+    "checkingAccess": "Checking access…"
+  },
+  "settingsPage": {
+    "title": "Settings",
+    "subtitle": "Manage your profile and preferences.",
+    "account": {
+      "heading": "Account"
+    },
+    "profile": {
+      "heading": "Profile",
+      "nameLabel": "Name",
+      "documentLanguageLabel": "Preferred document language",
+      "documentLanguageHint": "Used as the default target language when translating a document.",
+      "timezoneLabel": "Timezone",
+      "saveError": "Could not save your changes.",
+      "saved": "Saved."
+    },
+    "appearance": {
+      "heading": "Appearance",
+      "description": "Choose how DocVault looks on this device."
+    },
+    "appLanguage": {
+      "heading": "App language",
+      "description": "Choose the language DocVault is displayed in."
+    },
+    "reminders": {
+      "heading": "Reminders"
+    }
+  },
+  "dashboardPage": {
+    "welcomeBack": "Welcome back",
+    "subtitle": "Here's what's happening with your documents.",
+    "loading": "Loading dashboard…",
+    "loadingShort": "Loading…",
+    "stats": {
+      "totalDocuments": "Total documents",
+      "today": "Today",
+      "actionRequired": "Action required",
+      "upcomingPayments": "Upcoming payments"
+    },
+    "today": {
+      "heading": "Today",
+      "empty": "Nothing scheduled for today."
+    },
+    "upcoming": {
+      "heading": "Upcoming (next 7 days)",
+      "empty": "Nothing else coming up this week."
+    },
+    "recentDocuments": {
+      "heading": "Recent documents",
+      "empty": "No documents yet. Upload your first one to get started."
+    },
+    "actionRequired": {
+      "heading": "Action required",
+      "empty": "Nothing needs your attention right now."
+    },
+    "notifications": {
+      "heading": "Notifications",
+      "empty": "You're all caught up."
+    }
+  },
+  "dateLabels": {
+    "noDate": "No date",
+    "noDateSet": "No date set",
+    "today": "Today",
+    "tomorrow": "Tomorrow",
+    "overdue_one": "{{count}}d overdue",
+    "overdue_other": "{{count}}d overdue",
+    "inDays_one": "In {{count}} day",
+    "inDays_other": "In {{count}} days",
+    "at": "at {{time}}"
+  },
+  "components": {
+    "pleaseVerify": "Please verify",
+    "open": "Open",
+    "openDocument": "Open Document",
+    "sourceDocument": "Source document",
+    "complete": "Complete",
+    "snooze": "Snooze",
+    "markPaid": "Mark paid",
+    "markRead": "Mark read",
+    "unknownRecipient": "Unknown recipient",
+    "amountUnknown": "Amount unknown",
+    "ref": "Ref: {{value}}",
+    "due": "Due {{date}}",
+    "noDate": "No date"
+  },
+  "paymentStatus": {
+    "pending": "pending",
+    "paid": "paid",
+    "cancelled": "cancelled",
+    "disputed": "disputed",
+    "unknown": "unknown",
+    "overdue": "overdue"
+  },
+  "eventType": {
+    "deadline": "Deadline",
+    "appointment": "Appointment",
+    "payment_due": "Payment",
+    "renewal": "Renewal",
+    "expiration": "Expiration",
+    "task": "Task",
+    "other": "Other"
+  },
+  "priority": {
+    "critical": "critical",
+    "high": "high",
+    "medium": "medium",
+    "low": "low"
+  },
+  "reminderLabel": {
+    "seven_days": "7 days before",
+    "three_days": "3 days before",
+    "one_day": "1 day before",
+    "same_day": "Same day",
+    "custom": "Custom"
+  },
+  "eventModal": {
+    "defaultTitle": "Event",
+    "possibleDetected": "Possible {{type}} detected — please verify.",
+    "aiConfidence": "AI confidence: {{value}}%",
+    "confirm": "Confirm",
+    "editAndConfirm": "Edit & Confirm",
+    "ignore": "Ignore",
+    "fields": {
+      "title": "Title",
+      "description": "Description",
+      "date": "Date",
+      "time": "Time",
+      "location": "Location",
+      "priority": "Priority",
+      "reminders": "Reminders"
+    },
+    "remove": "Remove",
+    "sent": " (sent)",
+    "openSourceDocument": "Open source document",
+    "markComplete": "Mark complete",
+    "errors": {
+      "generic": "Something went wrong.",
+      "deleteFailed": "Could not delete this event."
+    },
+    "deleteEvent": {
+      "title": "Delete event",
+      "message": "Delete \"{{title}}\"? This cannot be undone."
+    }
+  },
+  "deadlinesPage": {
+    "title": "Deadlines",
+    "subtitle": "Tasks and deadlines detected from your documents.",
+    "searchPlaceholder": "Search deadlines…",
+    "allPriorities": "All priorities",
+    "allTypes": "All types",
+    "loading": "Loading deadlines…",
+    "empty": {
+      "title": "No deadlines yet",
+      "description": "Deadlines and tasks detected from your documents will show up here."
+    },
+    "sections": {
+      "overdue": "Overdue",
+      "today": "Today",
+      "week": "This week",
+      "upcoming": "Upcoming",
+      "undated": "No date set",
+      "completed": "Completed"
+    },
+    "snoozeModal": {
+      "title": "Snooze deadline",
+      "message": "Push \"{{title}}\" to a new date.",
+      "days_one": "+{{count}} day",
+      "days_other": "+{{count}} days",
+      "pickDate": "Or pick a date",
+      "submit": "Snooze"
+    }
+  },
+  "calendarPage": {
+    "title": "Calendar",
+    "subtitle": "Dates, deadlines, and payments extracted from your documents.",
+    "newEvent": "+ New event",
+    "today": "Today",
+    "views": {
+      "month": "month",
+      "week": "week",
+      "day": "day",
+      "agenda": "agenda"
+    },
+    "completed": "Completed",
+    "loading": "Loading calendar…",
+    "addEvent": "Add event",
+    "more_one": "+{{count}} more",
+    "more_other": "+{{count}} more",
+    "noEvents": "No events",
+    "allDay": "All day",
+    "nothingScheduled": {
+      "title": "Nothing scheduled",
+      "description": "No events on this day."
+    },
+    "noUpcoming": {
+      "title": "No upcoming events",
+      "description": "Your agenda is clear."
+    },
+    "newEventModal": {
+      "title": "New event",
+      "fields": {
+        "title": "Title",
+        "type": "Type",
+        "date": "Date",
+        "time": "Time",
+        "location": "Location"
+      },
+      "titleRequired": "Title is required.",
+      "createError": "Could not create event.",
+      "creating": "Creating…",
+      "submit": "Create event"
+    }
+  },
+  "paymentsPage": {
+    "title": "Payments",
+    "subtitle": "Track bills, invoices, and dues detected from your documents.",
+    "stats": {
+      "totalUpcoming": "Total upcoming",
+      "overdue": "Overdue",
+      "upcoming": "Upcoming",
+      "paid": "Paid"
+    },
+    "searchPlaceholder": "Search by recipient or reference…",
+    "tabs": {
+      "all": "All",
+      "upcoming": "Upcoming",
+      "overdue": "Overdue",
+      "paid": "Paid",
+      "unknown": "Unknown"
+    },
+    "loading": "Loading payments…",
+    "empty": {
+      "title": "No payments here",
+      "description": "Payments detected from your documents will show up here."
+    }
+  },
+  "paymentModal": {
+    "title": "Payment",
+    "unknownWarning": "This payment's status couldn't be determined automatically — please review and confirm the details below.",
+    "fields": {
+      "recipient": "Recipient",
+      "amount": "Amount",
+      "currency": "Currency",
+      "dueDate": "Due date",
+      "referenceNumber": "Reference number",
+      "recurrence": "Recurrence"
+    },
+    "recurringLabel": "This is a recurring payment",
+    "selectInterval": "Select interval…",
+    "intervals": {
+      "weekly": "Weekly",
+      "monthly": "Monthly",
+      "quarterly": "Quarterly",
+      "yearly": "Yearly"
+    },
+    "recurrenceHint": "Confirming a recurrence here does not create future payments automatically — each one is created as its own document is processed.",
+    "openSourceDocument": "Open source document",
+    "markPaid": "Mark paid",
+    "ignore": "Ignore",
+    "errors": {
+      "generic": "Something went wrong.",
+      "invalidAmount": "Amount must be a number.",
+      "deleteFailed": "Could not delete this payment."
+    },
+    "deletePayment": {
+      "title": "Delete payment",
+      "message": "Delete this payment{{recipient}}? This cannot be undone.",
+      "toRecipient": " to {{name}}"
+    }
+  },
+  "reminderSettings": {
+    "intro": "Choose when you'd like to be reminded before upcoming deadlines, payments, and appointments.",
+    "loading": "Loading reminder settings…",
+    "unavailable": "Reminder settings unavailable.",
+    "loadError": "Could not load reminder settings.",
+    "saveError": "Could not save this change.",
+    "options": {
+      "seven_days": {
+        "label": "7 days before",
+        "hint": "Early heads-up for deadlines and payments"
+      },
+      "three_days": {
+        "label": "3 days before",
+        "hint": "Second nudge"
+      },
+      "one_day": {
+        "label": "1 day before",
+        "hint": "Final warning"
+      },
+      "same_day": {
+        "label": "On the day",
+        "hint": "Day-of reminder"
+      }
+    }
+  },
+  "notificationsPage": {
+    "title": "Notifications",
+    "subtitle": "Reminders and updates about your documents, deadlines, and payments.",
+    "markAllRead": "Mark all as read",
+    "tabs": {
+      "all": "All",
+      "unread": "Unread",
+      "read": "Read"
+    },
+    "loading": "Loading notifications…",
+    "empty": {
+      "title": "No notifications",
+      "description": "You'll see reminders and document activity here."
+    },
+    "delete": "Delete"
+  },
+  "documentCategory": {
+    "uncategorized": "Uncategorized",
+    "identification": "Identification",
+    "financial": "Financial",
+    "medical": "Medical",
+    "legal": "Legal",
+    "insurance": "Insurance",
+    "education": "Education",
+    "property": "Property",
+    "employment": "Employment",
+    "other": "Other"
+  },
+  "documentStatus": {
+    "all": "All statuses",
+    "uploading": "Uploading",
+    "uploaded": "Uploaded",
+    "processing": "Processing",
+    "analyzed": "Analyzed",
+    "completed": "Completed",
+    "failed": "Failed"
+  },
+  "aiDocumentType": {
+    "invoice": "Invoice",
+    "contract": "Contract",
+    "government_letter": "Government letter",
+    "university_document": "University document",
+    "employment_document": "Employment document",
+    "bank_document": "Bank document",
+    "insurance": "Insurance",
+    "tax": "Tax",
+    "rental": "Rental",
+    "utility_bill": "Utility bill",
+    "appointment": "Appointment",
+    "certificate": "Certificate",
+    "receipt": "Receipt",
+    "subscription": "Subscription",
+    "other": "Other"
+  },
+  "documentsPage": {
+    "title": "Documents",
+    "subtitle": "Manage and organize all of your documents.",
+    "loading": "Loading documents…",
+    "deleteDocument": {
+      "title": "Delete document",
+      "message": "Are you sure you want to delete \"{{title}}\"? This cannot be undone."
+    }
+  },
+  "documentFilters": {
+    "allCategories": "All categories",
+    "importantOnly": "Important only",
+    "showArchived": "Show archived"
+  },
+  "documentSearchBar": {
+    "placeholder": "Search documents by title…"
+  },
+  "documentList": {
+    "empty": {
+      "title": "No documents found",
+      "description": "Try adjusting your search or filters, or upload your first document."
+    }
+  },
+  "renameDialog": {
+    "title": "Rename document",
+    "save": "Save"
+  },
+  "documentCard": {
+    "markImportant": "Mark important",
+    "unmarkImportant": "Unmark important",
+    "folderLabel": "Folder",
+    "noFolder": "No folder",
+    "open": "Open",
+    "rename": "Rename",
+    "archive": "Archive",
+    "unarchive": "Unarchive"
+  },
+  "folderSidebar": {
+    "heading": "Folders",
+    "newFolder": "+ New",
+    "newFolderTitle": "New folder",
+    "allDocuments": "All Documents",
+    "empty": "No folders yet. Create one to start organizing, e.g. \"Taxes\" or \"Finance\".",
+    "editFolder": "Edit folder",
+    "deleteFolder": "Delete folder",
+    "deleteConfirm": {
+      "title": "Delete folder",
+      "message": "Delete \"{{name}}\"? Documents in this folder will not be deleted — they'll just move back to \"No Folder\"."
+    },
+    "deleting": "Deleting…"
+  },
+  "folderModal": {
+    "editTitle": "Edit folder",
+    "newTitle": "New folder",
+    "nameLabel": "Name",
+    "namePlaceholder": "e.g. Taxes, Finance, Marketing",
+    "colorLabel": "Color",
+    "nameRequired": "Give the folder a name.",
+    "saveError": "Could not save this folder.",
+    "createFolder": "Create folder"
+  },
+  "documentViewerPage": {
+    "download": "Download",
+    "markImportant": "Mark important",
+    "unmarkImportant": "Unmark important",
+    "archive": "Archive",
+    "unarchive": "Unarchive",
+    "delete": "Delete",
+    "previewUnavailable": "Preview unavailable.",
+    "previewNotSupported": "Preview not supported for this file type.",
+    "loading": "Loading document…",
+    "processing": "Processing",
+    "retrying": "Retrying…",
+    "retryProcessing": "Retry Processing",
+    "datesPaymentsTasks": "Dates, payments & tasks",
+    "appointments": "Appointments",
+    "deadlinesTasks": "Deadlines & tasks",
+    "payments": "Payments",
+    "rawOcrText": "Raw OCR text",
+    "explain": "Explain",
+    "translate": "Translate",
+    "askAi": "Ask AI",
+    "editInformation": "Edit Information",
+    "upgradeExplainTitle": "Included from the Basic plan — click to upgrade",
+    "upgradeTranslateTitle": "Included from the Basic plan — click to upgrade",
+    "upgradeAskAiTitle": "Included from the Pro plan — click to upgrade",
+    "folder": "Folder",
+    "newFolder": "+ New",
+    "noFolder": "No folder",
+    "fileInformation": "File information",
+    "category": "Category",
+    "type": "Type",
+    "size": "Size",
+    "uploaded": "Uploaded",
+    "updated": "Updated",
+    "status": "Status",
+    "deleteDocument": "Delete document",
+    "deleteConfirmMessage": "Are you sure you want to delete \"{{title}}\"? This cannot be undone.",
+    "retryFailed": "Retry failed.",
+    "folderChangeError": "Could not change folder.",
+    "explainPrompt": "Explain this document to me in simple terms."
+  },
+  "uploadPage": {
+    "title": "Upload documents",
+    "subtitle": "Upload PDF, JPG, PNG, or WEBP files up to 25MB each. AI processing (OCR, classification, summary) continues in the background — feel free to move on once uploads finish.",
+    "category": "Category",
+    "uploadProgress": "Upload progress",
+    "starting": "Starting…",
+    "uploading": "Uploading…",
+    "retry": "Retry",
+    "viewPlans": "View plans",
+    "goToDocuments": "Go to Documents",
+    "uploadFailed": "Upload failed.",
+    "originalNotFound": "Original document record was not found."
+  },
+  "scanPage": {
+    "title": "Scan a document",
+    "subtitle": "Use your camera to capture a document. Edge detection and cleanup arrive in Phase 2.",
+    "savingScan": "Saving scan…",
+    "scannedTitle": "Scanned document {{datetime}}",
+    "saveFailed": "Could not save the scan."
+  },
+  "cameraCapture": {
+    "cameraErrorPrefix": "Could not access the camera:",
+    "cameraErrorGeneric": "Could not access the camera.",
+    "cameraErrorHint": "You can also use the Upload page to add a photo from your device.",
+    "capturedAlt": "Captured document",
+    "capture": "Capture",
+    "retake": "Retake",
+    "usePhoto": "Use this photo"
+  },
+  "uploadDropzone": {
+    "dragDrop": "Drag and drop files here, or click to browse",
+    "fileTypes": "PDF, JPG, PNG, or WEBP — up to 25MB per file",
+    "invalidFile": "One or more files are invalid."
+  },
+  "documentImportance": {
+    "low": "low",
+    "normal": "normal",
+    "high": "high"
+  },
+  "analysis": {
+    "aiSummary": {
+      "title": "AI Summary",
+      "aiInterpretation": "AI interpretation",
+      "whatIsThis": "What is this?",
+      "whoSentIt": "Who sent it?",
+      "whatItMeans": "What does it mean?",
+      "whatToDo": "What do you need to do?",
+      "deadlineLabel": "Deadline?",
+      "deadlineYes": "Yes",
+      "noDeadline": "No deadline mentioned",
+      "moneyLabel": "Money involved?",
+      "moneyYes": "Yes",
+      "noPayment": "No payment mentioned",
+      "nextAction": "Next action"
+    },
+    "documentType": {
+      "title": "Document Type",
+      "unclassified": "Unclassified",
+      "language": "Language: {{language}}",
+      "confidence": "{{confidence}} confidence"
+    },
+    "editInfo": {
+      "title": "Edit information",
+      "note": "Corrections you make here are saved as-is and marked as user-verified.",
+      "cancel": "Cancel",
+      "saveChanges": "Save changes",
+      "saving": "Saving…",
+      "saveError": "Could not save your changes.",
+      "fields": {
+        "document_title": "Document title",
+        "issuer": "Issuer",
+        "recipient": "Recipient",
+        "document_date": "Document date",
+        "deadline": "Deadline",
+        "payment_amount": "Payment amount",
+        "currency": "Currency",
+        "payment_due_date": "Payment due date",
+        "required_action": "Required action"
+      }
+    },
+    "extractedDataRaw": {
+      "title": "Extracted Data",
+      "hideJson": "Hide raw JSON",
+      "showJson": "Show raw JSON"
+    },
+    "fieldRow": {
+      "notFound": "Not found"
+    },
+    "importantInfo": {
+      "title": "Important Information",
+      "documentTitle": "Document title",
+      "issuer": "Issuer",
+      "recipient": "Recipient",
+      "names": "Names",
+      "organizations": "Organizations",
+      "addresses": "Addresses",
+      "referenceNumber": "Reference number",
+      "invoiceNumber": "Invoice number",
+      "contractNumber": "Contract number",
+      "customerNumber": "Customer number",
+      "phone": "Phone",
+      "email": "Email",
+      "iban": "IBAN"
+    },
+    "dates": {
+      "title": "Dates",
+      "documentDate": "Document date",
+      "effectiveDate": "Effective date",
+      "expiryDate": "Expiry date",
+      "deadline": "Deadline",
+      "appointmentDatetime": "Appointment date/time"
+    },
+    "payments": {
+      "title": "Payments",
+      "noPaymentInfo": "No payment information found.",
+      "amount": "Amount",
+      "currency": "Currency",
+      "paymentDueDate": "Payment due date"
+    },
+    "requiredAction": {
+      "title": "Required Action",
+      "priorityLabel": "{{priority}} priority",
+      "noAction": "No specific action required."
+    }
+  },
+  "chatPanel": {
+    "title": "Ask AI about this document",
+    "closeChat": "Close chat",
+    "loading": "Loading chat…",
+    "emptyPrompt": "Ask things like \"What is this document about?\" or \"When is the deadline?\"",
+    "thinking": "Thinking…",
+    "inputPlaceholder": "Ask a question…",
+    "send": "Send",
+    "loadFailed": "Failed to load chat.",
+    "sendFailed": "Failed to send message."
+  },
+  "translatePanel": {
+    "title": "Translate",
+    "language": "Language",
+    "whatToTranslate": "What to translate",
+    "scope": {
+      "summary": "summary",
+      "full": "full",
+      "selection": "Custom text"
+    },
+    "customTextPlaceholder": "Paste or type the text you want translated…",
+    "translating": "Translating…",
+    "translate": "Translate",
+    "translationFailed": "Translation failed."
+  },
+  "adminPage": {
+    "title": "Admin",
+    "subtitle": "Manage users and grant complimentary (free) access for testing — up to {{limit}} accounts at a time.",
+    "loadFailed": "Could not load users.",
+    "updateFailed": "Could not update comp access.",
+    "loadingUsers": "Loading users…",
+    "noUsersTitle": "No users yet",
+    "noUsersDescription": "Once people sign up, they'll show up here.",
+    "userCount_one": "{{count}} user",
+    "userCount_other": "{{count}} users",
+    "compAccessCount": "Comp access: {{count}} / {{limit}}",
+    "colUser": "User",
+    "colRole": "Role",
+    "colPlan": "Plan",
+    "colStatus": "Status",
+    "colDocuments": "Documents",
+    "colCompAccess": "Comp access",
+    "roleAdmin": "Admin",
+    "roleUser": "User",
+    "cannotChangeSelf": "You can't change your own comp access",
+    "compLimitReached": "Comp access limit reached",
+    "saving": "Saving…",
+    "granted": "Granted",
+    "grant": "Grant"
+  },
+  "subscriptionStatus": {
+    "active": "Active",
+    "trialing": "Trialing",
+    "past_due": "Past due",
+    "canceled": "Canceled",
+    "incomplete": "Incomplete",
+    "incomplete_expired": "Expired",
+    "unpaid": "Unpaid"
+  },
+  "formatters": {
+    "justNow": "just now",
+    "minutesAgo": "{{count}}m ago",
+    "hoursAgo": "{{count}}h ago",
+    "daysAgo": "{{count}}d ago",
+    "noDate": "No date",
+    "processingFailed": "Processing failed.",
+    "aiQuotaLimit": "AI usage limit reached for right now — this app's free-tier AI quota resets quickly. Wait a minute, then click Retry.",
+    "aiServiceBusy": "The AI service is temporarily busy. Click Retry in a few seconds."
+  },
+  "processingStatus": {
+    "uploading": "Uploading…",
+    "complete": "Complete ✓",
+    "reading": "Reading…",
+    "creatingSummary": "Creating summary…",
+    "processing": "Processing…",
+    "retrying": "Retrying…",
+    "retry": "Retry"
+  },
+  "processingStage": {
+    "reading": "Reading…",
+    "extracting_text": "Extracting text…",
+    "understanding": "Understanding…",
+    "finding_important_information": "Finding important information…",
+    "creating_summary": "Creating summary…",
+    "creating_events": "Finding dates and payments…"
+  },
+  "dashboardWidgets": {
+    "recentNotifications": "Recent notifications",
+    "allCaughtUp": "You're all caught up."
+  }
+}

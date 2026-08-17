@@ -1,3 +1,5 @@
+type TFunction = (key: string, options?: Record<string, unknown>) => string
+
 export function formatFileSize(bytes: number): string {
   if (bytes === 0) return '0 B'
   const units = ['B', 'KB', 'MB', 'GB']
@@ -24,7 +26,9 @@ export function formatDateTime(dateString: string): string {
   })
 }
 
-export function formatRelativeTime(dateString: string): string {
+/** `t` is react-i18next's translation function (under the `formatters.*` namespace).
+ * Falls back to English when omitted, e.g. from non-component call sites. */
+export function formatRelativeTime(dateString: string, t?: TFunction): string {
   const date = new Date(dateString)
   const diffMs = Date.now() - date.getTime()
   const diffSec = Math.round(diffMs / 1000)
@@ -32,10 +36,10 @@ export function formatRelativeTime(dateString: string): string {
   const diffHour = Math.round(diffMin / 60)
   const diffDay = Math.round(diffHour / 24)
 
-  if (diffSec < 60) return 'just now'
-  if (diffMin < 60) return `${diffMin}m ago`
-  if (diffHour < 24) return `${diffHour}h ago`
-  if (diffDay < 7) return `${diffDay}d ago`
+  if (diffSec < 60) return t ? t('formatters.justNow') : 'just now'
+  if (diffMin < 60) return t ? t('formatters.minutesAgo', { count: diffMin }) : `${diffMin}m ago`
+  if (diffHour < 24) return t ? t('formatters.hoursAgo', { count: diffHour }) : `${diffHour}h ago`
+  if (diffDay < 7) return t ? t('formatters.daysAgo', { count: diffDay }) : `${diffDay}d ago`
   return formatDate(dateString)
 }
 
@@ -54,8 +58,8 @@ export function formatConfidence(confidence: number): string {
 /** Formats a plain "YYYY-MM-DD" date column without going through the Date
  * constructor's implicit UTC-midnight parsing (which can shift the
  * displayed day depending on the browser's local timezone). */
-export function formatDateOnly(dateStr: string | null | undefined): string {
-  if (!dateStr) return 'No date'
+export function formatDateOnly(dateStr: string | null | undefined, t?: TFunction): string {
+  if (!dateStr) return t ? t('formatters.noDate') : 'No date'
   const [y, m, d] = dateStr.split('-').map(Number)
   const date = new Date(y, m - 1, d)
   return date.toLocaleDateString(undefined, { year: 'numeric', month: 'short', day: 'numeric' })
@@ -87,13 +91,25 @@ export function daysUntil(dateStr: string): number {
   return Math.round((targetUtc - todayUtc) / (1000 * 60 * 60 * 24))
 }
 
-export function relativeDateLabel(dateStr: string | null | undefined): string {
-  if (!dateStr) return 'No date'
+/** Pure day-diff check — never trust substring-matching on relativeDateLabel's
+ * (locale-dependent) output text to detect overdue-ness. */
+export function isDateOverdue(dateStr: string | null | undefined): boolean {
+  if (!dateStr) return false
+  return daysUntil(dateStr) < 0
+}
+
+/** `t` is react-i18next's translation function (under the `dateLabels.*` namespace).
+ * Falls back to English when omitted, e.g. from non-component call sites. */
+export function relativeDateLabel(dateStr: string | null | undefined, t?: TFunction): string {
+  if (!dateStr) return t ? t('dateLabels.noDate') : 'No date'
   const diff = daysUntil(dateStr)
-  if (diff < 0) return `${Math.abs(diff)}d overdue`
-  if (diff === 0) return 'Today'
-  if (diff === 1) return 'Tomorrow'
-  if (diff <= 7) return `In ${diff} days`
+  if (diff < 0) {
+    const count = Math.abs(diff)
+    return t ? t('dateLabels.overdue', { count }) : `${count}d overdue`
+  }
+  if (diff === 0) return t ? t('dateLabels.today') : 'Today'
+  if (diff === 1) return t ? t('dateLabels.tomorrow') : 'Tomorrow'
+  if (diff <= 7) return t ? t('dateLabels.inDays', { count: diff }) : `In ${diff} days`
   return formatDateOnly(dateStr)
 }
 
@@ -120,20 +136,22 @@ function stripUpgradeErrorPrefix(raw: string): string {
   return raw.replace(DOCUMENT_LIMIT_ERROR_PREFIX, '').replace(FEATURE_LOCKED_ERROR_PREFIX, '').trim()
 }
 
-export function friendlyProcessingError(raw: string | null | undefined): string {
-  if (!raw) return 'Processing failed.'
+export function friendlyProcessingError(raw: string | null | undefined, t?: TFunction): string {
+  if (!raw) return t ? t('formatters.processingFailed') : 'Processing failed.'
 
   if (isUpgradeError(raw)) return stripUpgradeErrorPrefix(raw)
 
   const lower = raw.toLowerCase()
 
   if (lower.includes('429') || lower.includes('resource_exhausted') || lower.includes('quota')) {
-    return "AI usage limit reached for right now — this app's free-tier AI quota resets " +
-      'quickly. Wait a minute, then click Retry.'
+    return t
+      ? t('formatters.aiQuotaLimit')
+      : "AI usage limit reached for right now — this app's free-tier AI quota resets " +
+        'quickly. Wait a minute, then click Retry.'
   }
 
   if (lower.includes('503') || lower.includes('unavailable') || lower.includes('overloaded')) {
-    return 'The AI service is temporarily busy. Click Retry in a few seconds.'
+    return t ? t('formatters.aiServiceBusy') : 'The AI service is temporarily busy. Click Retry in a few seconds.'
   }
 
   if (lower.includes('gemini_api_key is not configured') || lower.includes('api key not valid')) {

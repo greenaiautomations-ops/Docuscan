@@ -1,4 +1,5 @@
 import { useMemo, useState } from 'react'
+import { useTranslation } from 'react-i18next'
 import { useAuth } from '../hooks/useAuth'
 import { useEvents } from '../hooks/useEvents'
 import { EventModal } from '../components/events/EventModal'
@@ -6,14 +7,12 @@ import { Modal } from '../components/common/Modal'
 import { LoadingSpinner } from '../components/common/LoadingSpinner'
 import { ErrorMessage } from '../components/common/ErrorMessage'
 import { EmptyState } from '../components/common/EmptyState'
-import { EVENT_TYPE_COLORS, EVENT_TYPE_LABELS, EVENT_STATUS_COMPLETED_COLOR, EVENT_TYPES } from '../utils/constants'
+import { EVENT_TYPE_COLORS, EVENT_STATUS_COMPLETED_COLOR, EVENT_TYPES } from '../utils/constants'
 import { formatDateOnly, formatTimeOnly } from '../utils/formatters'
 import { createEvent } from '../services/eventService'
 import type { Event, EventType } from '../types/document'
 
 type ViewMode = 'month' | 'week' | 'day' | 'agenda'
-
-const WEEKDAYS = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat']
 
 function toDateKey(date: Date): string {
   const y = date.getFullYear()
@@ -50,6 +49,7 @@ function EventChip({ event, onClick }: { event: Event; onClick: () => void }) {
 
 export function CalendarPage() {
   const { user } = useAuth()
+  const { t, i18n } = useTranslation()
   const [anchor, setAnchor] = useState(() => new Date())
   const [view, setView] = useState<ViewMode>('month')
   const [selectedEvent, setSelectedEvent] = useState<Event | null>(null)
@@ -65,6 +65,14 @@ export function CalendarPage() {
   const { events, loading, error, refresh, setEvents } = useEvents({})
   const visibleEvents = useMemo(() => events.filter((e) => e.status !== 'dismissed'), [events])
 
+  const weekdayLabels = useMemo(
+    () =>
+      // Jan 1 2023 was a Sunday — walking 7 days from there gives locale-correct
+      // short weekday names (Sun/Mon/… or So/Mo/… in German) via Intl, no hardcoded list.
+      Array.from({ length: 7 }, (_, i) => new Date(2023, 0, i + 1).toLocaleDateString(i18n.language, { weekday: 'short' })),
+    [i18n.language],
+  )
+
   const eventsByDate = useMemo(() => {
     const map = new Map<string, Event[]>()
     for (const event of visibleEvents) {
@@ -76,7 +84,7 @@ export function CalendarPage() {
     return map
   }, [visibleEvents])
 
-  const monthLabel = anchor.toLocaleDateString(undefined, { month: 'long', year: 'numeric' })
+  const monthLabel = anchor.toLocaleDateString(i18n.language, { month: 'long', year: 'numeric' })
 
   const monthCells = useMemo(() => {
     const year = anchor.getFullYear()
@@ -122,7 +130,7 @@ export function CalendarPage() {
   const handleCreate = async () => {
     if (!user) return
     if (!newTitle.trim()) {
-      setCreateError('Title is required.')
+      setCreateError(t('calendarPage.newEventModal.titleRequired'))
       return
     }
     setCreatingSaving(true)
@@ -140,7 +148,7 @@ export function CalendarPage() {
       setEvents((prev) => [...prev, created])
       setCreating(false)
     } catch (err) {
-      setCreateError(err instanceof Error ? err.message : 'Could not create event.')
+      setCreateError(err instanceof Error ? err.message : t('calendarPage.newEventModal.createError'))
     } finally {
       setCreatingSaving(false)
     }
@@ -167,14 +175,14 @@ export function CalendarPage() {
     <div className="flex flex-col gap-6">
       <div className="flex flex-wrap items-center justify-between gap-4">
         <div>
-          <h1 className="text-2xl font-semibold text-slate-900 dark:text-slate-100">Calendar</h1>
-          <p className="text-sm text-slate-500 dark:text-slate-400">Dates, deadlines, and payments extracted from your documents.</p>
+          <h1 className="text-2xl font-semibold text-slate-900 dark:text-slate-100">{t('calendarPage.title')}</h1>
+          <p className="text-sm text-slate-500 dark:text-slate-400">{t('calendarPage.subtitle')}</p>
         </div>
         <button
           onClick={() => handleOpenNew()}
           className="rounded-lg bg-indigo-600 px-4 py-2 text-sm font-semibold text-white hover:bg-indigo-700"
         >
-          + New event
+          {t('calendarPage.newEvent')}
         </button>
       </div>
 
@@ -190,7 +198,7 @@ export function CalendarPage() {
             onClick={() => setAnchor(new Date())}
             className="rounded-lg border border-slate-300 dark:border-slate-600 px-3 py-1.5 text-sm text-slate-600 dark:text-slate-400 hover:bg-slate-50 dark:hover:bg-slate-800"
           >
-            Today
+            {t('calendarPage.today')}
           </button>
           <button
             onClick={() => navigate(1)}
@@ -199,7 +207,7 @@ export function CalendarPage() {
             →
           </button>
           <h2 className="ml-2 text-sm font-semibold text-slate-700 dark:text-slate-300">
-            {view === 'day' ? anchor.toLocaleDateString(undefined, { weekday: 'long', month: 'long', day: 'numeric', year: 'numeric' }) : monthLabel}
+            {view === 'day' ? anchor.toLocaleDateString(i18n.language, { weekday: 'long', month: 'long', day: 'numeric', year: 'numeric' }) : monthLabel}
           </h2>
         </div>
         <div className="flex gap-1 rounded-lg border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 p-1">
@@ -207,11 +215,11 @@ export function CalendarPage() {
             <button
               key={v}
               onClick={() => setView(v)}
-              className={`rounded-md px-3 py-1.5 text-xs font-medium capitalize transition-colors ${
+              className={`rounded-md px-3 py-1.5 text-xs font-medium transition-colors ${
                 view === v ? 'bg-white dark:bg-slate-900 text-indigo-600 dark:text-indigo-400 shadow-sm' : 'text-slate-500 dark:text-slate-400 hover:text-slate-700 dark:hover:text-slate-300'
               }`}
             >
-              {v}
+              {t(`calendarPage.views.${v}`)}
             </button>
           ))}
         </div>
@@ -221,23 +229,23 @@ export function CalendarPage() {
         {EVENT_TYPES.map((type) => (
           <span key={type} className="flex items-center gap-1.5">
             <span className={`h-2 w-2 rounded-full ${EVENT_TYPE_COLORS[type]?.dot}`} />
-            {EVENT_TYPE_LABELS[type]}
+            {t(`eventType.${type}`)}
           </span>
         ))}
         <span className="flex items-center gap-1.5">
           <span className={`h-2 w-2 rounded-full ${EVENT_STATUS_COMPLETED_COLOR.dot}`} />
-          Completed
+          {t('calendarPage.completed')}
         </span>
       </div>
 
-      {loading && <LoadingSpinner label="Loading calendar…" />}
+      {loading && <LoadingSpinner label={t('calendarPage.loading')} />}
       {!loading && error && <ErrorMessage message={error} onRetry={refresh} />}
 
       {!loading && !error && view === 'month' && (
         <div className="rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 p-5">
           <div className="grid grid-cols-7 gap-1 text-center text-xs font-medium text-slate-400 dark:text-slate-500">
-            {WEEKDAYS.map((day) => (
-              <div key={day} className="py-1">
+            {weekdayLabels.map((day, i) => (
+              <div key={i} className="py-1">
                 {day}
               </div>
             ))}
@@ -262,7 +270,7 @@ export function CalendarPage() {
                     <button
                       onClick={() => handleOpenNew(key)}
                       className="text-xs text-slate-300 dark:text-slate-600 hover:text-indigo-500 dark:hover:text-indigo-400"
-                      title="Add event"
+                      title={t('calendarPage.addEvent')}
                     >
                       +
                     </button>
@@ -272,7 +280,9 @@ export function CalendarPage() {
                       <EventChip key={event.id} event={event} onClick={() => setSelectedEvent(event)} />
                     ))}
                     {dayEvents.length > 3 && (
-                      <span className="text-[11px] text-slate-400 dark:text-slate-500">+{dayEvents.length - 3} more</span>
+                      <span className="text-[11px] text-slate-400 dark:text-slate-500">
+                        {t('calendarPage.more', { count: dayEvents.length - 3 })}
+                      </span>
                     )}
                   </div>
                 </div>
@@ -297,14 +307,14 @@ export function CalendarPage() {
               >
                 <div className="flex items-center justify-between">
                   <p className={`text-xs font-semibold ${isToday ? 'text-indigo-600 dark:text-indigo-400' : 'text-slate-500 dark:text-slate-400'}`}>
-                    {date.toLocaleDateString(undefined, { weekday: 'short', day: 'numeric' })}
+                    {date.toLocaleDateString(i18n.language, { weekday: 'short', day: 'numeric' })}
                   </p>
                   <button onClick={() => handleOpenNew(key)} className="text-xs text-slate-300 dark:text-slate-600 hover:text-indigo-500 dark:hover:text-indigo-400">
                     +
                   </button>
                 </div>
                 <div className="flex flex-col gap-1">
-                  {dayEvents.length === 0 && <p className="text-[11px] text-slate-300 dark:text-slate-600">No events</p>}
+                  {dayEvents.length === 0 && <p className="text-[11px] text-slate-300 dark:text-slate-600">{t('calendarPage.noEvents')}</p>}
                   {dayEvents.map((event) => (
                     <EventChip key={event.id} event={event} onClick={() => setSelectedEvent(event)} />
                   ))}
@@ -318,7 +328,7 @@ export function CalendarPage() {
       {!loading && !error && view === 'day' && (
         <div className="rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 p-5">
           {(eventsByDate.get(toDateKey(anchor)) ?? []).length === 0 && (
-            <EmptyState title="Nothing scheduled" description="No events on this day." />
+            <EmptyState title={t('calendarPage.nothingScheduled.title')} description={t('calendarPage.nothingScheduled.description')} />
           )}
           <div className="flex flex-col gap-2">
             {(eventsByDate.get(toDateKey(anchor)) ?? []).map((event) => {
@@ -333,7 +343,7 @@ export function CalendarPage() {
                   <div>
                     <p className="text-sm font-medium text-slate-800 dark:text-slate-200">{event.title}</p>
                     <p className="text-xs text-slate-400 dark:text-slate-500">
-                      {formatTimeOnly(event.event_time) ?? 'All day'}
+                      {formatTimeOnly(event.event_time) ?? t('calendarPage.allDay')}
                       {event.location ? ` · ${event.location}` : ''}
                     </p>
                   </div>
@@ -346,7 +356,7 @@ export function CalendarPage() {
 
       {!loading && !error && view === 'agenda' && (
         <div className="flex flex-col gap-2">
-          {agendaEvents.length === 0 && <EmptyState title="No upcoming events" description="Your agenda is clear." />}
+          {agendaEvents.length === 0 && <EmptyState title={t('calendarPage.noUpcoming.title')} description={t('calendarPage.noUpcoming.description')} />}
           {agendaEvents.map((event) => {
             const colors = colorFor(event)
             return (
@@ -359,13 +369,13 @@ export function CalendarPage() {
                 <div className="min-w-0 flex-1">
                   <p className="truncate text-sm font-medium text-slate-800 dark:text-slate-200">{event.title}</p>
                   <p className="text-xs text-slate-400 dark:text-slate-500">
-                    {formatDateOnly(event.event_date)}
+                    {formatDateOnly(event.event_date, t)}
                     {formatTimeOnly(event.event_time) ? ` · ${formatTimeOnly(event.event_time)}` : ''}
                     {event.location ? ` · ${event.location}` : ''}
                   </p>
                 </div>
                 <span className={`shrink-0 rounded-full px-2 py-0.5 text-[11px] font-medium ${colors.bg} ${colors.text}`}>
-                  {EVENT_TYPE_LABELS[event.type]}
+                  {t(`eventType.${event.type}`)}
                 </span>
               </button>
             )
@@ -375,10 +385,10 @@ export function CalendarPage() {
 
       <EventModal event={selectedEvent} open={!!selectedEvent} onClose={() => setSelectedEvent(null)} onChanged={handleEventChanged} />
 
-      <Modal open={creating} title="New event" onClose={() => setCreating(false)}>
+      <Modal open={creating} title={t('calendarPage.newEventModal.title')} onClose={() => setCreating(false)}>
         <div className="flex flex-col gap-4">
           <div>
-            <label className="mb-1 block text-xs font-medium text-slate-600 dark:text-slate-400">Title</label>
+            <label className="mb-1 block text-xs font-medium text-slate-600 dark:text-slate-400">{t('calendarPage.newEventModal.fields.title')}</label>
             <input
               value={newTitle}
               onChange={(e) => setNewTitle(e.target.value)}
@@ -386,7 +396,7 @@ export function CalendarPage() {
             />
           </div>
           <div>
-            <label className="mb-1 block text-xs font-medium text-slate-600 dark:text-slate-400">Type</label>
+            <label className="mb-1 block text-xs font-medium text-slate-600 dark:text-slate-400">{t('calendarPage.newEventModal.fields.type')}</label>
             <select
               value={newType}
               onChange={(e) => setNewType(e.target.value as EventType)}
@@ -394,14 +404,14 @@ export function CalendarPage() {
             >
               {EVENT_TYPES.map((type) => (
                 <option key={type} value={type}>
-                  {EVENT_TYPE_LABELS[type]}
+                  {t(`eventType.${type}`)}
                 </option>
               ))}
             </select>
           </div>
           <div className="grid grid-cols-2 gap-3">
             <div>
-              <label className="mb-1 block text-xs font-medium text-slate-600 dark:text-slate-400">Date</label>
+              <label className="mb-1 block text-xs font-medium text-slate-600 dark:text-slate-400">{t('calendarPage.newEventModal.fields.date')}</label>
               <input
                 type="date"
                 value={newDate}
@@ -410,7 +420,7 @@ export function CalendarPage() {
               />
             </div>
             <div>
-              <label className="mb-1 block text-xs font-medium text-slate-600 dark:text-slate-400">Time</label>
+              <label className="mb-1 block text-xs font-medium text-slate-600 dark:text-slate-400">{t('calendarPage.newEventModal.fields.time')}</label>
               <input
                 type="time"
                 value={newTime}
@@ -420,7 +430,7 @@ export function CalendarPage() {
             </div>
           </div>
           <div>
-            <label className="mb-1 block text-xs font-medium text-slate-600 dark:text-slate-400">Location</label>
+            <label className="mb-1 block text-xs font-medium text-slate-600 dark:text-slate-400">{t('calendarPage.newEventModal.fields.location')}</label>
             <input
               value={newLocation}
               onChange={(e) => setNewLocation(e.target.value)}
@@ -433,7 +443,7 @@ export function CalendarPage() {
             disabled={creatingSaving}
             className="self-end rounded-lg bg-indigo-600 px-4 py-2 text-sm font-semibold text-white hover:bg-indigo-700 disabled:opacity-60"
           >
-            {creatingSaving ? 'Creating…' : 'Create event'}
+            {creatingSaving ? t('calendarPage.newEventModal.creating') : t('calendarPage.newEventModal.submit')}
           </button>
         </div>
       </Modal>

@@ -1,12 +1,14 @@
+import { useTranslation } from 'react-i18next'
 import type { Notification } from '../../types/document'
 import { formatRelativeTime } from '../../utils/formatters'
 
 export function NotificationsList({ notifications }: { notifications: Notification[] }) {
+  const { t } = useTranslation()
   return (
     <div className="rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 p-5">
-      <h2 className="mb-3 text-sm font-semibold text-slate-700 dark:text-slate-300">Recent notifications</h2>
+      <h2 className="mb-3 text-sm font-semibold text-slate-700 dark:text-slate-300">{t('dashboardWidgets.recentNotifications')}</h2>
       {notifications.length === 0 ? (
-        <p className="text-sm text-slate-400 dark:text-slate-500">You&apos;re all caught up.</p>
+        <p className="text-sm text-slate-400 dark:text-slate-500">{t('dashboardWidgets.allCaughtUp')}</p>
       ) : (
         <ul className="flex flex-col gap-3">
           {notifications.map((n) => (
@@ -14,7 +16,7 @@ export function NotificationsList({ notifications }: { notifications: Notificati
               <div className="flex items-center justify-between gap-2">
                 <span className="font-medium">{n.title}</span>
                 <span className="shrink-0 text-xs text-slate-400 dark:text-slate-500">
-                  {formatRelativeTime(n.created_at)}
+                  {formatRelativeTime(n.created_at, t)}
                 </span>
               </div>
               {n.message && <p className="text-xs text-slate-400 dark:text-slate-500">{n.message}</p>}

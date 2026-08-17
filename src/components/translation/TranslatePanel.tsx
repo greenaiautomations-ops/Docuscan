@@ -1,5 +1,6 @@
 import { useState } from 'react'
 import { Link } from 'react-router-dom'
+import { useTranslation } from 'react-i18next'
 import { Modal } from '../common/Modal'
 import { translateDocument } from '../../services/translationService'
 import { TRANSLATION_LANGUAGES, type TranslationLanguage, type TranslationScope } from '../../types/document'
@@ -12,6 +13,7 @@ interface TranslatePanelProps {
 }
 
 export function TranslatePanel({ documentId, open, onClose }: TranslatePanelProps) {
+  const { t } = useTranslation()
   const [language, setLanguage] = useState<TranslationLanguage>('en')
   const [scope, setScope] = useState<TranslationScope>('summary')
   const [selectionText, setSelectionText] = useState('')
@@ -32,17 +34,17 @@ export function TranslatePanel({ documentId, open, onClose }: TranslatePanelProp
       })
       setResult(translation.translated_text)
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'Translation failed.')
+      setError(err instanceof Error ? err.message : t('translatePanel.translationFailed'))
     } finally {
       setLoading(false)
     }
   }
 
   return (
-    <Modal open={open} title="Translate" onClose={onClose}>
+    <Modal open={open} title={t('translatePanel.title')} onClose={onClose}>
       <div className="flex flex-col gap-4">
         <div>
-          <label className="mb-1 block text-sm font-medium text-slate-700 dark:text-slate-300">Language</label>
+          <label className="mb-1 block text-sm font-medium text-slate-700 dark:text-slate-300">{t('translatePanel.language')}</label>
           <select
             value={language}
             onChange={(e) => setLanguage(e.target.value as TranslationLanguage)}
@@ -57,7 +59,7 @@ export function TranslatePanel({ documentId, open, onClose }: TranslatePanelProp
         </div>
 
         <div>
-          <label className="mb-1 block text-sm font-medium text-slate-700 dark:text-slate-300">What to translate</label>
+          <label className="mb-1 block text-sm font-medium text-slate-700 dark:text-slate-300">{t('translatePanel.whatToTranslate')}</label>
           <div className="flex gap-2">
             {(['summary', 'full', 'selection'] as TranslationScope[]).map((s) => (
               <button
@@ -69,7 +71,7 @@ export function TranslatePanel({ documentId, open, onClose }: TranslatePanelProp
                     : 'border-slate-300 dark:border-slate-600 text-slate-600 dark:text-slate-400 hover:bg-slate-50 dark:hover:bg-slate-800'
                 }`}
               >
-                {s === 'selection' ? 'Custom text' : s}
+                {t(`translatePanel.scope.${s}`)}
               </button>
             ))}
           </div>
@@ -79,7 +81,7 @@ export function TranslatePanel({ documentId, open, onClose }: TranslatePanelProp
           <textarea
             value={selectionText}
             onChange={(e) => setSelectionText(e.target.value)}
-            placeholder="Paste or type the text you want translated…"
+            placeholder={t('translatePanel.customTextPlaceholder')}
             rows={4}
             className="w-full rounded-lg border border-slate-300 dark:border-slate-600 px-3 py-2 text-sm focus:border-indigo-500 focus:outline-none focus:ring-1 focus:ring-indigo-500"
           />
@@ -87,12 +89,12 @@ export function TranslatePanel({ documentId, open, onClose }: TranslatePanelProp
 
         {error && (
           <p className="text-sm text-red-600 dark:text-red-400">
-            {friendlyProcessingError(error)}
+            {friendlyProcessingError(error, t)}
             {isUpgradeError(error) && (
               <>
                 {' '}
                 <Link to="/billing" className="font-medium underline underline-offset-2" onClick={onClose}>
-                  View plans
+                  {t('common.viewPlans')}
                 </Link>
               </>
             )}
@@ -110,7 +112,7 @@ export function TranslatePanel({ documentId, open, onClose }: TranslatePanelProp
           disabled={loading || (scope === 'selection' && !selectionText.trim())}
           className="self-start rounded-lg bg-indigo-600 px-4 py-2 text-sm font-semibold text-white hover:bg-indigo-700 disabled:opacity-60"
         >
-          {loading ? 'Translating…' : 'Translate'}
+          {loading ? t('translatePanel.translating') : t('translatePanel.translate')}
         </button>
       </div>
     </Modal>

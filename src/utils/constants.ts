@@ -1,20 +1,23 @@
-export const APP_NAME = 'Docuscan'
+export const APP_NAME = 'DocVault'
 
+// `key` looks up the label in the `nav.*` i18n namespace (see src/i18n/locales) —
+// keeping labels out of this file is what makes the sidebar translate automatically.
 export const NAV_ITEMS = [
-  { label: 'Dashboard', path: '/' },
-  { label: 'Documents', path: '/documents' },
-  { label: 'Scan', path: '/scan' },
-  { label: 'Upload', path: '/upload' },
-  { label: 'Calendar', path: '/calendar' },
-  { label: 'Deadlines', path: '/deadlines' },
-  { label: 'Payments', path: '/payments' },
-  { label: 'Notifications', path: '/notifications' },
-  { label: 'Billing', path: '/billing' },
-  { label: 'Settings', path: '/settings' },
+  { key: 'home', path: '/' },
+  { key: 'dashboard', path: '/dashboard' },
+  { key: 'documents', path: '/documents' },
+  { key: 'scan', path: '/scan' },
+  { key: 'upload', path: '/upload' },
+  { key: 'calendar', path: '/calendar' },
+  { key: 'deadlines', path: '/deadlines' },
+  { key: 'payments', path: '/payments' },
+  { key: 'notifications', path: '/notifications' },
+  { key: 'billing', path: '/billing' },
+  { key: 'settings', path: '/settings' },
 ] as const
 
 /** Shown only to admins (role === 'admin'), appended after the main nav. */
-export const ADMIN_NAV_ITEM = { label: 'Admin', path: '/admin' } as const
+export const ADMIN_NAV_ITEM = { key: 'admin', path: '/admin' } as const
 
 // ---------------------------------------------------------------------
 // Phase 3 — events, payments, priorities
@@ -29,16 +32,6 @@ export const EVENT_TYPES = [
   'task',
   'other',
 ] as const
-
-export const EVENT_TYPE_LABELS: Record<string, string> = {
-  deadline: 'Deadline',
-  appointment: 'Appointment',
-  payment_due: 'Payment',
-  renewal: 'Renewal',
-  expiration: 'Expiration',
-  task: 'Task',
-  other: 'Other',
-}
 
 // Colors follow the spec's legend: 🔴 deadlines, 🟠 payments, 🔵 appointments,
 // 🟣 renewals/expirations, 🟢 completed.

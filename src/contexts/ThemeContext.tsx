@@ -14,7 +14,7 @@ export interface ThemeContextValue {
 // eslint-disable-next-line react-refresh/only-export-components
 export const ThemeContext = createContext<ThemeContextValue | undefined>(undefined)
 
-const STORAGE_KEY = 'docuscan-theme'
+const STORAGE_KEY = 'docvault-theme'
 
 function getSystemPrefersDark(): boolean {
   return typeof window !== 'undefined' && window.matchMedia('(prefers-color-scheme: dark)').matches

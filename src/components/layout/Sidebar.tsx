@@ -1,5 +1,7 @@
 import { NavLink } from 'react-router-dom'
-import { NAV_ITEMS, ADMIN_NAV_ITEM, APP_NAME } from '../../utils/constants'
+import { useTranslation } from 'react-i18next'
+import { NAV_ITEMS, ADMIN_NAV_ITEM } from '../../utils/constants'
+import { Logo } from '../common/Logo'
 import { useUnreadNotificationCount } from '../../hooks/useUnreadNotificationCount'
 import { useAuth } from '../../hooks/useAuth'
 
@@ -11,6 +13,7 @@ interface SidebarProps {
 export function Sidebar({ open, onNavigate }: SidebarProps) {
   const { count } = useUnreadNotificationCount()
   const { profile } = useAuth()
+  const { t } = useTranslation()
   const items = profile?.role === 'admin' ? [...NAV_ITEMS, ADMIN_NAV_ITEM] : NAV_ITEMS
 
   return (
@@ -19,18 +22,15 @@ export function Sidebar({ open, onNavigate }: SidebarProps) {
         open ? 'translate-x-0' : '-translate-x-full'
       }`}
     >
-      <div className="flex h-16 items-center gap-2 border-b border-slate-200 dark:border-slate-700 px-6">
-        <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-indigo-600 text-sm font-bold text-white">
-          D
-        </div>
-        <span className="text-lg font-semibold text-slate-900 dark:text-slate-100">{APP_NAME}</span>
+      <div className="flex h-16 items-center border-b border-slate-200 dark:border-slate-700 px-6">
+        <Logo size={32} withWordmark />
       </div>
       <nav className="flex flex-col gap-1 p-3">
         {items.map((item) => (
           <NavLink
             key={item.path}
             to={item.path}
-            end={item.path === '/'}
+            end={item.path === '/' || item.path === '/dashboard'}
             onClick={onNavigate}
             className={({ isActive }) =>
               `flex items-center justify-between rounded-lg px-3 py-2 text-sm font-medium transition-colors ${
@@ -40,7 +40,7 @@ export function Sidebar({ open, onNavigate }: SidebarProps) {
               }`
             }
           >
-            <span>{item.label}</span>
+            <span>{t(`nav.${item.key}`)}</span>
             {item.path === '/notifications' && count > 0 && (
               <span className="rounded-full bg-indigo-600 px-1.5 py-0.5 text-[10px] font-semibold text-white">
                 {count > 99 ? '99+' : count}

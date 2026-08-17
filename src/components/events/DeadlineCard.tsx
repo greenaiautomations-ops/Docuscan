@@ -1,6 +1,7 @@
 import { Link } from 'react-router-dom'
+import { useTranslation } from 'react-i18next'
 import { EventTypeBadge, PriorityBadge } from './EventTypeBadge'
-import { formatDateOnly, relativeDateLabel } from '../../utils/formatters'
+import { formatDateOnly, isDateOverdue, relativeDateLabel } from '../../utils/formatters'
 import type { Event } from '../../types/document'
 
 interface DeadlineCardProps {
@@ -11,7 +12,8 @@ interface DeadlineCardProps {
 }
 
 export function DeadlineCard({ event, onComplete, onEdit, onSnooze }: DeadlineCardProps) {
-  const isOverdue = event.event_date ? relativeDateLabel(event.event_date).includes('overdue') : false
+  const { t } = useTranslation()
+  const isOverdue = isDateOverdue(event.event_date)
 
   return (
     <div className="flex flex-col gap-2 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 p-4 shadow-sm">
@@ -25,11 +27,11 @@ export function DeadlineCard({ event, onComplete, onEdit, onSnooze }: DeadlineCa
       <div className="flex flex-wrap items-center gap-2">
         <EventTypeBadge type={event.type} status={event.status} />
         <span className={`text-xs font-medium ${isOverdue ? 'text-red-600 dark:text-red-400' : 'text-slate-400 dark:text-slate-500'}`}>
-          {event.event_date ? `${relativeDateLabel(event.event_date)} · ${formatDateOnly(event.event_date)}` : 'No date set'}
+          {event.event_date ? `${relativeDateLabel(event.event_date, t)} · ${formatDateOnly(event.event_date, t)}` : t('dateLabels.noDateSet')}
         </span>
         {event.status === 'needs_review' && (
           <span className="rounded-full bg-amber-50 dark:bg-amber-500/10 px-2 py-0.5 text-xs font-medium text-amber-700 dark:text-amber-400">
-            Please verify
+            {t('components.pleaseVerify')}
           </span>
         )}
       </div>
@@ -37,20 +39,20 @@ export function DeadlineCard({ event, onComplete, onEdit, onSnooze }: DeadlineCa
       <div className="mt-1 flex flex-wrap items-center gap-3 border-t border-slate-100 dark:border-slate-800 pt-2 text-xs">
         {event.status !== 'completed' && (
           <button onClick={() => onComplete(event)} className="font-medium text-emerald-600 dark:text-emerald-400 hover:text-emerald-700 dark:hover:text-emerald-400">
-            Complete
+            {t('components.complete')}
           </button>
         )}
         <button onClick={() => onEdit(event)} className="text-slate-500 dark:text-slate-400 hover:text-slate-700 dark:hover:text-slate-300">
-          Edit
+          {t('common.edit')}
         </button>
         {event.status !== 'completed' && (
           <button onClick={() => onSnooze(event)} className="text-slate-500 dark:text-slate-400 hover:text-slate-700 dark:hover:text-slate-300">
-            Snooze
+            {t('components.snooze')}
           </button>
         )}
         {event.document_id && (
           <Link to={`/documents/${event.document_id}`} className="ml-auto text-slate-500 dark:text-slate-400 hover:text-slate-700 dark:hover:text-slate-300">
-            Open Document
+            {t('components.openDocument')}
           </Link>
         )}
       </div>

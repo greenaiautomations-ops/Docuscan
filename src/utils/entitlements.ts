@@ -14,9 +14,14 @@ export type Tier = 'free' | 'basic' | 'pro' | 'enterprise'
 /** Tiers that are actually purchasable via Stripe Checkout (Free has no checkout; Enterprise is sales-assisted). */
 export type PaidTier = 'basic' | 'pro'
 
+// Display text (label/tagline/features) intentionally lives in the i18n
+// locale files (`billing.tiers.<tier>.*` in src/i18n/locales/*.json), not
+// here — this module only holds the numeric/boolean facts every tier card
+// needs (price, limits, feature flags), so it stays framework-free and easy
+// to keep in sync with the Deno copy. Components look up display text via
+// `t(\`billing.tiers.\${tier.id}.label\`)` etc.
 export interface TierDefinition {
   id: Tier
-  label: string
   /** Price in EUR/month. null = no self-serve price (Enterprise: "Contact us"). */
   priceEuros: number | null
   /** null = unlimited. */
@@ -24,62 +29,42 @@ export interface TierDefinition {
   translation: boolean
   explain: boolean
   askAi: boolean
-  tagline: string
-  features: string[]
   highlight?: boolean
 }
 
 export const TIERS: Record<Tier, TierDefinition> = {
   free: {
     id: 'free',
-    label: 'Free',
     priceEuros: 0,
     documentLimit: 10,
     translation: false,
     explain: false,
     askAi: false,
-    tagline: 'Try Docuscan with your first documents.',
-    features: ['Up to 10 documents', 'OCR, classification & extraction', 'AI summary', 'Calendar, deadlines & payments'],
   },
   basic: {
     id: 'basic',
-    label: 'Basic',
     priceEuros: 5,
     documentLimit: 100,
     translation: true,
     explain: true,
     askAi: false,
-    tagline: 'For regularly organizing personal or household documents.',
-    features: [
-      'Up to 100 documents',
-      'Everything in Free',
-      'Explain in plain language',
-      'Translate documents',
-      'Ask AI not included',
-    ],
   },
   pro: {
     id: 'pro',
-    label: 'Pro',
     priceEuros: 14.99,
     documentLimit: 1000,
     translation: true,
     explain: true,
     askAi: true,
-    tagline: 'Full access for power users and small teams.',
-    features: ['Up to 1,000 documents', 'Everything in Basic', 'Ask AI — chat with any document', 'Priority support'],
     highlight: true,
   },
   enterprise: {
     id: 'enterprise',
-    label: 'Enterprise',
     priceEuros: null,
     documentLimit: null,
     translation: true,
     explain: true,
     askAi: true,
-    tagline: 'Custom volume, security, and support — by consultation and agreement.',
-    features: ['Unlimited documents', 'Everything in Pro', 'Dedicated onboarding', 'Custom agreement & invoicing'],
   },
 }
 
@@ -145,8 +130,9 @@ export function computeEntitlements(profile: ProfileSubscriptionFields): Entitle
   }
 }
 
-export function formatTierPrice(tier: TierDefinition): string {
-  if (tier.priceEuros === null) return 'Contact us'
-  if (tier.priceEuros === 0) return 'Free'
-  return `€${tier.priceEuros}/mo`
+/** `t` is a plain (key: string) => string function — pass react-i18next's `t` from the caller. */
+export function formatTierPrice(tier: TierDefinition, t: (key: string) => string): string {
+  if (tier.priceEuros === null) return t('billing.contactUs')
+  if (tier.priceEuros === 0) return t('billing.free')
+  return `€${tier.priceEuros}${t('billing.perMonth')}`
 }

@@ -1,4 +1,5 @@
 import { useState, type FormEvent } from 'react'
+import { useTranslation } from 'react-i18next'
 import { Modal } from '../common/Modal'
 
 interface RenameDialogProps {
@@ -9,6 +10,7 @@ interface RenameDialogProps {
 }
 
 export function RenameDialog({ open, currentTitle, onCancel, onSave }: RenameDialogProps) {
+  const { t } = useTranslation()
   const [title, setTitle] = useState(currentTitle)
   const [saving, setSaving] = useState(false)
 
@@ -24,7 +26,7 @@ export function RenameDialog({ open, currentTitle, onCancel, onSave }: RenameDia
   }
 
   return (
-    <Modal open={open} title="Rename document" onClose={onCancel}>
+    <Modal open={open} title={t('renameDialog.title')} onClose={onCancel}>
       <form onSubmit={handleSubmit} className="flex flex-col gap-4">
         <input
           autoFocus
@@ -38,14 +40,14 @@ export function RenameDialog({ open, currentTitle, onCancel, onSave }: RenameDia
             onClick={onCancel}
             className="rounded-lg border border-slate-300 dark:border-slate-600 px-4 py-2 text-sm font-medium text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-800"
           >
-            Cancel
+            {t('common.cancel')}
           </button>
           <button
             type="submit"
             disabled={saving || !title.trim()}
             className="rounded-lg bg-indigo-600 px-4 py-2 text-sm font-medium text-white hover:bg-indigo-700 disabled:opacity-60"
           >
-            {saving ? 'Saving…' : 'Save'}
+            {saving ? t('common.saving') : t('renameDialog.save')}
           </button>
         </div>
       </form>

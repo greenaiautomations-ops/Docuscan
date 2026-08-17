@@ -1,5 +1,6 @@
 import { useEffect, useMemo, useState } from 'react'
 import { Link } from 'react-router-dom'
+import { useTranslation } from 'react-i18next'
 import { useAuth } from '../hooks/useAuth'
 import { useDashboardStats } from '../hooks/useDashboardStats'
 import { StatCard } from '../components/dashboard/StatCard'
@@ -22,6 +23,7 @@ function todayStr() {
 
 export function DashboardPage() {
   const { profile } = useAuth()
+  const { t } = useTranslation()
   const { stats, loading, error, refresh } = useDashboardStats()
 
   const [upcoming, setUpcoming] = useState<Event[]>([])
@@ -66,7 +68,7 @@ export function DashboardPage() {
     setSelectedEvent(null)
   }
 
-  if (loading) return <LoadingSpinner fullHeight label="Loading dashboard…" />
+  if (loading) return <LoadingSpinner fullHeight label={t('dashboardPage.loading')} />
   if (error) return <ErrorMessage message={error} onRetry={refresh} />
   if (!stats) return null
 
@@ -75,27 +77,27 @@ export function DashboardPage() {
       <div className="flex flex-wrap items-center justify-between gap-4">
         <div>
           <h1 className="text-2xl font-semibold text-slate-900 dark:text-slate-100">
-            Welcome back{profile?.name ? `, ${profile.name}` : ''}
+            {t('dashboardPage.welcomeBack')}{profile?.name ? `, ${profile.name}` : ''}
           </h1>
-          <p className="text-sm text-slate-500 dark:text-slate-400">Here&apos;s what&apos;s happening with your documents.</p>
+          <p className="text-sm text-slate-500 dark:text-slate-400">{t('dashboardPage.subtitle')}</p>
         </div>
         <UploadButton />
       </div>
 
       <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
-        <StatCard label="Total documents" value={stats.totalDocuments} />
-        <StatCard label="Today" value={todaysEvents.length} />
-        <StatCard label="Action required" value={actionRequiredEvents.length + stats.actionRequiredDocuments.length} />
-        <StatCard label="Upcoming payments" value={upcomingAmountLabel} />
+        <StatCard label={t('dashboardPage.stats.totalDocuments')} value={stats.totalDocuments} />
+        <StatCard label={t('dashboardPage.stats.today')} value={todaysEvents.length} />
+        <StatCard label={t('dashboardPage.stats.actionRequired')} value={actionRequiredEvents.length + stats.actionRequiredDocuments.length} />
+        <StatCard label={t('dashboardPage.stats.upcomingPayments')} value={upcomingAmountLabel} />
       </div>
 
       <div className="grid grid-cols-1 gap-4 lg:grid-cols-2">
         <div className="rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 p-5">
-          <h2 className="mb-3 text-sm font-semibold text-slate-700 dark:text-slate-300">Today</h2>
+          <h2 className="mb-3 text-sm font-semibold text-slate-700 dark:text-slate-300">{t('dashboardPage.today.heading')}</h2>
           {phase3Loading ? (
-            <LoadingSpinner label="Loading…" />
+            <LoadingSpinner label={t('dashboardPage.loadingShort')} />
           ) : todaysEvents.length === 0 ? (
-            <p className="text-sm text-slate-400 dark:text-slate-500">Nothing scheduled for today.</p>
+            <p className="text-sm text-slate-400 dark:text-slate-500">{t('dashboardPage.today.empty')}</p>
           ) : (
             <div className="flex flex-col gap-2">
               {todaysEvents.map((event) => (
@@ -106,11 +108,11 @@ export function DashboardPage() {
         </div>
 
         <div className="rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 p-5">
-          <h2 className="mb-3 text-sm font-semibold text-slate-700 dark:text-slate-300">Upcoming (next 7 days)</h2>
+          <h2 className="mb-3 text-sm font-semibold text-slate-700 dark:text-slate-300">{t('dashboardPage.upcoming.heading')}</h2>
           {phase3Loading ? (
-            <LoadingSpinner label="Loading…" />
+            <LoadingSpinner label={t('dashboardPage.loadingShort')} />
           ) : laterEvents.length === 0 ? (
-            <p className="text-sm text-slate-400 dark:text-slate-500">Nothing else coming up this week.</p>
+            <p className="text-sm text-slate-400 dark:text-slate-500">{t('dashboardPage.upcoming.empty')}</p>
           ) : (
             <div className="flex flex-col gap-2">
               {laterEvents.slice(0, 5).map((event) => (
@@ -123,14 +125,14 @@ export function DashboardPage() {
 
       <div className="grid grid-cols-1 gap-4 lg:grid-cols-3">
         <RecentDocumentsList
-          title="Recent documents"
+          title={t('dashboardPage.recentDocuments.heading')}
           documents={stats.recentDocuments}
-          emptyText="No documents yet. Upload your first one to get started."
+          emptyText={t('dashboardPage.recentDocuments.empty')}
         />
         <div className="rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 p-5">
-          <h2 className="mb-3 text-sm font-semibold text-slate-700 dark:text-slate-300">Action required</h2>
+          <h2 className="mb-3 text-sm font-semibold text-slate-700 dark:text-slate-300">{t('dashboardPage.actionRequired.heading')}</h2>
           {actionRequiredEvents.length === 0 && stats.actionRequiredDocuments.length === 0 ? (
-            <p className="text-sm text-slate-400 dark:text-slate-500">Nothing needs your attention right now.</p>
+            <p className="text-sm text-slate-400 dark:text-slate-500">{t('dashboardPage.actionRequired.empty')}</p>
           ) : (
             <div className="flex flex-col gap-2">
               {actionRequiredEvents.map((event) => (
@@ -149,9 +151,9 @@ export function DashboardPage() {
           )}
         </div>
         <div className="rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 p-5">
-          <h2 className="mb-3 text-sm font-semibold text-slate-700 dark:text-slate-300">Notifications</h2>
+          <h2 className="mb-3 text-sm font-semibold text-slate-700 dark:text-slate-300">{t('dashboardPage.notifications.heading')}</h2>
           {unreadNotifications.length === 0 ? (
-            <p className="text-sm text-slate-400 dark:text-slate-500">You&apos;re all caught up.</p>
+            <p className="text-sm text-slate-400 dark:text-slate-500">{t('dashboardPage.notifications.empty')}</p>
           ) : (
             <div className="flex flex-col gap-2">
               {unreadNotifications.map((n) => (

@@ -1,12 +1,14 @@
 import { useState, type FormEvent } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
+import { useTranslation } from 'react-i18next'
 import { useAuth } from '../../hooks/useAuth'
 import { isValidEmail, isValidPassword } from '../../utils/validation'
-import { APP_NAME } from '../../utils/constants'
+import { Logo } from '../../components/common/Logo'
 
 export function SignupPage() {
   const { signUp } = useAuth()
   const navigate = useNavigate()
+  const { t } = useTranslation()
   const [name, setName] = useState('')
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
@@ -19,15 +21,15 @@ export function SignupPage() {
     setError(null)
 
     if (name.trim().length === 0) {
-      setError('Enter your name.')
+      setError(t('auth.signup.errors.emptyName'))
       return
     }
     if (!isValidEmail(email)) {
-      setError('Enter a valid email address.')
+      setError(t('auth.signup.errors.invalidEmail'))
       return
     }
     if (!isValidPassword(password)) {
-      setError('Password must be at least 8 characters.')
+      setError(t('auth.signup.errors.invalidPassword'))
       return
     }
 
@@ -37,7 +39,7 @@ export function SignupPage() {
       setSuccess(true)
       setTimeout(() => navigate('/login', { replace: true }), 1500)
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'Could not create your account.')
+      setError(err instanceof Error ? err.message : t('auth.signup.errors.generic'))
     } finally {
       setSubmitting(false)
     }
@@ -46,19 +48,20 @@ export function SignupPage() {
   return (
     <div className="flex min-h-screen items-center justify-center bg-slate-50 dark:bg-slate-800 px-4">
       <div className="w-full max-w-sm rounded-2xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 p-8 shadow-sm">
-        <h1 className="text-xl font-semibold text-slate-900 dark:text-slate-100">{APP_NAME}</h1>
-        <p className="mt-1 text-sm text-slate-500 dark:text-slate-400">Create your account</p>
+        <Link to="/" className="inline-block">
+          <Logo size={36} withWordmark />
+        </Link>
+        <p className="mt-4 text-sm text-slate-500 dark:text-slate-400">{t('auth.signup.subtitle')}</p>
 
         {success ? (
           <p className="mt-6 rounded-lg bg-emerald-50 dark:bg-emerald-500/10 p-3 text-sm text-emerald-700 dark:text-emerald-400">
-            Account created. If email confirmation is required, check your inbox. Redirecting to
-            sign in…
+            {t('auth.signup.success')}
           </p>
         ) : (
           <form onSubmit={handleSubmit} className="mt-6 flex flex-col gap-4">
             <div>
               <label htmlFor="name" className="mb-1 block text-sm font-medium text-slate-700 dark:text-slate-300">
-                Name
+                {t('auth.fields.name')}
               </label>
               <input
                 id="name"
@@ -72,7 +75,7 @@ export function SignupPage() {
             </div>
             <div>
               <label htmlFor="email" className="mb-1 block text-sm font-medium text-slate-700 dark:text-slate-300">
-                Email
+                {t('auth.fields.email')}
               </label>
               <input
                 id="email"
@@ -86,7 +89,7 @@ export function SignupPage() {
             </div>
             <div>
               <label htmlFor="password" className="mb-1 block text-sm font-medium text-slate-700 dark:text-slate-300">
-                Password
+                {t('auth.fields.password')}
               </label>
               <input
                 id="password"
@@ -97,7 +100,7 @@ export function SignupPage() {
                 className="w-full rounded-lg border border-slate-300 dark:border-slate-600 px-3 py-2 text-sm focus:border-indigo-500 focus:outline-none focus:ring-1 focus:ring-indigo-500"
                 required
               />
-              <p className="mt-1 text-xs text-slate-400 dark:text-slate-500">At least 8 characters.</p>
+              <p className="mt-1 text-xs text-slate-400 dark:text-slate-500">{t('auth.signup.passwordHint')}</p>
             </div>
 
             {error && <p className="text-sm text-red-600 dark:text-red-400">{error}</p>}
@@ -107,15 +110,15 @@ export function SignupPage() {
               disabled={submitting}
               className="mt-2 rounded-lg bg-indigo-600 px-4 py-2 text-sm font-semibold text-white hover:bg-indigo-700 disabled:opacity-60"
             >
-              {submitting ? 'Creating account…' : 'Sign up'}
+              {submitting ? t('auth.signup.submitting') : t('auth.signup.submit')}
             </button>
           </form>
         )}
 
         <p className="mt-6 text-center text-sm text-slate-500 dark:text-slate-400">
-          Already have an account?{' '}
+          {t('auth.signup.alreadyHaveAccount')}{' '}
           <Link to="/login" className="font-medium text-indigo-600 dark:text-indigo-400 hover:text-indigo-700 dark:hover:text-indigo-300">
-            Sign in
+            {t('auth.signup.signInLink')}
           </Link>
         </p>
       </div>

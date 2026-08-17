@@ -1,3 +1,4 @@
+import { useTranslation } from 'react-i18next'
 import type { Document, Folder } from '../../types/document'
 import { DocumentCard } from './DocumentCard'
 import { EmptyState } from '../common/EmptyState'
@@ -22,11 +23,13 @@ export function DocumentList({
   onToggleImportant,
   onMoveToFolder,
 }: DocumentListProps) {
+  const { t } = useTranslation()
+
   if (documents.length === 0) {
     return (
       <EmptyState
-        title="No documents found"
-        description="Try adjusting your search or filters, or upload your first document."
+        title={t('documentList.empty.title')}
+        description={t('documentList.empty.description')}
         action={<UploadButton />}
       />
     )

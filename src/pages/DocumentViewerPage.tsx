@@ -1,5 +1,6 @@
 import { useCallback, useEffect, useState } from 'react'
 import { useNavigate, useParams } from 'react-router-dom'
+import { useTranslation } from 'react-i18next'
 import {
   getDocument,
   getDocumentAnalysis,
@@ -46,6 +47,7 @@ export function DocumentViewerPage() {
   const navigate = useNavigate()
   const { document, setDocument, loading, error, refresh } = useDocumentProcessing(id)
   const { entitlements } = useAuth()
+  const { t } = useTranslation()
 
   const [previewUrl, setPreviewUrl] = useState<string | null>(null)
   const [analysis, setAnalysis] = useState<DocumentAnalysis | null>(null)
@@ -132,7 +134,7 @@ export function DocumentViewerPage() {
       // (status='failed' + error_message), which refresh() below picks up —
       // this local error is just so the button shows *why* immediately,
       // without waiting for the next poll tick.
-      setRetryError(err instanceof Error ? err.message : 'Retry failed.')
+      setRetryError(err instanceof Error ? err.message : t('documentViewerPage.retryFailed'))
     } finally {
       setRetrying(false)
       refresh()
@@ -147,7 +149,7 @@ export function DocumentViewerPage() {
 
   const openExplain = () => {
     setChatMode('explain')
-    setChatQuestion('Explain this document to me in simple terms.')
+    setChatQuestion(t('documentViewerPage.explainPrompt'))
     setChatOpen(true)
   }
 
@@ -196,11 +198,11 @@ export function DocumentViewerPage() {
       const updated = await setDocumentFolder(document.id, newFolderId)
       setDocument(updated)
     } catch (err) {
-      setFolderChangeError(err instanceof Error ? err.message : 'Could not change folder.')
+      setFolderChangeError(err instanceof Error ? err.message : t('documentViewerPage.folderChangeError'))
     }
   }
 
-  if (loading) return <LoadingSpinner fullHeight label="Loading document…" />
+  if (loading) return <LoadingSpinner fullHeight label={t('documentViewerPage.loading')} />
   if (error) return <ErrorMessage message={error} onRetry={() => getDocument(id ?? '')} />
   if (!document) return null
 
@@ -226,33 +228,33 @@ export function DocumentViewerPage() {
                 download
                 className="rounded-lg border border-slate-300 dark:border-slate-600 px-3 py-1.5 text-sm font-medium text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-800"
               >
-                Download
+                {t('documentViewerPage.download')}
               </a>
             )}
             <button
               onClick={handleToggleImportant}
               className="rounded-lg border border-slate-300 dark:border-slate-600 px-3 py-1.5 text-sm font-medium text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-800"
             >
-              {document.is_important ? 'Unmark important' : 'Mark important'}
+              {document.is_important ? t('documentViewerPage.unmarkImportant') : t('documentViewerPage.markImportant')}
             </button>
             <button
               onClick={handleToggleArchive}
               className="rounded-lg border border-slate-300 dark:border-slate-600 px-3 py-1.5 text-sm font-medium text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-800"
             >
-              {document.is_archived ? 'Unarchive' : 'Archive'}
+              {document.is_archived ? t('documentViewerPage.unarchive') : t('documentViewerPage.archive')}
             </button>
             <button
               onClick={() => setDeleteOpen(true)}
               className="rounded-lg border border-red-300 dark:border-red-500/40 px-3 py-1.5 text-sm font-medium text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-500/10"
             >
-              Delete
+              {t('documentViewerPage.delete')}
             </button>
           </div>
         </div>
 
         {/* Document preview */}
         <div className="flex min-h-[320px] items-center justify-center overflow-hidden rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-100 dark:bg-slate-800">
-          {!previewUrl && <p className="text-sm text-slate-400 dark:text-slate-500">Preview unavailable.</p>}
+          {!previewUrl && <p className="text-sm text-slate-400 dark:text-slate-500">{t('documentViewerPage.previewUnavailable')}</p>}
           {previewUrl && isImage && (
             <img src={previewUrl} alt={document.title} className="max-h-[60vh] w-auto object-contain" />
           )}
@@ -260,7 +262,7 @@ export function DocumentViewerPage() {
             <iframe title={document.title} src={previewUrl} className="h-[60vh] w-full" />
           )}
           {previewUrl && !isImage && !isPdf && (
-            <p className="text-sm text-slate-500 dark:text-slate-400">Preview not supported for this file type.</p>
+            <p className="text-sm text-slate-500 dark:text-slate-400">{t('documentViewerPage.previewNotSupported')}</p>
           )}
         </div>
 
@@ -268,9 +270,9 @@ export function DocumentViewerPage() {
         <div className="mt-6 flex flex-col gap-4">
           {!isAnalyzed && (
             <div className="rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 p-5">
-              <h2 className="mb-2 text-sm font-semibold text-slate-700 dark:text-slate-300">Processing</h2>
+              <h2 className="mb-2 text-sm font-semibold text-slate-700 dark:text-slate-300">{t('documentViewerPage.processing')}</h2>
               <ProcessingStatus document={document} onRetry={handleRetry} retrying={retrying} />
-              {retryError && <p className="mt-2 text-sm text-red-600 dark:text-red-400">{friendlyProcessingError(retryError)}</p>}
+              {retryError && <p className="mt-2 text-sm text-red-600 dark:text-red-400">{friendlyProcessingError(retryError, t)}</p>}
             </div>
           )}
 
@@ -293,11 +295,11 @@ export function DocumentViewerPage() {
 
           {(linkedEvents.length > 0 || linkedPayments.length > 0) && (
             <div className="rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 p-5">
-              <h2 className="mb-3 text-sm font-semibold text-slate-700 dark:text-slate-300">Dates, payments &amp; tasks</h2>
+              <h2 className="mb-3 text-sm font-semibold text-slate-700 dark:text-slate-300">{t('documentViewerPage.datesPaymentsTasks')}</h2>
               <div className="flex flex-col gap-4">
                 {linkedEvents.filter((e) => e.type === 'appointment').length > 0 && (
                   <div>
-                    <h3 className="mb-2 text-xs font-semibold uppercase tracking-wide text-slate-400 dark:text-slate-500">Appointments</h3>
+                    <h3 className="mb-2 text-xs font-semibold uppercase tracking-wide text-slate-400 dark:text-slate-500">{t('documentViewerPage.appointments')}</h3>
                     <div className="flex flex-col gap-2">
                       {linkedEvents
                         .filter((e) => e.type === 'appointment')
@@ -310,7 +312,7 @@ export function DocumentViewerPage() {
 
                 {linkedEvents.filter((e) => e.type !== 'appointment').length > 0 && (
                   <div>
-                    <h3 className="mb-2 text-xs font-semibold uppercase tracking-wide text-slate-400 dark:text-slate-500">Deadlines &amp; tasks</h3>
+                    <h3 className="mb-2 text-xs font-semibold uppercase tracking-wide text-slate-400 dark:text-slate-500">{t('documentViewerPage.deadlinesTasks')}</h3>
                     <div className="flex flex-col gap-2">
                       {linkedEvents
                         .filter((e) => e.type !== 'appointment')
@@ -329,7 +331,7 @@ export function DocumentViewerPage() {
 
                 {linkedPayments.length > 0 && (
                   <div>
-                    <h3 className="mb-2 text-xs font-semibold uppercase tracking-wide text-slate-400 dark:text-slate-500">Payments</h3>
+                    <h3 className="mb-2 text-xs font-semibold uppercase tracking-wide text-slate-400 dark:text-slate-500">{t('documentViewerPage.payments')}</h3>
                     <div className="grid grid-cols-1 gap-2 sm:grid-cols-2">
                       {linkedPayments.map((payment) => (
                         <PaymentCard
@@ -352,43 +354,43 @@ export function DocumentViewerPage() {
             <div className="flex flex-wrap gap-2">
               <button
                 onClick={entitlements.explain ? openExplain : () => navigate('/billing')}
-                title={entitlements.explain ? undefined : 'Included from the Basic plan — click to upgrade'}
+                title={entitlements.explain ? undefined : t('documentViewerPage.upgradeExplainTitle')}
                 className={`rounded-lg border px-3 py-1.5 text-sm font-medium ${
                   entitlements.explain
                     ? 'border-slate-300 dark:border-slate-600 text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-800'
                     : 'border-dashed border-slate-300 dark:border-slate-600 text-slate-400 dark:text-slate-500 hover:bg-slate-50 dark:hover:bg-slate-800'
                 }`}
               >
-                Explain{!entitlements.explain && ' 🔒'}
+                {t('documentViewerPage.explain')}{!entitlements.explain && ' 🔒'}
               </button>
               <button
                 onClick={entitlements.translation ? () => setTranslateOpen(true) : () => navigate('/billing')}
-                title={entitlements.translation ? undefined : 'Included from the Basic plan — click to upgrade'}
+                title={entitlements.translation ? undefined : t('documentViewerPage.upgradeTranslateTitle')}
                 className={`rounded-lg border px-3 py-1.5 text-sm font-medium ${
                   entitlements.translation
                     ? 'border-slate-300 dark:border-slate-600 text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-800'
                     : 'border-dashed border-slate-300 dark:border-slate-600 text-slate-400 dark:text-slate-500 hover:bg-slate-50 dark:hover:bg-slate-800'
                 }`}
               >
-                Translate{!entitlements.translation && ' 🔒'}
+                {t('documentViewerPage.translate')}{!entitlements.translation && ' 🔒'}
               </button>
               <button
                 onClick={entitlements.askAi ? openAskAi : () => navigate('/billing')}
-                title={entitlements.askAi ? undefined : 'Included from the Pro plan — click to upgrade'}
+                title={entitlements.askAi ? undefined : t('documentViewerPage.upgradeAskAiTitle')}
                 className={`rounded-lg border px-3 py-1.5 text-sm font-medium ${
                   entitlements.askAi
                     ? 'border-slate-300 dark:border-slate-600 text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-800'
                     : 'border-dashed border-slate-300 dark:border-slate-600 text-slate-400 dark:text-slate-500 hover:bg-slate-50 dark:hover:bg-slate-800'
                 }`}
               >
-                Ask AI{!entitlements.askAi && ' 🔒'}
+                {t('documentViewerPage.askAi')}{!entitlements.askAi && ' 🔒'}
               </button>
               {analysis && (
                 <button
                   onClick={() => setEditOpen(true)}
                   className="rounded-lg border border-slate-300 dark:border-slate-600 px-3 py-1.5 text-sm font-medium text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-800"
                 >
-                  Edit Information
+                  {t('documentViewerPage.editInformation')}
                 </button>
               )}
               <button
@@ -396,16 +398,16 @@ export function DocumentViewerPage() {
                 disabled={retrying}
                 className="rounded-lg border border-slate-300 dark:border-slate-600 px-3 py-1.5 text-sm font-medium text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-800 disabled:opacity-60"
               >
-                {retrying ? 'Retrying…' : 'Retry Processing'}
+                {retrying ? t('documentViewerPage.retrying') : t('documentViewerPage.retryProcessing')}
               </button>
             </div>
           )}
-          {retryError && isAnalyzed && <p className="text-sm text-red-600 dark:text-red-400">{friendlyProcessingError(retryError)}</p>}
+          {retryError && isAnalyzed && <p className="text-sm text-red-600 dark:text-red-400">{friendlyProcessingError(retryError, t)}</p>}
 
           {ocr?.raw_text && (
             <details className="rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 p-5">
               <summary className="cursor-pointer text-sm font-semibold text-slate-700 dark:text-slate-300">
-                Raw OCR text
+                {t('documentViewerPage.rawOcrText')}
               </summary>
               <pre className="mt-3 max-h-96 overflow-auto whitespace-pre-wrap text-xs text-slate-600 dark:text-slate-400">
                 {ocr.raw_text}
@@ -418,12 +420,12 @@ export function DocumentViewerPage() {
       <aside className="w-full shrink-0 lg:w-72">
         <div className="mb-4 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 p-4">
           <div className="mb-2 flex items-center justify-between">
-            <h2 className="text-sm font-semibold text-slate-700 dark:text-slate-300">Folder</h2>
+            <h2 className="text-sm font-semibold text-slate-700 dark:text-slate-300">{t('documentViewerPage.folder')}</h2>
             <button
               onClick={() => setFolderModalOpen(true)}
               className="text-xs font-medium text-indigo-600 dark:text-indigo-400 hover:text-indigo-700 dark:hover:text-indigo-300"
             >
-              + New
+              {t('documentViewerPage.newFolder')}
             </button>
           </div>
           <select
@@ -431,7 +433,7 @@ export function DocumentViewerPage() {
             onChange={(e) => handleFolderChange(e.target.value || null)}
             className="w-full rounded-lg border border-slate-300 dark:border-slate-600 px-3 py-2 text-sm focus:border-indigo-500 focus:outline-none focus:ring-1 focus:ring-indigo-500"
           >
-            <option value="">No folder</option>
+            <option value="">{t('documentViewerPage.noFolder')}</option>
             {folders.map((f) => (
               <option key={f.id} value={f.id}>
                 {f.name}
@@ -456,30 +458,30 @@ export function DocumentViewerPage() {
         </div>
 
         <div className="rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 p-4">
-          <h2 className="mb-3 text-sm font-semibold text-slate-700 dark:text-slate-300">File information</h2>
+          <h2 className="mb-3 text-sm font-semibold text-slate-700 dark:text-slate-300">{t('documentViewerPage.fileInformation')}</h2>
           <dl className="flex flex-col gap-2 text-sm">
             <div className="flex justify-between">
-              <dt className="text-slate-400 dark:text-slate-500">Category</dt>
-              <dd className="text-slate-700 dark:text-slate-300">{titleCase(document.category)}</dd>
+              <dt className="text-slate-400 dark:text-slate-500">{t('documentViewerPage.category')}</dt>
+              <dd className="text-slate-700 dark:text-slate-300">{t(`documentCategory.${document.category}`, { defaultValue: titleCase(document.category) })}</dd>
             </div>
             <div className="flex justify-between">
-              <dt className="text-slate-400 dark:text-slate-500">Type</dt>
+              <dt className="text-slate-400 dark:text-slate-500">{t('documentViewerPage.type')}</dt>
               <dd className="text-slate-700 dark:text-slate-300">{document.file_type}</dd>
             </div>
             <div className="flex justify-between">
-              <dt className="text-slate-400 dark:text-slate-500">Size</dt>
+              <dt className="text-slate-400 dark:text-slate-500">{t('documentViewerPage.size')}</dt>
               <dd className="text-slate-700 dark:text-slate-300">{formatFileSize(document.file_size)}</dd>
             </div>
             <div className="flex justify-between">
-              <dt className="text-slate-400 dark:text-slate-500">Uploaded</dt>
+              <dt className="text-slate-400 dark:text-slate-500">{t('documentViewerPage.uploaded')}</dt>
               <dd className="text-slate-700 dark:text-slate-300">{formatDateTime(document.created_at)}</dd>
             </div>
             <div className="flex justify-between">
-              <dt className="text-slate-400 dark:text-slate-500">Updated</dt>
+              <dt className="text-slate-400 dark:text-slate-500">{t('documentViewerPage.updated')}</dt>
               <dd className="text-slate-700 dark:text-slate-300">{formatDateTime(document.updated_at)}</dd>
             </div>
             <div className="flex justify-between">
-              <dt className="text-slate-400 dark:text-slate-500">Status</dt>
+              <dt className="text-slate-400 dark:text-slate-500">{t('documentViewerPage.status')}</dt>
               <dd><StatusBadge status={document.status} /></dd>
             </div>
           </dl>
@@ -488,9 +490,9 @@ export function DocumentViewerPage() {
 
       <ConfirmDialog
         open={deleteOpen}
-        title="Delete document"
-        message={`Are you sure you want to delete "${document.title}"? This cannot be undone.`}
-        confirmLabel="Delete"
+        title={t('documentViewerPage.deleteDocument')}
+        message={t('documentViewerPage.deleteConfirmMessage', { title: document.title })}
+        confirmLabel={t('documentViewerPage.delete')}
         danger
         onConfirm={handleDelete}
         onCancel={() => setDeleteOpen(false)}

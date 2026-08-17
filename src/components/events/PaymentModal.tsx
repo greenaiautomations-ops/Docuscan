@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react'
 import { Link } from 'react-router-dom'
+import { useTranslation } from 'react-i18next'
 import { Modal } from '../common/Modal'
 import { ConfirmDialog } from '../common/ConfirmDialog'
 import { deletePayment, ignorePayment, markPaymentPaid, updatePayment } from '../../services/paymentService'
@@ -13,6 +14,7 @@ interface PaymentModalProps {
 }
 
 export function PaymentModal({ payment, open, onClose, onChanged }: PaymentModalProps) {
+  const { t } = useTranslation()
   const [recipient, setRecipient] = useState('')
   const [amount, setAmount] = useState('')
   const [currency, setCurrency] = useState('')
@@ -45,7 +47,7 @@ export function PaymentModal({ payment, open, onClose, onChanged }: PaymentModal
       const updated = await action()
       onChanged(updated)
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'Something went wrong.')
+      setError(err instanceof Error ? err.message : t('paymentModal.errors.generic'))
     } finally {
       setSaving(false)
     }
@@ -54,7 +56,7 @@ export function PaymentModal({ payment, open, onClose, onChanged }: PaymentModal
   const handleSave = async () => {
     const parsedAmount = amount.trim() ? Number(amount) : null
     if (amount.trim() && Number.isNaN(parsedAmount)) {
-      setError('Amount must be a number.')
+      setError(t('paymentModal.errors.invalidAmount'))
       return
     }
     await runAction(() =>
@@ -77,7 +79,7 @@ export function PaymentModal({ payment, open, onClose, onChanged }: PaymentModal
       await deletePayment(payment.id)
       onChanged(null)
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'Could not delete this payment.')
+      setError(err instanceof Error ? err.message : t('paymentModal.errors.deleteFailed'))
     } finally {
       setSaving(false)
       setDeleteOpen(false)
@@ -86,16 +88,16 @@ export function PaymentModal({ payment, open, onClose, onChanged }: PaymentModal
 
   return (
     <>
-      <Modal open={open} title="Payment" onClose={onClose}>
+      <Modal open={open} title={t('paymentModal.title')} onClose={onClose}>
         <div className="flex flex-col gap-4">
           {payment.status === 'unknown' && (
             <div className="rounded-lg border border-amber-200 dark:border-amber-500/30 bg-amber-50 dark:bg-amber-500/10 p-3 text-sm text-amber-800 dark:text-amber-300">
-              This payment's status couldn't be determined automatically — please review and confirm the details below.
+              {t('paymentModal.unknownWarning')}
             </div>
           )}
 
           <div>
-            <label className="mb-1 block text-xs font-medium text-slate-600 dark:text-slate-400">Recipient</label>
+            <label className="mb-1 block text-xs font-medium text-slate-600 dark:text-slate-400">{t('paymentModal.fields.recipient')}</label>
             <input
               value={recipient}
               onChange={(e) => setRecipient(e.target.value)}
@@ -105,7 +107,7 @@ export function PaymentModal({ payment, open, onClose, onChanged }: PaymentModal
 
           <div className="grid grid-cols-2 gap-3">
             <div>
-              <label className="mb-1 block text-xs font-medium text-slate-600 dark:text-slate-400">Amount</label>
+              <label className="mb-1 block text-xs font-medium text-slate-600 dark:text-slate-400">{t('paymentModal.fields.amount')}</label>
               <input
                 value={amount}
                 onChange={(e) => setAmount(e.target.value)}
@@ -114,7 +116,7 @@ export function PaymentModal({ payment, open, onClose, onChanged }: PaymentModal
               />
             </div>
             <div>
-              <label className="mb-1 block text-xs font-medium text-slate-600 dark:text-slate-400">Currency</label>
+              <label className="mb-1 block text-xs font-medium text-slate-600 dark:text-slate-400">{t('paymentModal.fields.currency')}</label>
               <input
                 value={currency}
                 onChange={(e) => setCurrency(e.target.value.toUpperCase())}
@@ -126,7 +128,7 @@ export function PaymentModal({ payment, open, onClose, onChanged }: PaymentModal
           </div>
 
           <div>
-            <label className="mb-1 block text-xs font-medium text-slate-600 dark:text-slate-400">Due date</label>
+            <label className="mb-1 block text-xs font-medium text-slate-600 dark:text-slate-400">{t('paymentModal.fields.dueDate')}</label>
             <input
               type="date"
               value={dueDate}
@@ -136,7 +138,7 @@ export function PaymentModal({ payment, open, onClose, onChanged }: PaymentModal
           </div>
 
           <div>
-            <label className="mb-1 block text-xs font-medium text-slate-600 dark:text-slate-400">Reference number</label>
+            <label className="mb-1 block text-xs font-medium text-slate-600 dark:text-slate-400">{t('paymentModal.fields.referenceNumber')}</label>
             <input
               value={referenceNumber}
               onChange={(e) => setReferenceNumber(e.target.value)}
@@ -153,33 +155,31 @@ export function PaymentModal({ payment, open, onClose, onChanged }: PaymentModal
               className="h-4 w-4 rounded border-slate-300 dark:border-slate-600 text-indigo-600 dark:text-indigo-400 focus:ring-indigo-500"
             />
             <label htmlFor="payment-recurring" className="text-sm text-slate-700 dark:text-slate-300">
-              This is a recurring payment
+              {t('paymentModal.recurringLabel')}
             </label>
           </div>
 
           {recurring && (
             <div>
-              <label className="mb-1 block text-xs font-medium text-slate-600 dark:text-slate-400">Recurrence</label>
+              <label className="mb-1 block text-xs font-medium text-slate-600 dark:text-slate-400">{t('paymentModal.fields.recurrence')}</label>
               <select
                 value={recurrenceInterval}
                 onChange={(e) => setRecurrenceInterval(e.target.value as RecurrenceInterval)}
                 className="w-full rounded-lg border border-slate-300 dark:border-slate-600 px-3 py-2 text-sm focus:border-indigo-500 focus:outline-none focus:ring-1 focus:ring-indigo-500"
               >
-                <option value="">Select interval…</option>
-                <option value="weekly">Weekly</option>
-                <option value="monthly">Monthly</option>
-                <option value="quarterly">Quarterly</option>
-                <option value="yearly">Yearly</option>
+                <option value="">{t('paymentModal.selectInterval')}</option>
+                <option value="weekly">{t('paymentModal.intervals.weekly')}</option>
+                <option value="monthly">{t('paymentModal.intervals.monthly')}</option>
+                <option value="quarterly">{t('paymentModal.intervals.quarterly')}</option>
+                <option value="yearly">{t('paymentModal.intervals.yearly')}</option>
               </select>
-              <p className="mt-1 text-xs text-slate-400 dark:text-slate-500">
-                Confirming a recurrence here does not create future payments automatically — each one is created as its own document is processed.
-              </p>
+              <p className="mt-1 text-xs text-slate-400 dark:text-slate-500">{t('paymentModal.recurrenceHint')}</p>
             </div>
           )}
 
           {payment.document_id && (
             <Link to={`/documents/${payment.document_id}`} className="text-sm font-medium text-indigo-600 dark:text-indigo-400 hover:text-indigo-700 dark:hover:text-indigo-300">
-              Open source document
+              {t('paymentModal.openSourceDocument')}
             </Link>
           )}
 
@@ -193,7 +193,7 @@ export function PaymentModal({ payment, open, onClose, onChanged }: PaymentModal
                   disabled={saving}
                   className="rounded-lg border border-emerald-300 dark:border-emerald-500/40 px-3 py-1.5 text-sm font-medium text-emerald-700 dark:text-emerald-400 hover:bg-emerald-50 dark:hover:bg-emerald-500/10 disabled:opacity-60"
                 >
-                  Mark paid
+                  {t('paymentModal.markPaid')}
                 </button>
               )}
               {payment.status !== 'cancelled' && (
@@ -202,14 +202,14 @@ export function PaymentModal({ payment, open, onClose, onChanged }: PaymentModal
                   disabled={saving}
                   className="rounded-lg border border-slate-300 dark:border-slate-600 px-3 py-1.5 text-sm font-medium text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-800 disabled:opacity-60"
                 >
-                  Ignore
+                  {t('paymentModal.ignore')}
                 </button>
               )}
               <button
                 onClick={() => setDeleteOpen(true)}
                 className="rounded-lg border border-red-300 dark:border-red-500/40 px-3 py-1.5 text-sm font-medium text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-500/10"
               >
-                Delete
+                {t('common.delete')}
               </button>
             </div>
             <button
@@ -217,7 +217,7 @@ export function PaymentModal({ payment, open, onClose, onChanged }: PaymentModal
               disabled={saving}
               className="rounded-lg bg-indigo-600 px-4 py-2 text-sm font-semibold text-white hover:bg-indigo-700 disabled:opacity-60"
             >
-              {saving ? 'Saving…' : 'Save changes'}
+              {saving ? t('common.saving') : t('common.saveChanges')}
             </button>
           </div>
         </div>
@@ -225,9 +225,11 @@ export function PaymentModal({ payment, open, onClose, onChanged }: PaymentModal
 
       <ConfirmDialog
         open={deleteOpen}
-        title="Delete payment"
-        message={`Delete this payment${payment.recipient ? ` to ${payment.recipient}` : ''}? This cannot be undone.`}
-        confirmLabel="Delete"
+        title={t('paymentModal.deletePayment.title')}
+        message={t('paymentModal.deletePayment.message', {
+          recipient: payment.recipient ? t('paymentModal.deletePayment.toRecipient', { name: payment.recipient }) : '',
+        })}
+        confirmLabel={t('common.delete')}
         danger
         onConfirm={handleDelete}
         onCancel={() => setDeleteOpen(false)}

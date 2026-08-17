@@ -1,4 +1,5 @@
 import { useRef, useState, type DragEvent } from 'react'
+import { useTranslation } from 'react-i18next'
 import { ACCEPTED_FILE_EXTENSIONS } from '../../types/document'
 import { validateFile } from '../../utils/validation'
 
@@ -8,6 +9,7 @@ interface UploadDropzoneProps {
 }
 
 export function UploadDropzone({ onFilesSelected, disabled }: UploadDropzoneProps) {
+  const { t } = useTranslation()
   const inputRef = useRef<HTMLInputElement>(null)
   const [dragActive, setDragActive] = useState(false)
   const [error, setError] = useState<string | null>(null)
@@ -19,7 +21,7 @@ export function UploadDropzone({ onFilesSelected, disabled }: UploadDropzoneProp
     const files = Array.from(fileList)
     const invalid = files.map((f) => validateFile(f)).find((r) => !r.valid)
     if (invalid) {
-      setError(invalid.error ?? 'One or more files are invalid.')
+      setError(invalid.error ?? t('uploadDropzone.invalidFile'))
       return
     }
     onFilesSelected(files)
@@ -46,12 +48,8 @@ export function UploadDropzone({ onFilesSelected, disabled }: UploadDropzoneProp
           dragActive ? 'border-indigo-500 bg-indigo-50 dark:bg-indigo-500/10' : 'border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-900'
         } ${disabled ? 'cursor-not-allowed opacity-60' : 'hover:border-indigo-400'}`}
       >
-        <p className="text-sm font-medium text-slate-700 dark:text-slate-300">
-          Drag and drop files here, or click to browse
-        </p>
-        <p className="text-xs text-slate-400 dark:text-slate-500">
-          PDF, JPG, PNG, or WEBP — up to 25MB per file
-        </p>
+        <p className="text-sm font-medium text-slate-700 dark:text-slate-300">{t('uploadDropzone.dragDrop')}</p>
+        <p className="text-xs text-slate-400 dark:text-slate-500">{t('uploadDropzone.fileTypes')}</p>
         <input
           ref={inputRef}
           type="file"

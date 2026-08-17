@@ -1,5 +1,6 @@
 import { useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
+import { useTranslation } from 'react-i18next'
 import { useAuth } from '../hooks/useAuth'
 import { useDocumentProcessing } from '../hooks/useDocumentProcessing'
 import { UploadDropzone } from '../components/documents/UploadDropzone'
@@ -25,6 +26,7 @@ function UploadItemRow({
   onRetry: (item: UploadItem) => void
 }) {
   const { document } = useDocumentProcessing(item.documentId)
+  const { t } = useTranslation()
 
   return (
     <div className="flex items-center justify-between gap-3 rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 px-4 py-3">
@@ -32,12 +34,12 @@ function UploadItemRow({
         <p className="truncate text-sm font-medium text-slate-800 dark:text-slate-200">{item.file.name}</p>
         {item.error && (
           <p className="text-xs text-red-600 dark:text-red-400">
-            {friendlyProcessingError(item.error)}
+            {friendlyProcessingError(item.error, t)}
             {isUpgradeError(item.error) && (
               <>
                 {' '}
                 <Link to="/billing" className="font-medium underline underline-offset-2">
-                  View plans
+                  t('uploadPage.viewPlans')
                 </Link>
               </>
             )}
@@ -47,7 +49,7 @@ function UploadItemRow({
       {document ? (
         <ProcessingStatus document={document} onRetry={() => onRetry(item)} />
       ) : (
-        <span className="text-xs text-slate-400 dark:text-slate-500">Starting…</span>
+        <span className="text-xs text-slate-400 dark:text-slate-500">{t('uploadPage.starting')}</span>
       )}
     </div>
   )
@@ -56,6 +58,7 @@ function UploadItemRow({
 export function UploadPage() {
   const { user } = useAuth()
   const navigate = useNavigate()
+  const { t } = useTranslation()
   const [category, setCategory] = useState<DocumentCategory>('uncategorized')
   const [items, setItems] = useState<UploadItem[]>([])
 
@@ -71,7 +74,7 @@ export function UploadPage() {
     } catch (err) {
       updateItem(item.id, {
         failedBeforeUpload: true,
-        error: err instanceof Error ? err.message : 'Upload failed.',
+        error: err instanceof Error ? err.message : t('uploadPage.uploadFailed'),
       })
     }
   }
@@ -82,7 +85,7 @@ export function UploadPage() {
     try {
       if (item.documentId) {
         const existing = await getDocument(item.documentId)
-        if (!existing) throw new Error('Original document record was not found.')
+        if (!existing) throw new Error(t('uploadPage.originalNotFound'))
         await retryUpload(existing, item.file)
         updateItem(item.id, { failedBeforeUpload: false })
       } else {
@@ -91,7 +94,7 @@ export function UploadPage() {
     } catch (err) {
       updateItem(item.id, {
         failedBeforeUpload: true,
-        error: err instanceof Error ? err.message : 'Upload failed.',
+        error: err instanceof Error ? err.message : t('uploadPage.uploadFailed'),
       })
     }
   }
@@ -110,16 +113,13 @@ export function UploadPage() {
   return (
     <div className="mx-auto flex max-w-2xl flex-col gap-6">
       <div>
-        <h1 className="text-2xl font-semibold text-slate-900 dark:text-slate-100">Upload documents</h1>
-        <p className="text-sm text-slate-500 dark:text-slate-400">
-          Upload PDF, JPG, PNG, or WEBP files up to 25MB each. AI processing (OCR, classification,
-          summary) continues in the background — feel free to move on once uploads finish.
-        </p>
+        <h1 className="text-2xl font-semibold text-slate-900 dark:text-slate-100">{t('uploadPage.title')}</h1>
+        <p className="text-sm text-slate-500 dark:text-slate-400">{t('uploadPage.subtitle')}</p>
       </div>
 
       <div>
         <label htmlFor="category" className="mb-1 block text-sm font-medium text-slate-700 dark:text-slate-300">
-          Category
+          {t('uploadPage.category')}
         </label>
         <select
           id="category"
@@ -129,7 +129,7 @@ export function UploadPage() {
         >
           {DOCUMENT_CATEGORIES.map((c) => (
             <option key={c} value={c}>
-              {titleCase(c)}
+              {t(`documentCategory.${c}`, { defaultValue: titleCase(c) })}
             </option>
           ))}
         </select>
@@ -139,7 +139,7 @@ export function UploadPage() {
 
       {items.length > 0 && (
         <div className="flex flex-col gap-2">
-          <h2 className="text-sm font-semibold text-slate-700 dark:text-slate-300">Upload progress</h2>
+          <h2 className="text-sm font-semibold text-slate-700 dark:text-slate-300">{t('uploadPage.uploadProgress')}</h2>
           {items.map((item) =>
             item.documentId ? (
               <UploadItemRow key={item.id} item={item} onRetry={handleRetry} />
@@ -152,12 +152,12 @@ export function UploadPage() {
                   <p className="truncate text-sm font-medium text-slate-800 dark:text-slate-200">{item.file.name}</p>
                   {item.error && (
                     <p className="text-xs text-red-600 dark:text-red-400">
-                      {friendlyProcessingError(item.error)}
+                      {friendlyProcessingError(item.error, t)}
                       {isUpgradeError(item.error) && (
                         <>
                           {' '}
                           <Link to="/billing" className="font-medium underline underline-offset-2">
-                            View plans
+                            t('uploadPage.viewPlans')
                           </Link>
                         </>
                       )}
@@ -169,10 +169,10 @@ export function UploadPage() {
                     onClick={() => handleRetry(item)}
                     className="text-xs font-medium text-indigo-600 dark:text-indigo-400 hover:text-indigo-700 dark:hover:text-indigo-300"
                   >
-                    Retry
+                    {t('uploadPage.retry')}
                   </button>
                 ) : (
-                  <span className="text-xs text-slate-400 dark:text-slate-500">Uploading…</span>
+                  <span className="text-xs text-slate-400 dark:text-slate-500">{t('uploadPage.uploading')}</span>
                 )}
               </div>
             ),
@@ -185,7 +185,7 @@ export function UploadPage() {
           onClick={() => navigate('/documents')}
           className="self-start rounded-lg bg-indigo-600 px-4 py-2 text-sm font-semibold text-white hover:bg-indigo-700"
         >
-          Go to Documents
+          {t('uploadPage.goToDocuments')}
         </button>
       )}
     </div>

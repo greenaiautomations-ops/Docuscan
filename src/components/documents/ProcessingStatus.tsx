@@ -1,4 +1,5 @@
-import { PROCESSING_STAGE_LABELS, type Document } from '../../types/document'
+import { useTranslation } from 'react-i18next'
+import type { Document } from '../../types/document'
 import { friendlyProcessingError } from '../../utils/formatters'
 
 interface ProcessingStatusProps {
@@ -7,17 +8,18 @@ interface ProcessingStatusProps {
   retrying?: boolean
 }
 
-function stageLabel(document: Document): string {
-  if (document.status === 'uploading') return 'Uploading…'
-  if (document.status === 'failed') return friendlyProcessingError(document.error_message)
-  if (document.status === 'completed') return 'Complete ✓'
-  if (document.processing_stage) return PROCESSING_STAGE_LABELS[document.processing_stage]
-  if (document.status === 'uploaded') return 'Reading…'
-  if (document.status === 'analyzed') return 'Creating summary…'
-  return 'Processing…'
+function stageLabel(document: Document, t: (key: string, options?: Record<string, unknown>) => string): string {
+  if (document.status === 'uploading') return t('processingStatus.uploading')
+  if (document.status === 'failed') return friendlyProcessingError(document.error_message, t)
+  if (document.status === 'completed') return t('processingStatus.complete')
+  if (document.processing_stage) return t(`processingStage.${document.processing_stage}`)
+  if (document.status === 'uploaded') return t('processingStatus.reading')
+  if (document.status === 'analyzed') return t('processingStatus.creatingSummary')
+  return t('processingStatus.processing')
 }
 
 export function ProcessingStatus({ document, onRetry, retrying }: ProcessingStatusProps) {
+  const { t } = useTranslation()
   const isFailed = document.status === 'failed'
   const isDone = document.status === 'completed'
   const isActive = !isFailed && !isDone
@@ -30,7 +32,7 @@ export function ProcessingStatus({ document, onRetry, retrying }: ProcessingStat
       {isDone && <span className="text-emerald-600 dark:text-emerald-400">●</span>}
       {isFailed && <span className="text-red-500 dark:text-red-400">●</span>}
       <span className={isFailed ? 'text-red-600 dark:text-red-400' : isDone ? 'text-emerald-700 dark:text-emerald-400' : 'text-slate-600 dark:text-slate-400'}>
-        {stageLabel(document)}
+        {stageLabel(document, t)}
       </span>
       {isFailed && onRetry && (
         <button
@@ -38,7 +40,7 @@ export function ProcessingStatus({ document, onRetry, retrying }: ProcessingStat
           disabled={retrying}
           className="ml-1 text-xs font-medium text-indigo-600 dark:text-indigo-400 hover:text-indigo-700 dark:hover:text-indigo-300 disabled:opacity-60"
         >
-          {retrying ? 'Retrying…' : 'Retry'}
+          {retrying ? t('processingStatus.retrying') : t('processingStatus.retry')}
         </button>
       )}
     </div>

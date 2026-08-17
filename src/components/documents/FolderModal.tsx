@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react'
+import { useTranslation } from 'react-i18next'
 import { Modal } from '../common/Modal'
 import { FOLDER_COLORS } from '../../types/document'
 import { FOLDER_COLOR_STYLES } from '../../utils/constants'
@@ -14,6 +15,7 @@ interface FolderModalProps {
 }
 
 export function FolderModal({ open, folder, onClose, onSaved }: FolderModalProps) {
+  const { t } = useTranslation()
   const [name, setName] = useState('')
   const [color, setColor] = useState<FolderColor>('blue')
   const [saving, setSaving] = useState(false)
@@ -28,7 +30,7 @@ export function FolderModal({ open, folder, onClose, onSaved }: FolderModalProps
 
   const handleSave = async () => {
     if (!name.trim()) {
-      setError('Give the folder a name.')
+      setError(t('folderModal.nameRequired'))
       return
     }
     setSaving(true)
@@ -37,29 +39,29 @@ export function FolderModal({ open, folder, onClose, onSaved }: FolderModalProps
       const saved = folder ? await updateFolder(folder.id, { name, color }) : await createFolder(name, color)
       onSaved(saved)
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'Could not save this folder.')
+      setError(err instanceof Error ? err.message : t('folderModal.saveError'))
     } finally {
       setSaving(false)
     }
   }
 
   return (
-    <Modal open={open} title={folder ? 'Edit folder' : 'New folder'} onClose={onClose}>
+    <Modal open={open} title={folder ? t('folderModal.editTitle') : t('folderModal.newTitle')} onClose={onClose}>
       <div className="flex flex-col gap-4">
         <div>
-          <label className="mb-1 block text-xs font-medium text-slate-600 dark:text-slate-400">Name</label>
+          <label className="mb-1 block text-xs font-medium text-slate-600 dark:text-slate-400">{t('folderModal.nameLabel')}</label>
           <input
             autoFocus
             value={name}
             onChange={(e) => setName(e.target.value)}
             onKeyDown={(e) => e.key === 'Enter' && handleSave()}
-            placeholder="e.g. Taxes, Finance, Marketing"
+            placeholder={t('folderModal.namePlaceholder')}
             className="w-full rounded-lg border border-slate-300 dark:border-slate-600 px-3 py-2 text-sm focus:border-indigo-500 focus:outline-none focus:ring-1 focus:ring-indigo-500"
           />
         </div>
 
         <div>
-          <label className="mb-1 block text-xs font-medium text-slate-600 dark:text-slate-400">Color</label>
+          <label className="mb-1 block text-xs font-medium text-slate-600 dark:text-slate-400">{t('folderModal.colorLabel')}</label>
           <div className="flex flex-wrap gap-2">
             {FOLDER_COLORS.map((c) => (
               <button
@@ -82,7 +84,7 @@ export function FolderModal({ open, folder, onClose, onSaved }: FolderModalProps
           disabled={saving}
           className="self-end rounded-lg bg-indigo-600 px-4 py-2 text-sm font-semibold text-white hover:bg-indigo-700 disabled:opacity-60"
         >
-          {saving ? 'Saving…' : folder ? 'Save changes' : 'Create folder'}
+          {saving ? t('common.saving') : folder ? t('common.saveChanges') : t('folderModal.createFolder')}
         </button>
       </div>
     </Modal>

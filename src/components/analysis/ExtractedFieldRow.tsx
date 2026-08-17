@@ -1,3 +1,4 @@
+import { useTranslation } from 'react-i18next'
 import { formatConfidence } from '../../utils/formatters'
 import type { ExtractedField } from '../../types/document'
 
@@ -7,6 +8,7 @@ interface ExtractedFieldRowProps {
 }
 
 export function ExtractedFieldRow({ label, field }: ExtractedFieldRowProps) {
+  const { t } = useTranslation()
   return (
     <div className="flex items-start justify-between gap-3 py-1.5 text-sm">
       <span className="text-slate-400 dark:text-slate-500">{label}</span>
@@ -16,7 +18,7 @@ export function ExtractedFieldRow({ label, field }: ExtractedFieldRowProps) {
           <span className="ml-1.5 text-xs text-slate-400 dark:text-slate-500">({formatConfidence(field.confidence)})</span>
         </span>
       ) : (
-        <span className="text-right text-xs text-slate-300 dark:text-slate-600">Not found</span>
+        <span className="text-right text-xs text-slate-300 dark:text-slate-600">{t('analysis.fieldRow.notFound')}</span>
       )}
     </div>
   )
@@ -29,11 +31,12 @@ export function ExtractedListField({
   label: string
   items: ExtractedField[] | undefined
 }) {
+  const { t } = useTranslation()
   if (!items || items.length === 0) {
     return (
       <div className="flex items-start justify-between gap-3 py-1.5 text-sm">
         <span className="text-slate-400 dark:text-slate-500">{label}</span>
-        <span className="text-right text-xs text-slate-300 dark:text-slate-600">Not found</span>
+        <span className="text-right text-xs text-slate-300 dark:text-slate-600">{t('analysis.fieldRow.notFound')}</span>
       </div>
     )
   }

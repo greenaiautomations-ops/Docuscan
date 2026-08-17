@@ -1,3 +1,4 @@
+import { useTranslation } from 'react-i18next'
 import type { ExtractedData } from '../../types/document'
 
 const PRIORITY_STYLES: Record<'low' | 'medium' | 'high', string> = {
@@ -7,20 +8,21 @@ const PRIORITY_STYLES: Record<'low' | 'medium' | 'high', string> = {
 }
 
 export function RequiredActionSection({ data }: { data: ExtractedData }) {
+  const { t } = useTranslation()
   return (
     <div className="rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 p-5">
       <div className="mb-2 flex items-center justify-between">
-        <h2 className="text-sm font-semibold text-slate-700 dark:text-slate-300">Required Action</h2>
+        <h2 className="text-sm font-semibold text-slate-700 dark:text-slate-300">{t('analysis.requiredAction.title')}</h2>
         {data.priority && (
           <span
             className={`rounded-full px-2.5 py-0.5 text-xs font-medium capitalize ${PRIORITY_STYLES[data.priority]}`}
           >
-            {data.priority} priority
+            {t('analysis.requiredAction.priorityLabel', { priority: t(`priority.${data.priority}`, { defaultValue: data.priority }) })}
           </span>
         )}
       </div>
       <p className="text-sm text-slate-700 dark:text-slate-300">
-        {data.required_action?.value ?? 'No specific action required.'}
+        {data.required_action?.value ?? t('analysis.requiredAction.noAction')}
       </p>
     </div>
   )

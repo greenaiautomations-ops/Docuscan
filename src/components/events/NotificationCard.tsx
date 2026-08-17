@@ -1,4 +1,5 @@
 import { Link } from 'react-router-dom'
+import { useTranslation } from 'react-i18next'
 import { relativeDateLabel } from '../../utils/formatters'
 import type { UnifiedNotification } from '../../types/document'
 
@@ -8,6 +9,7 @@ interface NotificationCardProps {
 }
 
 export function NotificationCard({ notification, onMarkRead }: NotificationCardProps) {
+  const { t } = useTranslation()
   const target = notification.eventId
     ? `/deadlines?event=${notification.eventId}`
     : notification.documentId
@@ -20,7 +22,7 @@ export function NotificationCard({ notification, onMarkRead }: NotificationCardP
       <div className="min-w-0 flex-1">
         <p className={`text-sm ${notification.read ? 'text-slate-700 dark:text-slate-300' : 'font-medium text-slate-900 dark:text-slate-100'}`}>{notification.title}</p>
         {notification.message && <p className="mt-0.5 text-xs text-slate-500 dark:text-slate-400">{notification.message}</p>}
-        <p className="mt-1 text-xs text-slate-400 dark:text-slate-500">{relativeDateLabel(notification.createdAt.slice(0, 10))}</p>
+        <p className="mt-1 text-xs text-slate-400 dark:text-slate-500">{relativeDateLabel(notification.createdAt.slice(0, 10), t)}</p>
       </div>
       {!notification.read && onMarkRead && (
         <button
@@ -31,7 +33,7 @@ export function NotificationCard({ notification, onMarkRead }: NotificationCardP
           }}
           className="shrink-0 rounded-lg border border-slate-300 dark:border-slate-600 px-2 py-1 text-xs font-medium text-slate-600 dark:text-slate-400 hover:bg-slate-50 dark:hover:bg-slate-800"
         >
-          Mark read
+          {t('components.markRead')}
         </button>
       )}
     </div>

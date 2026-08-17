@@ -1,5 +1,6 @@
 import { useMemo, useState } from 'react'
 import { useSearchParams } from 'react-router-dom'
+import { useTranslation } from 'react-i18next'
 import { useAuth } from '../hooks/useAuth'
 import { createCheckoutSession, createPortalSession } from '../services/subscriptionService'
 import { TIERS, TIER_ORDER, formatTierPrice, type PaidTier, type Tier } from '../utils/entitlements'
@@ -22,9 +23,13 @@ function TierCard({
   onSubscribe: (tier: PaidTier) => void
   onManage: () => void
 }) {
+  const { t } = useTranslation()
   const def = TIERS[tier]
   const isCurrent = tier === currentTier
   const isPurchasable = tier === 'basic' || tier === 'pro'
+  const label = t(`billing.tiers.${tier}.label`)
+  const tagline = t(`billing.tiers.${tier}.tagline`)
+  const features = t(`billing.tiers.${tier}.features`, { returnObjects: true }) as string[]
 
   return (
     <div
@@ -36,19 +41,19 @@ function TierCard({
     >
       <div>
         <div className="flex items-center gap-2">
-          <h3 className="text-lg font-semibold text-slate-900 dark:text-slate-100">{def.label}</h3>
+          <h3 className="text-lg font-semibold text-slate-900 dark:text-slate-100">{label}</h3>
           {isCurrent && (
             <span className="rounded-full bg-indigo-600 px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wide text-white">
-              Current plan
+              {t('billingPage.currentPlan')}
             </span>
           )}
         </div>
-        <p className="mt-1 text-2xl font-bold text-slate-900 dark:text-slate-100">{formatTierPrice(def)}</p>
-        <p className="mt-1 text-sm text-slate-500 dark:text-slate-400">{def.tagline}</p>
+        <p className="mt-1 text-2xl font-bold text-slate-900 dark:text-slate-100">{formatTierPrice(def, t)}</p>
+        <p className="mt-1 text-sm text-slate-500 dark:text-slate-400">{tagline}</p>
       </div>
 
       <ul className="flex flex-1 flex-col gap-2 text-sm text-slate-600 dark:text-slate-400">
-        {def.features.map((f) => (
+        {features.map((f) => (
           <li key={f} className="flex items-start gap-2">
             <span className="mt-0.5 text-emerald-600 dark:text-emerald-400">✓</span>
             <span>{f}</span>
@@ -58,10 +63,10 @@ function TierCard({
 
       {tier === 'enterprise' ? (
         <a
-          href={`mailto:${CONTACT_EMAIL}?subject=Docuscan Enterprise`}
+          href={`mailto:${CONTACT_EMAIL}?subject=DocVault Enterprise`}
           className="rounded-lg border border-slate-300 dark:border-slate-600 px-4 py-2 text-center text-sm font-semibold text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-800"
         >
-          Contact us
+          {t('billing.contactUs')}
         </a>
       ) : isCurrent && isPaidActive ? (
         <button
@@ -69,11 +74,11 @@ function TierCard({
           disabled={busy}
           className="rounded-lg border border-slate-300 dark:border-slate-600 px-4 py-2 text-sm font-semibold text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-800 disabled:opacity-60"
         >
-          Manage subscription
+          {t('billingPage.manageSubscription')}
         </button>
       ) : isCurrent ? (
         <span className="rounded-lg bg-slate-100 dark:bg-slate-800 px-4 py-2 text-center text-sm font-medium text-slate-500 dark:text-slate-400">
-          You're on this plan
+          {t('billingPage.youAreOnThisPlan')}
         </span>
       ) : isPurchasable ? (
         <button
@@ -81,7 +86,7 @@ function TierCard({
           disabled={busy}
           className="rounded-lg bg-indigo-600 px-4 py-2 text-sm font-semibold text-white hover:bg-indigo-700 disabled:opacity-60"
         >
-          {busy ? 'Redirecting…' : `Subscribe to ${def.label}`}
+          {busy ? t('billingPage.redirecting') : t('billingPage.subscribeTo', { plan: label })}
         </button>
       ) : null}
     </div>
@@ -90,6 +95,7 @@ function TierCard({
 
 export function BillingPage() {
   const { profile, entitlements } = useAuth()
+  const { t } = useTranslation()
   const [searchParams] = useSearchParams()
   const [busyTier, setBusyTier] = useState<Tier | null>(null)
   const [error, setError] = useState<string | null>(null)
@@ -103,23 +109,20 @@ export function BillingPage() {
     (profile?.subscription_status === 'active' || profile?.subscription_status === 'trialing')
 
   const statusLabel = useMemo(() => {
-    if (entitlements.isAdmin) return 'Admin — full access'
-    if (entitlements.isCompAccess) return 'Complimentary access (granted by admin)'
+    if (entitlements.isAdmin) return t('billingPage.adminFullAccess')
+    if (entitlements.isCompAccess) return t('billingPage.compAccess')
     if (!profile) return null
     // Falls back to Free if subscription_tier is missing/unrecognized (e.g. the
     // 0011_subscriptions migration hasn't been applied yet, so the column doesn't
     // exist on this row) — never trust it to be a valid Tier key without checking.
     const tierDef = TIERS[profile.subscription_tier as Tier]
-    if (!tierDef || tierDef.id === 'free') return 'Free plan'
-    const statusText: Record<string, string> = {
-      active: 'Active',
-      trialing: 'Trial',
-      past_due: 'Payment past due — please update your payment method',
-      canceled: 'Canceled — you have Free plan access',
-      incomplete: 'Payment incomplete',
-    }
-    return `${tierDef.label} plan — ${statusText[profile.subscription_status] ?? profile.subscription_status ?? 'Unknown status'}`
-  }, [profile, entitlements])
+    if (!tierDef || tierDef.id === 'free') return t('billingPage.freePlan')
+    const status =
+      t(`billingPage.status.${profile.subscription_status}`, { defaultValue: '' }) ||
+      profile.subscription_status ||
+      t('billingPage.status.unknown')
+    return t('billingPage.planStatus', { plan: t(`billing.tiers.${tierDef.id}.label`), status })
+  }, [profile, entitlements, t])
 
   const handleSubscribe = async (tier: PaidTier) => {
     setError(null)
@@ -128,7 +131,7 @@ export function BillingPage() {
       const { url } = await createCheckoutSession(tier)
       window.location.href = url
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'Could not start checkout.')
+      setError(err instanceof Error ? err.message : t('billingPage.couldNotStartCheckout'))
       setBusyTier(null)
     }
   }
@@ -140,7 +143,7 @@ export function BillingPage() {
       const { url } = await createPortalSession()
       window.location.href = url
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'Could not open the billing portal.')
+      setError(err instanceof Error ? err.message : t('billingPage.couldNotOpenPortal'))
       setBusyTier(null)
     }
   }
@@ -148,32 +151,30 @@ export function BillingPage() {
   return (
     <div className="flex flex-col gap-6">
       <div>
-        <h1 className="text-2xl font-semibold text-slate-900 dark:text-slate-100">Billing & plans</h1>
-        <p className="text-sm text-slate-500 dark:text-slate-400">
-          Manage your subscription and see what each plan includes.
-        </p>
+        <h1 className="text-2xl font-semibold text-slate-900 dark:text-slate-100">{t('billingPage.title')}</h1>
+        <p className="text-sm text-slate-500 dark:text-slate-400">{t('billingPage.subtitle')}</p>
       </div>
 
       {checkoutResult === 'success' && (
         <div className="rounded-lg border border-emerald-200 dark:border-emerald-500/30 bg-emerald-50 dark:bg-emerald-500/10 p-4 text-sm text-emerald-700 dark:text-emerald-400">
-          Thanks! Your subscription is being activated — this can take a few seconds to reflect below.
+          {t('billingPage.checkoutSuccess')}
         </div>
       )}
       {checkoutResult === 'canceled' && (
         <div className="rounded-lg border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 p-4 text-sm text-slate-600 dark:text-slate-400">
-          Checkout was canceled — no changes were made to your plan.
+          {t('billingPage.checkoutCanceled')}
         </div>
       )}
 
       {statusLabel && (
         <div className="flex flex-wrap items-center justify-between gap-3 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 p-5">
           <div>
-            <h2 className="text-sm font-semibold text-slate-700 dark:text-slate-300">Your plan</h2>
+            <h2 className="text-sm font-semibold text-slate-700 dark:text-slate-300">{t('billingPage.yourPlan')}</h2>
             <p className="mt-1 text-sm text-slate-500 dark:text-slate-400">{statusLabel}</p>
             <p className="mt-1 text-xs text-slate-400 dark:text-slate-500">
               {entitlements.documentLimit === null
-                ? 'Unlimited documents'
-                : `Document limit: ${entitlements.documentLimit}`}
+                ? t('billingPage.unlimitedDocuments')
+                : t('billingPage.documentLimit', { count: entitlements.documentLimit })}
             </p>
           </div>
           {isPaidActive && (
@@ -182,7 +183,7 @@ export function BillingPage() {
               disabled={busyTier !== null}
               className="rounded-lg border border-slate-300 dark:border-slate-600 px-4 py-2 text-sm font-semibold text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-800 disabled:opacity-60"
             >
-              Manage subscription
+              {t('billingPage.manageSubscription')}
             </button>
           )}
         </div>

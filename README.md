@@ -1,6 +1,6 @@
-# Docuscan — Document Management + AI Intelligence + Smart Calendar
+# DocVault — Document Management + AI Intelligence + Smart Calendar
 
-Docuscan turns uploaded documents into structured, understandable, and
+DocVault turns uploaded documents into structured, understandable, and
 *actionable* information.
 
 - **Phase 1** built the document-management foundation (auth, upload,
@@ -10,7 +10,7 @@ Docuscan turns uploaded documents into structured, understandable, and
   per-document AI chat, and translation.
 - **Phase 3** turns that extracted information into deadlines, payments,
   appointments, reminders, notifications, and a real calendar — so
-  Docuscan doesn't just read your documents, it tells you what to do about
+  DocVault doesn't just read your documents, it tells you what to do about
   them and when.
 
 Pipeline: **Upload → Storage → OCR → Language Detection → Classification →
@@ -91,14 +91,14 @@ Business/database logic lives in `services/`, `hooks/`, and
   summary, translation, chat, and embeddings.
   New Google AI Studio keys use an `AQ.`-prefixed "auth key" format; older
   `AIza`-prefixed "Standard keys" are being phased out. Either works with
-  Docuscan as-is — just make sure you copy the *exact* key string from AI
+  DocVault as-is — just make sure you copy the *exact* key string from AI
   Studio (use its "Copy key" button rather than retyping it).
 
 ## 1. Clone & install
 
 ```bash
 git clone <your-repo-url>
-cd docuscan
+cd docvault
 npm install
 ```
 
@@ -169,7 +169,7 @@ Email auth is enabled by default. For local development you can disable
 confirmation on and set Site URL / Redirect URLs under **Authentication →
 URL Configuration** to your deployed domain.
 
-Docuscan reads the user's timezone from `profiles.timezone` (defaults to
+DocVault reads the user's timezone from `profiles.timezone` (defaults to
 the browser's detected timezone at signup, editable on the **Settings**
 page) — this is what `process-reminders` uses to decide what "today" means
 for each user, so date-only deadlines never shift because of UTC math.
@@ -196,7 +196,7 @@ section below) — they need their own secrets (`STRIPE_SECRET_KEY`,
 `STRIPE_WEBHOOK_SECRET`, `STRIPE_PRICE_BASIC`, `STRIPE_PRICE_PRO`) set
 before checkout or the billing portal will work.
 
-**About the model choice / "429 quota exceeded" errors:** Docuscan defaults
+**About the model choice / "429 quota exceeded" errors:** DocVault defaults
 to `gemini-flash-lite-latest`, not the plain `-latest` Flash alias. Google
 cut the full Flash model's free-tier quota hard in late 2025 (as low as
 ~20 requests/day in some configurations), which is easy to blow through in
@@ -222,8 +222,8 @@ database — so a leaked anon key can never trigger it.
 
 ## 6. Set up Stripe (subscriptions & billing)
 
-Docuscan's Free/Basic/Pro tiers are enforced server-side and billed through
-Stripe Checkout + the Billing Portal — no card data ever touches Docuscan's
+DocVault's Free/Basic/Pro tiers are enforced server-side and billed through
+Stripe Checkout + the Billing Portal — no card data ever touches DocVault's
 own servers.
 
 **Tiers:**
@@ -241,8 +241,8 @@ own servers.
    toggle "Test mode" in the dashboard).
 2. Go to **Product catalog** and create two products with **recurring
    monthly** prices:
-   - "Docuscan Basic" — €5.00/month
-   - "Docuscan Pro" — €14.99/month
+   - "DocVault Basic" — €5.00/month
+   - "DocVault Pro" — €14.99/month
 3. Copy each price's **API ID** (starts with `price_...`, *not* the product
    id which starts with `prod_...`) — you'll need both below. Enterprise has
    no Stripe price; it's sales-assisted (the pricing page links a `mailto:`
