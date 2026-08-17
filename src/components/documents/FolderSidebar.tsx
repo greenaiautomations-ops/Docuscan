@@ -73,12 +73,6 @@ export function FolderSidebar({ folders, counts, selected, onSelect, onFoldersCh
         <span className="text-xs text-slate-400">{counts.total}</span>
       </button>
 
-      <button onClick={() => onSelect(null)} className={rowClass(selected === null)}>
-        <span className="h-2.5 w-2.5 rounded-full border border-slate-300" />
-        <span className="flex-1 truncate text-left">No Folder</span>
-        <span className="text-xs text-slate-400">{counts.unfiled}</span>
-      </button>
-
       <div className="my-1 border-t border-slate-100" />
 
       {folders.length === 0 && (
