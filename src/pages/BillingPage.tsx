@@ -106,7 +106,11 @@ export function BillingPage() {
     if (entitlements.isAdmin) return 'Admin — full access'
     if (entitlements.isCompAccess) return 'Complimentary access (granted by admin)'
     if (!profile) return null
-    if (profile.subscription_tier === 'free') return 'Free plan'
+    // Falls back to Free if subscription_tier is missing/unrecognized (e.g. the
+    // 0011_subscriptions migration hasn't been applied yet, so the column doesn't
+    // exist on this row) — never trust it to be a valid Tier key without checking.
+    const tierDef = TIERS[profile.subscription_tier as Tier]
+    if (!tierDef || tierDef.id === 'free') return 'Free plan'
     const statusText: Record<string, string> = {
       active: 'Active',
       trialing: 'Trial',
@@ -114,7 +118,7 @@ export function BillingPage() {
       canceled: 'Canceled — you have Free plan access',
       incomplete: 'Payment incomplete',
     }
-    return `${TIERS[profile.subscription_tier].label} plan — ${statusText[profile.subscription_status] ?? profile.subscription_status}`
+    return `${tierDef.label} plan — ${statusText[profile.subscription_status] ?? profile.subscription_status ?? 'Unknown status'}`
   }, [profile, entitlements])
 
   const handleSubscribe = async (tier: PaidTier) => {
