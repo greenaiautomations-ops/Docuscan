@@ -74,6 +74,29 @@ export function getServiceRoleClient(req: Request): SupabaseClient {
   })
 }
 
+/**
+ * For Edge Functions where the incoming caller is NOT a Supabase-authenticated
+ * user at all (e.g. Stripe's webhook, which authenticates itself via its own
+ * signature header, not a Supabase bearer token) but the function still
+ * needs to write privileged data (like subscription state on `profiles`,
+ * which the privileged-update trigger blocks for ordinary users). Unlike
+ * getServiceRoleClient(), this does NOT check the incoming request's
+ * Authorization header — callers of this function must verify the request's
+ * authenticity themselves first (e.g. Stripe signature verification) before
+ * ever using the client it returns.
+ */
+export function getInternalServiceClient(): SupabaseClient {
+  const supabaseUrl = Deno.env.get('SUPABASE_URL')
+  const serviceRoleKey = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')
+  if (!supabaseUrl || !serviceRoleKey) {
+    throw new HttpError(500, 'Supabase service-role environment is not configured.')
+  }
+
+  return createClient(supabaseUrl, serviceRoleKey, {
+    auth: { persistSession: false },
+  })
+}
+
 function decodeJwtPayload(token: string): { role?: string } | null {
   try {
     const [, payloadB64] = token.split('.')

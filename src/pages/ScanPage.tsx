@@ -1,9 +1,10 @@
 import { useState } from 'react'
-import { useNavigate } from 'react-router-dom'
+import { Link, useNavigate } from 'react-router-dom'
 import { CameraCapture } from '../components/scan/CameraCapture'
 import { useAuth } from '../hooks/useAuth'
 import { uploadDocument } from '../services/uploadService'
 import { StatusBadge } from '../components/common/Badge'
+import { friendlyProcessingError, isUpgradeError } from '../utils/formatters'
 import type { DocumentStatus } from '../types/document'
 
 export function ScanPage() {
@@ -50,7 +51,19 @@ export function ScanPage() {
           {status && <StatusBadge status={status} />}
         </div>
       )}
-      {error && <p className="text-sm text-red-600 dark:text-red-400">{error}</p>}
+      {error && (
+        <p className="text-sm text-red-600 dark:text-red-400">
+          {friendlyProcessingError(error)}
+          {isUpgradeError(error) && (
+            <>
+              {' '}
+              <Link to="/billing" className="font-medium underline underline-offset-2">
+                View plans
+              </Link>
+            </>
+          )}
+        </p>
+      )}
     </div>
   )
 }

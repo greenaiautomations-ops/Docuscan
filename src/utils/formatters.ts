@@ -104,8 +104,26 @@ export function relativeDateLabel(dateStr: string | null | undefined): string {
  * tab. Known transient conditions (rate limit, overload) get a specific,
  * reassuring message instead of a wall of JSON.
  */
+// Distinctive prefixes the backend (Postgres trigger / Edge Functions) sends
+// so the frontend can recognize subscription-related errors and show an
+// "Upgrade" CTA instead of a generic error message.
+export const DOCUMENT_LIMIT_ERROR_PREFIX = 'DOCUMENT_LIMIT_REACHED:'
+export const FEATURE_LOCKED_ERROR_PREFIX = 'FEATURE_LOCKED:'
+
+/** True if `raw` is a subscription-gating error (doc limit or locked feature) rather than a generic failure. */
+export function isUpgradeError(raw: string | null | undefined): boolean {
+  if (!raw) return false
+  return raw.includes(DOCUMENT_LIMIT_ERROR_PREFIX) || raw.includes(FEATURE_LOCKED_ERROR_PREFIX)
+}
+
+function stripUpgradeErrorPrefix(raw: string): string {
+  return raw.replace(DOCUMENT_LIMIT_ERROR_PREFIX, '').replace(FEATURE_LOCKED_ERROR_PREFIX, '').trim()
+}
+
 export function friendlyProcessingError(raw: string | null | undefined): string {
   if (!raw) return 'Processing failed.'
+
+  if (isUpgradeError(raw)) return stripUpgradeErrorPrefix(raw)
 
   const lower = raw.toLowerCase()
 

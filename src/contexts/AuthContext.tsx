@@ -2,12 +2,14 @@ import { createContext, useEffect, useMemo, useState, type ReactNode } from 'rea
 import type { Session, User } from '@supabase/supabase-js'
 import { supabase } from '../lib/supabase'
 import { getProfile } from '../services/profileService'
+import { computeEntitlements, type Entitlements } from '../utils/entitlements'
 import type { Profile } from '../types/document'
 
 export interface AuthContextValue {
   session: Session | null
   user: User | null
   profile: Profile | null
+  entitlements: Entitlements
   loading: boolean
   refreshProfile: () => Promise<void>
   signUp: (email: string, password: string, name: string) => Promise<void>
@@ -60,11 +62,23 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     }
   }, [])
 
+  const entitlements = useMemo(
+    () =>
+      computeEntitlements({
+        role: profile?.role ?? 'user',
+        subscription_tier: profile?.subscription_tier ?? 'free',
+        subscription_status: profile?.subscription_status ?? 'active',
+        is_comp_access: profile?.is_comp_access ?? false,
+      }),
+    [profile],
+  )
+
   const value = useMemo<AuthContextValue>(
     () => ({
       session,
       user: session?.user ?? null,
       profile,
+      entitlements,
       loading,
       refreshProfile: async () => {
         if (session?.user) await loadProfile(session.user.id)
@@ -86,7 +100,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         if (error) throw error
       },
     }),
-    [session, profile, loading],
+    [session, profile, entitlements, loading],
   )
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>

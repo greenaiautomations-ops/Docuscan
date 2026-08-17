@@ -2,6 +2,7 @@ import { BrowserRouter, Routes, Route } from 'react-router-dom'
 import { AuthProvider } from './contexts/AuthContext'
 import { ThemeProvider } from './contexts/ThemeContext'
 import { ProtectedRoute } from './components/layout/ProtectedRoute'
+import { AdminRoute } from './components/layout/AdminRoute'
 import { AppLayout } from './components/layout/AppLayout'
 import { LoginPage } from './pages/auth/LoginPage'
 import { SignupPage } from './pages/auth/SignupPage'
@@ -14,6 +15,8 @@ import { CalendarPage } from './pages/CalendarPage'
 import { PaymentsPage } from './pages/PaymentsPage'
 import { DeadlinesPage } from './pages/DeadlinesPage'
 import { NotificationsPage } from './pages/NotificationsPage'
+import { BillingPage } from './pages/BillingPage'
+import { AdminPage } from './pages/AdminPage'
 import { SettingsPage } from './pages/SettingsPage'
 import { NotFoundPage } from './pages/NotFoundPage'
 
@@ -42,6 +45,15 @@ function App() {
               <Route path="/payments" element={<PaymentsPage />} />
               <Route path="/deadlines" element={<DeadlinesPage />} />
               <Route path="/notifications" element={<NotificationsPage />} />
+              <Route path="/billing" element={<BillingPage />} />
+              <Route
+                path="/admin"
+                element={
+                  <AdminRoute>
+                    <AdminPage />
+                  </AdminRoute>
+                }
+              />
               <Route path="/settings" element={<SettingsPage />} />
             </Route>
 

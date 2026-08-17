@@ -34,6 +34,7 @@ import { PaymentModal } from '../components/events/PaymentModal'
 import { getEventsForDocument, completeEvent, snoozeEvent } from '../services/eventService'
 import { getPaymentsForDocument, markPaymentPaid } from '../services/paymentService'
 import { setDocumentFolder } from '../services/folderService'
+import { useAuth } from '../hooks/useAuth'
 import { FolderModal } from '../components/documents/FolderModal'
 import { useFolders } from '../hooks/useFolders'
 import { FOLDER_COLOR_STYLES } from '../utils/constants'
@@ -44,6 +45,7 @@ export function DocumentViewerPage() {
   const { id } = useParams<{ id: string }>()
   const navigate = useNavigate()
   const { document, setDocument, loading, error, refresh } = useDocumentProcessing(id)
+  const { entitlements } = useAuth()
 
   const [previewUrl, setPreviewUrl] = useState<string | null>(null)
   const [analysis, setAnalysis] = useState<DocumentAnalysis | null>(null)
@@ -51,6 +53,7 @@ export function DocumentViewerPage() {
   const [deleteOpen, setDeleteOpen] = useState(false)
   const [chatOpen, setChatOpen] = useState(false)
   const [chatQuestion, setChatQuestion] = useState<string | null>(null)
+  const [chatMode, setChatMode] = useState<'explain' | 'chat'>('chat')
   const [translateOpen, setTranslateOpen] = useState(false)
   const [editOpen, setEditOpen] = useState(false)
   const [retrying, setRetrying] = useState(false)
@@ -143,11 +146,13 @@ export function DocumentViewerPage() {
   }
 
   const openExplain = () => {
+    setChatMode('explain')
     setChatQuestion('Explain this document to me in simple terms.')
     setChatOpen(true)
   }
 
   const openAskAi = () => {
+    setChatMode('chat')
     setChatQuestion(null)
     setChatOpen(true)
   }
@@ -346,22 +351,37 @@ export function DocumentViewerPage() {
           {isAnalyzed && (
             <div className="flex flex-wrap gap-2">
               <button
-                onClick={openExplain}
-                className="rounded-lg border border-slate-300 dark:border-slate-600 px-3 py-1.5 text-sm font-medium text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-800"
+                onClick={entitlements.explain ? openExplain : () => navigate('/billing')}
+                title={entitlements.explain ? undefined : 'Included from the Basic plan — click to upgrade'}
+                className={`rounded-lg border px-3 py-1.5 text-sm font-medium ${
+                  entitlements.explain
+                    ? 'border-slate-300 dark:border-slate-600 text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-800'
+                    : 'border-dashed border-slate-300 dark:border-slate-600 text-slate-400 dark:text-slate-500 hover:bg-slate-50 dark:hover:bg-slate-800'
+                }`}
               >
-                Explain
+                Explain{!entitlements.explain && ' 🔒'}
               </button>
               <button
-                onClick={() => setTranslateOpen(true)}
-                className="rounded-lg border border-slate-300 dark:border-slate-600 px-3 py-1.5 text-sm font-medium text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-800"
+                onClick={entitlements.translation ? () => setTranslateOpen(true) : () => navigate('/billing')}
+                title={entitlements.translation ? undefined : 'Included from the Basic plan — click to upgrade'}
+                className={`rounded-lg border px-3 py-1.5 text-sm font-medium ${
+                  entitlements.translation
+                    ? 'border-slate-300 dark:border-slate-600 text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-800'
+                    : 'border-dashed border-slate-300 dark:border-slate-600 text-slate-400 dark:text-slate-500 hover:bg-slate-50 dark:hover:bg-slate-800'
+                }`}
               >
-                Translate
+                Translate{!entitlements.translation && ' 🔒'}
               </button>
               <button
-                onClick={openAskAi}
-                className="rounded-lg border border-slate-300 dark:border-slate-600 px-3 py-1.5 text-sm font-medium text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-800"
+                onClick={entitlements.askAi ? openAskAi : () => navigate('/billing')}
+                title={entitlements.askAi ? undefined : 'Included from the Pro plan — click to upgrade'}
+                className={`rounded-lg border px-3 py-1.5 text-sm font-medium ${
+                  entitlements.askAi
+                    ? 'border-slate-300 dark:border-slate-600 text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-800'
+                    : 'border-dashed border-slate-300 dark:border-slate-600 text-slate-400 dark:text-slate-500 hover:bg-slate-50 dark:hover:bg-slate-800'
+                }`}
               >
-                Ask AI
+                Ask AI{!entitlements.askAi && ' 🔒'}
               </button>
               {analysis && (
                 <button
@@ -492,6 +512,7 @@ export function DocumentViewerPage() {
         open={chatOpen}
         onClose={() => setChatOpen(false)}
         initialQuestion={chatQuestion}
+        mode={chatMode}
       />
 
       <EventModal

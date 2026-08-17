@@ -17,12 +17,15 @@ export interface SendChatMessageResult {
   message: ChatMessage
 }
 
-/** Sends a question to the chat-with-document Edge Function and returns the assistant's reply. */
+/** Sends a question to the chat-with-document Edge Function and returns the assistant's reply.
+ * `mode` distinguishes "Explain" (Basic+) from freeform "Ask AI" (Pro) — they share this same
+ * Edge Function, but the server checks a different entitlement depending on which one this is. */
 export async function sendChatMessage(
   documentId: string,
   message: string,
+  mode: 'explain' | 'chat' = 'chat',
 ): Promise<SendChatMessageResult> {
-  return invokeFunction<SendChatMessageResult>('chat-with-document', { documentId, message })
+  return invokeFunction<SendChatMessageResult>('chat-with-document', { documentId, message, mode })
 }
 
 export async function clearChatHistory(documentId: string): Promise<void> {

@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { useNavigate } from 'react-router-dom'
+import { Link, useNavigate } from 'react-router-dom'
 import { useAuth } from '../hooks/useAuth'
 import { useDocumentProcessing } from '../hooks/useDocumentProcessing'
 import { UploadDropzone } from '../components/documents/UploadDropzone'
@@ -7,7 +7,7 @@ import { ProcessingStatus } from '../components/documents/ProcessingStatus'
 import { DOCUMENT_CATEGORIES, type DocumentCategory } from '../types/document'
 import { uploadDocument, retryUpload } from '../services/uploadService'
 import { getDocument } from '../services/documentService'
-import { friendlyProcessingError, titleCase } from '../utils/formatters'
+import { friendlyProcessingError, isUpgradeError, titleCase } from '../utils/formatters'
 
 interface UploadItem {
   id: string
@@ -30,7 +30,19 @@ function UploadItemRow({
     <div className="flex items-center justify-between gap-3 rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 px-4 py-3">
       <div className="min-w-0 flex-1">
         <p className="truncate text-sm font-medium text-slate-800 dark:text-slate-200">{item.file.name}</p>
-        {item.error && <p className="text-xs text-red-600 dark:text-red-400">{friendlyProcessingError(item.error)}</p>}
+        {item.error && (
+          <p className="text-xs text-red-600 dark:text-red-400">
+            {friendlyProcessingError(item.error)}
+            {isUpgradeError(item.error) && (
+              <>
+                {' '}
+                <Link to="/billing" className="font-medium underline underline-offset-2">
+                  View plans
+                </Link>
+              </>
+            )}
+          </p>
+        )}
       </div>
       {document ? (
         <ProcessingStatus document={document} onRetry={() => onRetry(item)} />
@@ -138,7 +150,19 @@ export function UploadPage() {
               >
                 <div className="min-w-0 flex-1">
                   <p className="truncate text-sm font-medium text-slate-800 dark:text-slate-200">{item.file.name}</p>
-                  {item.error && <p className="text-xs text-red-600 dark:text-red-400">{friendlyProcessingError(item.error)}</p>}
+                  {item.error && (
+                    <p className="text-xs text-red-600 dark:text-red-400">
+                      {friendlyProcessingError(item.error)}
+                      {isUpgradeError(item.error) && (
+                        <>
+                          {' '}
+                          <Link to="/billing" className="font-medium underline underline-offset-2">
+                            View plans
+                          </Link>
+                        </>
+                      )}
+                    </p>
+                  )}
                 </div>
                 {item.failedBeforeUpload ? (
                   <button

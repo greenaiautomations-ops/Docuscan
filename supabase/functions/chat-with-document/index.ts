@@ -6,6 +6,7 @@
 import { handleCors, jsonResponse } from '../_shared/cors.ts'
 import { getUserClient, requireUser, HttpError } from '../_shared/supabaseClient.ts'
 import { answerQuestion, type ChatTurn } from '../_shared/geminiProvider.ts'
+import { getCallerEntitlements } from '../_shared/entitlements.ts'
 
 Deno.serve(async (req: Request) => {
   const cors = handleCors(req)
@@ -22,6 +23,11 @@ Deno.serve(async (req: Request) => {
     const body = await req.json().catch(() => ({}))
     const documentId: string = body.documentId
     const message: string = (body.message ?? '').trim()
+    // "Explain" (a canned question from the viewer) and open-ended "Ask AI"
+    // hit this same endpoint but sit on different plan tiers — Basic
+    // includes Explain, only Pro includes free-form Ask AI — so the caller
+    // tells us which one this is.
+    const mode: 'explain' | 'chat' = body.mode === 'explain' ? 'explain' : 'chat'
 
     if (!documentId || typeof documentId !== 'string') {
       throw new HttpError(400, 'documentId is required.')
@@ -31,6 +37,17 @@ Deno.serve(async (req: Request) => {
     }
     if (message.length > 2000) {
       throw new HttpError(400, 'message is too long (max 2000 characters).')
+    }
+
+    const entitlements = await getCallerEntitlements(supabase, user.id)
+    const allowed = mode === 'explain' ? entitlements.explain : entitlements.askAi
+    if (!allowed) {
+      throw new HttpError(
+        403,
+        mode === 'explain'
+          ? 'FEATURE_LOCKED: Explain is included from the Basic plan. Upgrade to unlock it.'
+          : 'FEATURE_LOCKED: Ask AI is included from the Pro plan. Upgrade to unlock it.',
+      )
     }
 
     const { data: document, error: docError } = await supabase

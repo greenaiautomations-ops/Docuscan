@@ -13,8 +13,11 @@ import type {
   ProcessingStage,
   RecurrenceInterval,
   ReminderType,
+  SubscriptionStatus,
+  SubscriptionTier,
   TranslationLanguage,
   TranslationScope,
+  UserRole,
 } from './database.types'
 
 export type Document = Database['public']['Tables']['documents']['Row']
@@ -54,6 +57,9 @@ export type {
   RecurrenceInterval,
   ReminderType,
   FolderColor,
+  UserRole,
+  SubscriptionTier,
+  SubscriptionStatus,
 }
 
 export type Event = Database['public']['Tables']['events']['Row']

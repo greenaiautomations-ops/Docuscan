@@ -1,6 +1,7 @@
 import { NavLink } from 'react-router-dom'
-import { NAV_ITEMS, APP_NAME } from '../../utils/constants'
+import { NAV_ITEMS, ADMIN_NAV_ITEM, APP_NAME } from '../../utils/constants'
 import { useUnreadNotificationCount } from '../../hooks/useUnreadNotificationCount'
+import { useAuth } from '../../hooks/useAuth'
 
 interface SidebarProps {
   open: boolean
@@ -9,6 +10,8 @@ interface SidebarProps {
 
 export function Sidebar({ open, onNavigate }: SidebarProps) {
   const { count } = useUnreadNotificationCount()
+  const { profile } = useAuth()
+  const items = profile?.role === 'admin' ? [...NAV_ITEMS, ADMIN_NAV_ITEM] : NAV_ITEMS
 
   return (
     <aside
@@ -23,7 +26,7 @@ export function Sidebar({ open, onNavigate }: SidebarProps) {
         <span className="text-lg font-semibold text-slate-900 dark:text-slate-100">{APP_NAME}</span>
       </div>
       <nav className="flex flex-col gap-1 p-3">
-        {NAV_ITEMS.map((item) => (
+        {items.map((item) => (
           <NavLink
             key={item.path}
             to={item.path}

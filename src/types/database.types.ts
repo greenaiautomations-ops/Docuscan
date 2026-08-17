@@ -43,6 +43,11 @@ export type RecurrenceInterval = 'weekly' | 'monthly' | 'quarterly' | 'yearly'
 export type ReminderType = 'seven_days' | 'three_days' | 'one_day' | 'same_day' | 'custom'
 export type NotificationEventType = 'reminder' | string
 
+// ---- Subscriptions ----
+export type UserRole = 'user' | 'admin'
+export type SubscriptionTier = 'free' | 'basic' | 'pro' | 'enterprise'
+export type SubscriptionStatus = 'active' | 'trialing' | 'past_due' | 'canceled' | 'incomplete'
+
 export interface Database {
   public: {
     Tables: {
@@ -51,8 +56,18 @@ export interface Database {
           id: string
           user_id: string
           name: string | null
+          email: string | null
           preferred_language: string
           timezone: string
+          role: UserRole
+          subscription_tier: SubscriptionTier
+          subscription_status: SubscriptionStatus
+          stripe_customer_id: string | null
+          stripe_subscription_id: string | null
+          subscription_current_period_end: string | null
+          is_comp_access: boolean
+          comp_access_granted_by: string | null
+          comp_access_granted_at: string | null
           created_at: string
           updated_at: string
         }
@@ -60,8 +75,18 @@ export interface Database {
           id?: string
           user_id: string
           name?: string | null
+          email?: string | null
           preferred_language?: string
           timezone?: string
+          role?: UserRole
+          subscription_tier?: SubscriptionTier
+          subscription_status?: SubscriptionStatus
+          stripe_customer_id?: string | null
+          stripe_subscription_id?: string | null
+          subscription_current_period_end?: string | null
+          is_comp_access?: boolean
+          comp_access_granted_by?: string | null
+          comp_access_granted_at?: string | null
           created_at?: string
           updated_at?: string
         }

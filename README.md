@@ -181,11 +181,20 @@ supabase functions deploy process-document
 supabase functions deploy chat-with-document
 supabase functions deploy translate-document
 supabase functions deploy process-reminders
+supabase functions deploy create-checkout-session
+supabase functions deploy create-portal-session
+supabase functions deploy stripe-webhook
 
 supabase secrets set GEMINI_API_KEY=AQ....   # or AIza... for older keys
 # optional override — the default is already gemini-flash-lite-latest:
 supabase secrets set GEMINI_MODEL=gemini-flash-lite-latest
 ```
+
+`create-checkout-session`, `create-portal-session`, and `stripe-webhook`
+power the subscription/billing model (see the new **"6. Set up Stripe"**
+section below) — they need their own secrets (`STRIPE_SECRET_KEY`,
+`STRIPE_WEBHOOK_SECRET`, `STRIPE_PRICE_BASIC`, `STRIPE_PRICE_PRO`) set
+before checkout or the billing portal will work.
 
 **About the model choice / "429 quota exceeded" errors:** Docuscan defaults
 to `gemini-flash-lite-latest`, not the plain `-latest` Flash alias. Google
@@ -211,7 +220,99 @@ the `role: 'service_role'` claim in its own JWT payload (defense-in-depth
 beyond the platform gateway's default signature check) before touching the
 database — so a leaked anon key can never trigger it.
 
-## 6. Set up scheduled reminders (Phase 3)
+## 6. Set up Stripe (subscriptions & billing)
+
+Docuscan's Free/Basic/Pro tiers are enforced server-side and billed through
+Stripe Checkout + the Billing Portal — no card data ever touches Docuscan's
+own servers.
+
+**Tiers:**
+
+| Tier | Price | Documents | Translate | Explain | Ask AI |
+|---|---|---|---|---|---|
+| Free | €0 | 10 | ❌ | ❌ | ❌ |
+| Basic | €5/mo | 100 | ✅ | ✅ | ❌ |
+| Pro | €14.99/mo | 1,000 | ✅ | ✅ | ✅ |
+| Enterprise | Contact us | Unlimited | ✅ | ✅ | ✅ |
+
+**a. Create a Stripe account and product catalog**
+
+1. Sign up at [stripe.com](https://stripe.com) (test mode is fine to start —
+   toggle "Test mode" in the dashboard).
+2. Go to **Product catalog** and create two products with **recurring
+   monthly** prices:
+   - "Docuscan Basic" — €5.00/month
+   - "Docuscan Pro" — €14.99/month
+3. Copy each price's **API ID** (starts with `price_...`, *not* the product
+   id which starts with `prod_...`) — you'll need both below. Enterprise has
+   no Stripe price; it's sales-assisted (the pricing page links a `mailto:`
+   for it).
+
+**b. Get your API key**
+
+Dashboard -> **Developers -> API keys** -> copy the **Secret key**
+(`sk_test_...` while testing, `sk_live_...` once you're ready to charge real
+cards).
+
+**c. Set the Edge Function secrets**
+
+```bash
+supabase secrets set STRIPE_SECRET_KEY=sk_test_...
+supabase secrets set STRIPE_PRICE_BASIC=price_...   # the Basic price's API ID
+supabase secrets set STRIPE_PRICE_PRO=price_...     # the Pro price's API ID
+```
+
+**d. Create the webhook and set its secret**
+
+1. Dashboard -> **Developers -> Webhooks -> Add endpoint**.
+2. Endpoint URL: `https://<project-ref>.functions.supabase.co/stripe-webhook`
+3. Listen for these events: `customer.subscription.created`,
+   `customer.subscription.updated`, `customer.subscription.deleted`,
+   `invoice.payment_failed`.
+4. After creating it, copy the endpoint's **Signing secret**
+   (`whsec_...`) and set it:
+
+```bash
+supabase secrets set STRIPE_WEBHOOK_SECRET=whsec_...
+```
+
+The webhook is the *only* place subscription state gets written to
+`profiles` — `create-checkout-session` and `create-portal-session` only
+ever read, so a browser can never set its own tier for free. Until the
+webhook secret is configured, Checkout will still open but a completed
+payment won't actually upgrade the account.
+
+**e. Enable the Billing Portal** (used by the "Manage subscription" button)
+
+Dashboard -> **Settings -> Billing -> Customer portal** -> Activate. The
+defaults (cancel, switch plan, update payment method, view invoices) are
+fine as-is.
+
+**f. Make yourself (or anyone) an admin**
+
+Migration `0011_subscriptions.sql` automatically grants the `admin` role to
+whichever account signs up with the email `zoraiz1002@gmail.com`. Admins
+get full access to every feature at no cost, see the **Admin** nav item,
+and can grant up to 5 other accounts free "comp access" (also full/Pro-level
+access, no card required — handy for testers) from **Admin -> Grant**. To
+make a *different* email an admin later, run in the Supabase SQL editor:
+
+```sql
+alter table public.profiles disable trigger check_profile_privileged_update;
+update public.profiles set role = 'admin' where user_id = (select id from auth.users where email = 'someone@example.com');
+alter table public.profiles enable trigger check_profile_privileged_update;
+```
+
+**g. Test it**
+
+Use [Stripe's test cards](https://docs.stripe.com/testing) (e.g.
+`4242 4242 4242 4242`, any future expiry, any CVC) against a test-mode key.
+Subscribe from **Billing**, confirm the webhook fires (Dashboard ->
+Developers -> Webhooks -> your endpoint -> recent deliveries, or
+`supabase functions logs stripe-webhook`), and confirm the account's plan
+updates within a few seconds.
+
+## 7. Set up scheduled reminders (Phase 3)
 
 `process-reminders` needs to run periodically (every 15–60 minutes is
 plenty) so reminders and notifications work without anyone having the app
@@ -249,7 +350,7 @@ This step is project-specific (it needs your project ref and service role
 key) and is intentionally **not** included in a migration file, so it's
 never committed to git.
 
-## 7. Run locally
+## 8. Run locally
 
 ```bash
 npm run dev
@@ -387,6 +488,27 @@ in-app toggle can override the system preference; `ThemeContext`/`useTheme`
 also still track and react to OS-level changes when "System" is selected.
 Native form controls (inputs, checkboxes, scrollbars) pick up a matching
 dark appearance via the CSS `color-scheme` property.
+
+**Subscriptions & billing:** four tiers — Free (10 documents, no
+Translate/Explain/Ask AI), Basic (€5/mo, 100 documents, Translate + Explain,
+no Ask AI), Pro (€14.99/mo, 1,000 documents, everything), and Enterprise
+(unlimited, everything, sales-assisted — "Contact us", no self-serve
+price). Billing runs on Stripe Checkout (hosted, subscription mode) and the
+Stripe Billing Portal (hosted plan management/cancellation/invoices); a
+signature-verified webhook (`stripe-webhook`) is the only path that ever
+writes subscription state, so a browser can never grant itself a paid tier.
+Enforcement is server-side, not just UI: a Postgres trigger blocks uploads
+past a tier's document limit (`DOCUMENT_LIMIT_REACHED` — the UI catches
+this specifically and links to Billing instead of showing a raw error),
+and the `chat-with-document`/`translate-document` Edge Functions check
+entitlements before running Explain/Translate/Ask AI
+(`FEATURE_LOCKED`, same treatment). Subscription/role columns on `profiles`
+are protected by a trigger so only an admin or the billing webhook can ever
+change them — a user updating their own profile can't self-grant access.
+Admins (role `admin`) get full access at no cost and can grant up to 5
+other accounts free "comp access" (also full/Pro-level, capped
+server-side) from the Admin page, for testing; everyone else subscribes
+through Billing. See README "6. Set up Stripe" for setup.
 
 ## What's intentionally NOT in Phase 3
 

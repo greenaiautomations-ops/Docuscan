@@ -6,6 +6,7 @@
 import { handleCors, jsonResponse } from '../_shared/cors.ts'
 import { getUserClient, requireUser, HttpError } from '../_shared/supabaseClient.ts'
 import { translateText } from '../_shared/geminiProvider.ts'
+import { getCallerEntitlements } from '../_shared/entitlements.ts'
 
 const SUPPORTED_LANGUAGES = ['en', 'de', 'es', 'zh', 'ru']
 
@@ -19,7 +20,12 @@ Deno.serve(async (req: Request) => {
 
   try {
     const supabase = getUserClient(req)
-    await requireUser(supabase)
+    const user = await requireUser(supabase)
+
+    const entitlements = await getCallerEntitlements(supabase, user.id)
+    if (!entitlements.translation) {
+      throw new HttpError(403, 'FEATURE_LOCKED: Translation is included from the Basic plan. Upgrade to unlock it.')
+    }
 
     const body = await req.json().catch(() => ({}))
     const documentId: string = body.documentId

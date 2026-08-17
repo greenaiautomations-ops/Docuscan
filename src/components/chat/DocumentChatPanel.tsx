@@ -1,6 +1,8 @@
 import { useEffect, useRef, useState } from 'react'
+import { Link } from 'react-router-dom'
 import { listChatMessages, sendChatMessage } from '../../services/chatService'
 import { LoadingSpinner } from '../common/LoadingSpinner'
+import { friendlyProcessingError, isUpgradeError } from '../../utils/formatters'
 import type { ChatMessage } from '../../types/document'
 
 interface DocumentChatPanelProps {
@@ -8,9 +10,11 @@ interface DocumentChatPanelProps {
   open: boolean
   onClose: () => void
   initialQuestion?: string | null
+  /** 'explain' (Basic+) vs freeform 'chat'/Ask AI (Pro) — they share this panel but the server checks a different entitlement for each. */
+  mode?: 'explain' | 'chat'
 }
 
-export function DocumentChatPanel({ documentId, open, onClose, initialQuestion }: DocumentChatPanelProps) {
+export function DocumentChatPanel({ documentId, open, onClose, initialQuestion, mode = 'chat' }: DocumentChatPanelProps) {
   const [messages, setMessages] = useState<ChatMessage[]>([])
   const [loading, setLoading] = useState(true)
   const [sending, setSending] = useState(false)
@@ -55,7 +59,7 @@ export function DocumentChatPanel({ documentId, open, onClose, initialQuestion }
       { id: `optimistic-${Date.now()}`, user_id: '', document_id: documentId, role: 'user', content: question, created_at: new Date().toISOString() },
     ])
     try {
-      await sendChatMessage(documentId, question)
+      await sendChatMessage(documentId, question, mode)
       // Refetch so both the user turn and the assistant reply have real ids.
       const fresh = await listChatMessages(documentId)
       setMessages(fresh)
@@ -104,7 +108,19 @@ export function DocumentChatPanel({ documentId, open, onClose, initialQuestion }
             {sending && <div className="mr-auto text-xs text-slate-400 dark:text-slate-500">Thinking…</div>}
           </div>
         )}
-        {error && <p className="mt-2 text-xs text-red-600 dark:text-red-400">{error}</p>}
+        {error && (
+          <p className="mt-2 text-xs text-red-600 dark:text-red-400">
+            {friendlyProcessingError(error)}
+            {isUpgradeError(error) && (
+              <>
+                {' '}
+                <Link to="/billing" className="font-medium underline underline-offset-2" onClick={onClose}>
+                  View plans
+                </Link>
+              </>
+            )}
+          </p>
+        )}
       </div>
 
       <form

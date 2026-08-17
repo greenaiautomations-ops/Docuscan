@@ -9,8 +9,12 @@ export const NAV_ITEMS = [
   { label: 'Deadlines', path: '/deadlines' },
   { label: 'Payments', path: '/payments' },
   { label: 'Notifications', path: '/notifications' },
+  { label: 'Billing', path: '/billing' },
   { label: 'Settings', path: '/settings' },
 ] as const
+
+/** Shown only to admins (role === 'admin'), appended after the main nav. */
+export const ADMIN_NAV_ITEM = { label: 'Admin', path: '/admin' } as const
 
 // ---------------------------------------------------------------------
 // Phase 3 — events, payments, priorities

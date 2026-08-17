@@ -1,7 +1,9 @@
 import { useState } from 'react'
+import { Link } from 'react-router-dom'
 import { Modal } from '../common/Modal'
 import { translateDocument } from '../../services/translationService'
 import { TRANSLATION_LANGUAGES, type TranslationLanguage, type TranslationScope } from '../../types/document'
+import { friendlyProcessingError, isUpgradeError } from '../../utils/formatters'
 
 interface TranslatePanelProps {
   documentId: string
@@ -83,7 +85,19 @@ export function TranslatePanel({ documentId, open, onClose }: TranslatePanelProp
           />
         )}
 
-        {error && <p className="text-sm text-red-600 dark:text-red-400">{error}</p>}
+        {error && (
+          <p className="text-sm text-red-600 dark:text-red-400">
+            {friendlyProcessingError(error)}
+            {isUpgradeError(error) && (
+              <>
+                {' '}
+                <Link to="/billing" className="font-medium underline underline-offset-2" onClick={onClose}>
+                  View plans
+                </Link>
+              </>
+            )}
+          </p>
+        )}
 
         {result && (
           <div className="rounded-lg border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 p-3 text-sm text-slate-700 dark:text-slate-300">

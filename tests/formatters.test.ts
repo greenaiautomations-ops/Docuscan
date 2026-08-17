@@ -89,4 +89,31 @@ describe('friendlyProcessingError', () => {
     expect(friendlyProcessingError(null)).toBe('Processing failed.')
     expect(friendlyProcessingError(undefined)).toBe('Processing failed.')
   })
+
+  it('strips the DOCUMENT_LIMIT_REACHED prefix into a clean message', async () => {
+    const { friendlyProcessingError } = await import('../src/utils/formatters')
+    const raw = 'DOCUMENT_LIMIT_REACHED: Your plan allows 10 documents. Upgrade to upload more.'
+    const friendly = friendlyProcessingError(raw)
+    expect(friendly).not.toContain('DOCUMENT_LIMIT_REACHED')
+    expect(friendly).toContain('Upgrade to upload more.')
+  })
+
+  it('strips the FEATURE_LOCKED prefix into a clean message', async () => {
+    const { friendlyProcessingError } = await import('../src/utils/formatters')
+    const raw = 'FEATURE_LOCKED: Ask AI is included from the Pro plan. Upgrade to unlock it.'
+    const friendly = friendlyProcessingError(raw)
+    expect(friendly).not.toContain('FEATURE_LOCKED')
+    expect(friendly).toContain('Upgrade to unlock it.')
+  })
+})
+
+describe('isUpgradeError', () => {
+  it('detects DOCUMENT_LIMIT_REACHED and FEATURE_LOCKED errors', async () => {
+    const { isUpgradeError } = await import('../src/utils/formatters')
+    expect(isUpgradeError('DOCUMENT_LIMIT_REACHED: Your plan allows 10 documents.')).toBe(true)
+    expect(isUpgradeError('FEATURE_LOCKED: Explain is included from the Basic plan.')).toBe(true)
+    expect(isUpgradeError('Some other error')).toBe(false)
+    expect(isUpgradeError(null)).toBe(false)
+    expect(isUpgradeError(undefined)).toBe(false)
+  })
 })
