@@ -220,32 +220,48 @@ export function HomePage() {
           <div className="mt-10 grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
             {TIER_ORDER.map((tier) => {
               const def = TIERS[tier]
+              const label = t(`billing.tiers.${tier}.label`)
+              const tagline = t(`billing.tiers.${tier}.tagline`)
+              const features = t(`billing.tiers.${tier}.features`, { returnObjects: true }) as string[]
               return (
                 <div
                   key={tier}
-                  className={`flex flex-col gap-3 rounded-xl border p-5 ${
+                  className={`flex flex-col gap-4 rounded-xl border p-5 ${
                     def.highlight
                       ? 'border-indigo-300 dark:border-indigo-500/50 bg-indigo-50/50 dark:bg-indigo-500/5 ring-1 ring-indigo-200 dark:ring-indigo-500/30'
                       : 'border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900'
                   }`}
                 >
-                  <h3 className="text-sm font-semibold text-slate-900 dark:text-slate-100">
-                    {t(`billing.tiers.${tier}.label`)}
-                  </h3>
-                  <p className="text-xl font-bold text-slate-900 dark:text-slate-100">{formatTierPrice(def, t)}</p>
-                  <p className="text-xs text-slate-500 dark:text-slate-400">
-                    {def.documentLimit === null ? '∞' : def.documentLimit} {t('home.pricing.documentsLabel')}
-                  </p>
-                  <Link
-                    to={user ? '/billing' : '/signup'}
-                    className={`mt-auto rounded-lg px-3 py-2 text-center text-xs font-semibold ${
-                      tier === 'enterprise'
-                        ? 'border border-slate-300 dark:border-slate-600 text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-800'
-                        : 'bg-indigo-600 text-white hover:bg-indigo-700'
-                    }`}
-                  >
-                    {tier === 'enterprise' ? t('home.pricing.contactCta') : t('home.pricing.cta')}
-                  </Link>
+                  <div>
+                    <h3 className="text-lg font-semibold text-slate-900 dark:text-slate-100">{label}</h3>
+                    <p className="mt-1 text-2xl font-bold text-slate-900 dark:text-slate-100">{formatTierPrice(def, t)}</p>
+                    <p className="mt-1 text-sm text-slate-500 dark:text-slate-400">{tagline}</p>
+                  </div>
+
+                  <ul className="flex flex-1 flex-col gap-2 text-sm text-slate-600 dark:text-slate-400">
+                    {features.map((f) => (
+                      <li key={f} className="flex items-start gap-2">
+                        <span className="mt-0.5 text-emerald-600 dark:text-emerald-400">✓</span>
+                        <span>{f}</span>
+                      </li>
+                    ))}
+                  </ul>
+
+                  {tier === 'enterprise' ? (
+                    <Link
+                      to={user ? '/billing' : '/signup'}
+                      className="rounded-lg border border-slate-300 dark:border-slate-600 px-4 py-2 text-center text-sm font-semibold text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-800"
+                    >
+                      {t('home.pricing.contactCta')}
+                    </Link>
+                  ) : (
+                    <Link
+                      to={user ? '/billing' : '/signup'}
+                      className="rounded-lg bg-indigo-600 px-4 py-2 text-center text-sm font-semibold text-white hover:bg-indigo-700"
+                    >
+                      {t('home.pricing.cta')}
+                    </Link>
+                  )}
                 </div>
               )
             })}
