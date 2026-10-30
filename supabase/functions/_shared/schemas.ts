@@ -109,7 +109,7 @@ export const SummaryResultSchema = z.object({
 export type SummaryResult = z.infer<typeof SummaryResultSchema>
 
 /** Safely parses a possibly-fenced JSON string against a Zod schema. */
-export function parseJsonWithSchema<T>(raw: string, schema: z.ZodType<T>): T {
+export function parseJsonWithSchema<T>(raw: string, schema: z.ZodType<T, z.ZodTypeDef, unknown>): T {
   const cleaned = raw
     .trim()
     .replace(/^```(?:json)?/i, '')

@@ -56,11 +56,14 @@ export function HomePage() {
   return (
     <div className="min-h-screen bg-white dark:bg-slate-950">
       <header className="sticky top-0 z-30 border-b border-slate-200 dark:border-slate-800 bg-white/90 dark:bg-slate-950/90 backdrop-blur">
-        <div className="mx-auto flex max-w-6xl items-center justify-between px-4 py-3 sm:px-6">
-          <Logo size={32} withWordmark />
-          <div className="flex items-center gap-2 sm:gap-3">
-            <LanguageToggle />
-            <ThemeToggle />
+        <div className="mx-auto flex max-w-6xl flex-wrap items-center justify-between gap-2 px-3 py-3 sm:px-6">
+          <Logo size={32} withWordmark className="max-[360px]:[&>span]:text-sm" />
+          <div className="contents">
+            <div className="ml-auto flex items-center gap-2">
+              <LanguageToggle />
+              <ThemeToggle />
+            </div>
+            <div className="flex w-full flex-wrap items-center justify-end gap-2 sm:w-auto">
             {user ? (
               <Link
                 to="/dashboard"
@@ -72,7 +75,7 @@ export function HomePage() {
               <>
                 <Link
                   to="/login"
-                  className="hidden rounded-lg px-3.5 py-2 text-sm font-medium text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 sm:inline-block"
+                  className="inline-block rounded-lg px-3.5 py-2 text-sm font-medium text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800"
                 >
                   {t('home.nav.signIn')}
                 </Link>
@@ -84,6 +87,7 @@ export function HomePage() {
                 </Link>
               </>
             )}
+            </div>
           </div>
         </div>
       </header>
@@ -248,12 +252,12 @@ export function HomePage() {
                   </ul>
 
                   {tier === 'enterprise' ? (
-                    <Link
-                      to={user ? '/billing' : '/signup'}
+                    <a
+                      href="mailto:zoraiz1002@gmail.com?subject=DocVault%20Enterprise"
                       className="rounded-lg border border-slate-300 dark:border-slate-600 px-4 py-2 text-center text-sm font-semibold text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-800"
                     >
                       {t('home.pricing.contactCta')}
-                    </Link>
+                    </a>
                   ) : (
                     <Link
                       to={user ? '/billing' : '/signup'}
@@ -269,6 +273,7 @@ export function HomePage() {
         </div>
       </section>
 
+<p className="mx-auto max-w-6xl px-4 pb-8 text-sm text-slate-500 dark:text-slate-400">{t('billing.usageNote')}</p>
       {/* Final CTA */}
       {!user && (
         <section className="border-t border-slate-100 dark:border-slate-800 bg-indigo-600 py-16">

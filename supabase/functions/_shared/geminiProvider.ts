@@ -7,7 +7,7 @@
 // via Google AI Studio keys) and support native PDF/image understanding
 // plus JSON-mode structured output, which is what this file uses.
 
-import { fetchWithRetry } from './httpRetry.ts'
+import { reserveCredits, settleCredits } from './aiBudget.ts'
 import {
   ClassificationResultSchema,
   ExtractedDataSchema,
@@ -21,12 +21,8 @@ import {
 } from './schemas.ts'
 
 const GEMINI_API_BASE = 'https://generativelanguage.googleapis.com/v1beta/models'
-// Flash-Lite, not the full Flash alias: Google's free tier for the full Flash
-// model family was cut hard in late 2025 (as low as ~20 requests/day in some
-// configurations), while Flash-Lite keeps a much higher free daily quota
-// (historically ~1,000/day). Override with GEMINI_MODEL if you're on a paid
-// plan and want the full model's higher quality.
-const DEFAULT_MODEL = 'gemini-flash-lite-latest'
+// Pin the priced model; moving aliases can silently change unit economics.
+const DEFAULT_MODEL = 'gemini-3.1-flash-lite'
 
 function getApiKey(): string {
   const key = Deno.env.get('GEMINI_API_KEY')
@@ -40,7 +36,9 @@ function getApiKey(): string {
 }
 
 function getModel(): string {
-  return Deno.env.get('GEMINI_MODEL') || DEFAULT_MODEL
+  const model = Deno.env.get('GEMINI_MODEL') || DEFAULT_MODEL
+  if (model !== DEFAULT_MODEL) throw new Error('GEMINI_MODEL must be gemini-3.1-flash-lite; reprice AI credits before changing models.')
+  return model
 }
 
 type GeminiPart =
@@ -58,21 +56,28 @@ interface GeminiCallOptions {
 async function callGemini({ system, parts, maxTokens = 4096, jsonMode = false }: GeminiCallOptions): Promise<string> {
   const url = `${GEMINI_API_BASE}/${getModel()}:generateContent`
 
-  const response = await fetchWithRetry(url, {
-    method: 'POST',
-    headers: {
-      'content-type': 'application/json',
-      'x-goog-api-key': getApiKey(),
+  const request = {
+    contents: [{ role: 'user', parts }],
+    systemInstruction: { parts: [{ text: system }] },
+    generationConfig: {
+      maxOutputTokens: maxTokens,
+      ...(jsonMode ? { responseMimeType: 'application/json' } : {}),
     },
-    body: JSON.stringify({
-      contents: [{ role: 'user', parts }],
-      systemInstruction: { parts: [{ text: system }] },
-      generationConfig: {
-        maxOutputTokens: maxTokens,
-        ...(jsonMode ? { responseMimeType: 'application/json' } : {}),
-      },
-    }),
+  }
+  const headers = { 'content-type': 'application/json', 'x-goog-api-key': getApiKey() }
+  // Count multimodal input before generating; file size is not a token count.
+  const counted = await fetch(`${GEMINI_API_BASE}/${getModel()}:countTokens`, {
+    method: 'POST', headers,
+    body: JSON.stringify({ generateContentRequest: { model: `models/${getModel()}`, ...request } }),
   })
+  if (!counted.ok) throw new Error('Could not estimate AI usage. Please retry.')
+  const { totalTokens } = await counted.json()
+  if (!Number.isSafeInteger(totalTokens) || totalTokens < 0) throw new Error('Invalid AI token estimate.')
+  const reserved = totalTokens + 6 * maxTokens
+  const reservation = await reserveCredits(reserved)
+  // A failed/ambiguous call keeps its reservation. Explicit retries are metered
+  // separately, including JSON repair calls, so concurrent requests cannot overspend.
+  const response = await fetch(url, { method: 'POST', headers, body: JSON.stringify(request) })
 
   if (!response.ok) {
     const body = await response.text().catch(() => '')
@@ -80,6 +85,11 @@ async function callGemini({ system, parts, maxTokens = 4096, jsonMode = false }:
   }
 
   const data = await response.json()
+  const usage = data.usageMetadata
+  if (Number.isSafeInteger(usage?.promptTokenCount) && Number.isSafeInteger(usage?.candidatesTokenCount)) {
+    const actual = usage.promptTokenCount + 6 * (usage.candidatesTokenCount + (usage.thoughtsTokenCount ?? 0))
+    if (Number.isSafeInteger(actual) && actual >= 0 && actual <= reserved) await settleCredits(reservation, actual)
+  }
   const candidate = data.candidates?.[0]
   if (!candidate) {
     const blockReason = data.promptFeedback?.blockReason

@@ -136,3 +136,5 @@ export function formatTierPrice(tier: TierDefinition, t: (key: string) => string
   if (tier.priceEuros === 0) return t('billing.free')
   return `€${tier.priceEuros}${t('billing.perMonth')}`
 }
+
+export const AI_CREDIT_LIMITS: Record<Tier, number> = { free: 1_000_000, basic: 4_000_000, pro: 16_000_000, enterprise: 64_000_000 }

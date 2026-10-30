@@ -1,12 +1,12 @@
 import { useState, type FormEvent } from 'react'
-import { Link, useLocation, useNavigate } from 'react-router-dom'
+import { Link, Navigate, useLocation, useNavigate } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
 import { useAuth } from '../../hooks/useAuth'
 import { isValidEmail } from '../../utils/validation'
 import { Logo } from '../../components/common/Logo'
 
 export function LoginPage() {
-  const { signIn } = useAuth()
+  const { signIn, user } = useAuth()
   const navigate = useNavigate()
   const location = useLocation()
   const { t } = useTranslation()
@@ -41,14 +41,17 @@ export function LoginPage() {
     }
   }
 
+  if (user) return <Navigate to={from} replace />
+
   return (
-    <div className="flex min-h-screen items-center justify-center bg-slate-50 dark:bg-slate-800 px-4">
-      <div className="w-full max-w-sm rounded-2xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 p-8 shadow-sm">
+    <div className="flex min-h-screen items-center justify-center bg-slate-50 dark:bg-slate-800 px-4 py-8">
+      <div className="w-full max-w-sm rounded-2xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 p-5 sm:p-8 shadow-sm">
         <Link to="/" className="inline-block">
           <Logo size={36} withWordmark />
         </Link>
         <p className="mt-4 text-sm text-slate-500 dark:text-slate-400">{t('auth.login.subtitle')}</p>
 
+        {sessionStorage.getItem('docvault:session-expired') && <p role="status" className="mt-4 text-sm text-amber-700 dark:text-amber-300">{t('auth.login.sessionExpired')}</p>}
         <form onSubmit={handleSubmit} className="mt-6 flex flex-col gap-4">
           <div>
             <label htmlFor="email" className="mb-1 block text-sm font-medium text-slate-700 dark:text-slate-300">

@@ -56,3 +56,11 @@ export async function setCompAccess(userId: string, enabled: boolean): Promise<P
   if (error) throw error
   return data
 }
+
+export async function getMonthlyAiUsage(userId: string): Promise<number> {
+  const month = new Date().toISOString().slice(0, 7) + '-01'
+  const { data, error } = await supabase.from('ai_monthly_usage').select('credits')
+    .eq('user_id', userId).eq('month', month).maybeSingle()
+  if (error) throw error
+  return data?.credits ?? 0
+}

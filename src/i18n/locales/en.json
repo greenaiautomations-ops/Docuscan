@@ -51,7 +51,8 @@
   "topbar": {
     "account": "Account",
     "openMenu": "Open menu",
-    "signOut": "Sign out"
+    "signOut": "Sign out",
+    "signOutError": "Could not sign out. Please try again."
   },
   "home": {
     "nav": {
@@ -167,7 +168,8 @@
           "Up to 10 documents",
           "OCR, classification & extraction",
           "AI summary",
-          "Calendar, deadlines & payments"
+          "Calendar, deadlines & payments",
+          "1 million OCR/AI credits per calendar month"
         ]
       },
       "basic": {
@@ -178,7 +180,8 @@
           "Everything in Free",
           "Explain in plain language",
           "Translate documents",
-          "Ask AI not included"
+          "Ask AI not included",
+          "4 million OCR/AI credits per calendar month"
         ]
       },
       "pro": {
@@ -188,7 +191,8 @@
           "Up to 1,000 documents",
           "Everything in Basic",
           "Ask AI — chat with any document",
-          "Priority support"
+          "Priority support",
+          "16 million OCR/AI credits per calendar month"
         ]
       },
       "enterprise": {
@@ -198,10 +202,14 @@
           "Unlimited documents",
           "Everything in Pro",
           "Dedicated onboarding",
-          "Custom agreement & invoicing"
+          "Custom agreement & invoicing",
+          "64 million OCR/AI credits per calendar month"
         ]
       }
-    }
+    },
+    "usageNote": "Storage limits count saved documents, not monthly uploads. OCR, summaries, translation and chat share the monthly AI allowance, which resets on the 1st (UTC). Input tokens use 1 credit; output and thinking tokens use 6. Requests reserve their maximum output first; unused credits return after a successful response. Failed attempts may consume credits. No automatic overage charges.",
+    "usage": "OCR/AI credits used this month: {{used}} / {{total}}",
+    "usageUnavailable": "Current AI usage is unavailable. Your monthly allowance still applies."
   },
   "billingPage": {
     "title": "Billing & plans",
@@ -247,7 +255,8 @@
         "invalidEmail": "Enter a valid email address.",
         "emptyPassword": "Enter your password.",
         "generic": "Could not sign in."
-      }
+      },
+      "sessionExpired": "You were signed out after 10 minutes of inactivity. Please sign in again."
     },
     "signup": {
       "subtitle": "Create your account",

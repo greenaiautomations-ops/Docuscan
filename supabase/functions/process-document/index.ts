@@ -1,3 +1,4 @@
+import { withAiBudget } from '../_shared/aiBudget.ts'
 // Supabase Edge Function: process-document
 // Pipeline: download file -> OCR -> language detection -> classification ->
 // structured extraction -> summary -> embeddings (best-effort) -> search index.
@@ -48,7 +49,7 @@ Deno.serve(async (req: Request) => {
     if (!document) throw new HttpError(404, 'Document not found.')
 
     try {
-      await runPipeline(supabase, document)
+      await withAiBudget(user.id, () => runPipeline(supabase, document))
       return jsonResponse({ success: true, documentId, status: 'completed' })
     } catch (pipelineError) {
       const message =
@@ -66,7 +67,7 @@ Deno.serve(async (req: Request) => {
         document_id: documentId,
       })
 
-      return jsonResponse({ success: false, error: message }, 500)
+      return jsonResponse({ success: false, error: message }, pipelineError instanceof HttpError ? pipelineError.status : 500)
     }
   } catch (err) {
     if (err instanceof HttpError) {

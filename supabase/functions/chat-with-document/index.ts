@@ -1,3 +1,4 @@
+import { withAiBudget } from '../_shared/aiBudget.ts'
 // Supabase Edge Function: chat-with-document
 // Answers a question about ONE document using only that document's OCR text
 // and structured analysis as context. Persists both turns to
@@ -112,7 +113,7 @@ Deno.serve(async (req: Request) => {
     })
     if (insertUserError) throw new HttpError(500, insertUserError.message)
 
-    const reply = await answerQuestion(context, history, message)
+    const reply = await withAiBudget(user.id, () => answerQuestion(context, history, mode === 'explain' ? 'Explain this document in plain language.' : message))
 
     const { data: assistantRow, error: insertAssistantError } = await supabase
       .from('document_chat_messages')

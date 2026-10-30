@@ -1,3 +1,4 @@
+import { withAiBudget } from '../_shared/aiBudget.ts'
 // Supabase Edge Function: translate-document
 // Translates the full OCR text, the AI summary, or an arbitrary selected
 // excerpt into one of the supported languages. Never modifies the original
@@ -85,7 +86,7 @@ Deno.serve(async (req: Request) => {
       sourceText = ocr.raw_text
     }
 
-    const translatedText = await translateText(sourceText, language)
+    const translatedText = await withAiBudget(user.id, () => translateText(sourceText, language))
 
     if (scope === 'selection') {
       const { data: row, error } = await supabase

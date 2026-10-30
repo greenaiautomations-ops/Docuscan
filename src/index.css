@@ -17,3 +17,9 @@
 body {
   @apply antialiased bg-slate-50 text-slate-900 dark:bg-slate-800 dark:text-slate-100;
 }
+
+/* Allow long filenames and translated labels to wrap without widening the app. */
+#root { min-width: 0; overflow-wrap: anywhere; }
+@media (max-width: 639px) {
+  input, select, textarea { font-size: 16px; }
+}

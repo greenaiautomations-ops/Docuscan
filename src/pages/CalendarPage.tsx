@@ -51,7 +51,7 @@ export function CalendarPage() {
   const { user } = useAuth()
   const { t, i18n } = useTranslation()
   const [anchor, setAnchor] = useState(() => new Date())
-  const [view, setView] = useState<ViewMode>('month')
+  const [view, setView] = useState<ViewMode>(() => window.matchMedia('(max-width: 639px)').matches ? 'agenda' : 'month')
   const [selectedEvent, setSelectedEvent] = useState<Event | null>(null)
   const [creating, setCreating] = useState(false)
   const [newTitle, setNewTitle] = useState('')
@@ -242,7 +242,7 @@ export function CalendarPage() {
       {!loading && error && <ErrorMessage message={error} onRetry={refresh} />}
 
       {!loading && !error && view === 'month' && (
-        <div className="rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 p-5">
+        <div className="rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 p-2 sm:p-5">
           <div className="grid grid-cols-7 gap-1 text-center text-xs font-medium text-slate-400 dark:text-slate-500">
             {weekdayLabels.map((day, i) => (
               <div key={i} className="py-1">
@@ -259,7 +259,7 @@ export function CalendarPage() {
               return (
                 <div
                   key={idx}
-                  className={`flex min-h-[90px] flex-col gap-1 rounded-lg border p-1.5 ${
+                  className={`flex min-w-0 min-h-[90px] flex-col gap-1 rounded-lg border p-1.5 ${
                     isToday ? 'border-indigo-300 dark:border-indigo-500/40 bg-indigo-50/40 dark:bg-indigo-500/10' : 'border-slate-100 dark:border-slate-800'
                   }`}
                 >
@@ -409,7 +409,7 @@ export function CalendarPage() {
               ))}
             </select>
           </div>
-          <div className="grid grid-cols-2 gap-3">
+          <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
             <div>
               <label className="mb-1 block text-xs font-medium text-slate-600 dark:text-slate-400">{t('calendarPage.newEventModal.fields.date')}</label>
               <input

@@ -51,7 +51,8 @@
   "topbar": {
     "account": "Konto",
     "openMenu": "Menü öffnen",
-    "signOut": "Abmelden"
+    "signOut": "Abmelden",
+    "signOutError": "Abmelden fehlgeschlagen. Bitte erneut versuchen."
   },
   "home": {
     "nav": {
@@ -167,7 +168,8 @@
           "Bis zu 10 Dokumente",
           "OCR, Klassifizierung & Extraktion",
           "KI-Zusammenfassung",
-          "Kalender, Fristen & Zahlungen"
+          "Kalender, Fristen & Zahlungen",
+          "1 Million OCR-/KI-Credits pro Kalendermonat"
         ]
       },
       "basic": {
@@ -178,7 +180,8 @@
           "Alles aus Kostenlos",
           "Erklärung in einfacher Sprache",
           "Dokumente übersetzen",
-          "Ask AI nicht enthalten"
+          "Ask AI nicht enthalten",
+          "4 Millionen OCR-/KI-Credits pro Kalendermonat"
         ]
       },
       "pro": {
@@ -188,7 +191,8 @@
           "Bis zu 1.000 Dokumente",
           "Alles aus Basic",
           "Ask AI — mit jedem Dokument chatten",
-          "Priorisierter Support"
+          "Priorisierter Support",
+          "16 Millionen OCR-/KI-Credits pro Kalendermonat"
         ]
       },
       "enterprise": {
@@ -198,10 +202,14 @@
           "Unbegrenzte Dokumente",
           "Alles aus Pro",
           "Persönliches Onboarding",
-          "Individuelle Vereinbarung & Rechnungsstellung"
+          "Individuelle Vereinbarung & Rechnungsstellung",
+          "64 Millionen OCR-/KI-Credits pro Kalendermonat"
         ]
       }
-    }
+    },
+    "usageNote": "Speicherlimits zählen gespeicherte Dokumente, nicht monatliche Uploads. OCR, Zusammenfassungen, Übersetzung und Chat teilen sich das monatliche KI-Kontingent; es wird am 1. (UTC) zurückgesetzt. Eingabe-Tokens kosten 1 Credit, Ausgabe- und Denk-Tokens 6. Anfragen reservieren zunächst die maximale Ausgabe; ungenutzte Credits werden nach erfolgreicher Antwort zurückgegeben. Fehlversuche können Credits verbrauchen. Keine automatischen Mehrkosten.",
+    "usage": "Verbrauchte OCR-/KI-Credits diesen Monat: {{used}} / {{total}}",
+    "usageUnavailable": "Der aktuelle KI-Verbrauch ist nicht verfügbar. Dein monatliches Kontingent gilt weiterhin."
   },
   "billingPage": {
     "title": "Abrechnung & Tarife",
@@ -247,7 +255,8 @@
         "invalidEmail": "Gib eine gültige E-Mail-Adresse ein.",
         "emptyPassword": "Gib dein Passwort ein.",
         "generic": "Anmeldung nicht möglich."
-      }
+      },
+      "sessionExpired": "Du wurdest nach 10 Minuten Inaktivität abgemeldet. Bitte melde dich erneut an."
     },
     "signup": {
       "subtitle": "Erstelle dein Konto",

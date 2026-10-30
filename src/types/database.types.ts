@@ -51,6 +51,12 @@ export type SubscriptionStatus = 'active' | 'trialing' | 'past_due' | 'canceled'
 export interface Database {
   public: {
     Tables: {
+      ai_monthly_usage: {
+        Row: { user_id: string; month: string; credits: number }
+        Insert: { user_id: string; month: string; credits?: number }
+        Update: { credits?: number }
+        Relationships: []
+      }
       profiles: {
         Row: {
           id: string

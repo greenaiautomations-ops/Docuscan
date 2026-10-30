@@ -1,9 +1,9 @@
-import { useMemo, useState } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 import { useSearchParams } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
 import { useAuth } from '../hooks/useAuth'
-import { createCheckoutSession, createPortalSession } from '../services/subscriptionService'
-import { TIERS, TIER_ORDER, formatTierPrice, type PaidTier, type Tier } from '../utils/entitlements'
+import { createCheckoutSession, createPortalSession, getMonthlyAiUsage } from '../services/subscriptionService'
+import { AI_CREDIT_LIMITS, TIERS, TIER_ORDER, formatTierPrice, type PaidTier, type Tier } from '../utils/entitlements'
 import { ErrorMessage } from '../components/common/ErrorMessage'
 
 const CONTACT_EMAIL = 'zoraiz1002@gmail.com'
@@ -68,7 +68,7 @@ function TierCard({
         >
           {t('billing.contactUs')}
         </a>
-      ) : isCurrent && isPaidActive ? (
+      ) : isPaidActive && isPurchasable ? (
         <button
           onClick={onManage}
           disabled={busy}
@@ -94,16 +94,25 @@ function TierCard({
 }
 
 export function BillingPage() {
-  const { profile, entitlements } = useAuth()
+  const { profile, entitlements, user } = useAuth()
   const { t } = useTranslation()
   const [searchParams] = useSearchParams()
   const [busyTier, setBusyTier] = useState<Tier | null>(null)
   const [error, setError] = useState<string | null>(null)
 
+  const userId = user?.id
+  const [credits, setCredits] = useState<number | null>(null)
+  useEffect(() => {
+    let active = true
+    if (userId) void getMonthlyAiUsage(userId).then(value => { if (active) setCredits(value) }).catch(() => { if (active) setCredits(null) })
+    return () => { active = false }
+  }, [userId])
+
   const checkoutResult = searchParams.get('checkout')
 
   const currentTier = entitlements.tier
   const isPaidActive =
+    (currentTier === 'basic' || currentTier === 'pro') &&
     !entitlements.isAdmin &&
     !entitlements.isCompAccess &&
     (profile?.subscription_status === 'active' || profile?.subscription_status === 'trialing')
@@ -191,14 +200,16 @@ export function BillingPage() {
 
       {error && <ErrorMessage message={error} />}
 
-      <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
+<p className="text-sm text-slate-500 dark:text-slate-400">{credits === null ? t('billing.usageUnavailable') : t('billing.usage', { used: credits.toLocaleString(), total: AI_CREDIT_LIMITS[currentTier].toLocaleString() })}</p>
+      <p className="text-sm text-slate-500 dark:text-slate-400">{t('billing.usageNote')}</p>
+      <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-4">
         {TIER_ORDER.map((tier) => (
           <TierCard
             key={tier}
             tier={tier}
             currentTier={currentTier}
             isPaidActive={isPaidActive}
-            busy={busyTier === tier}
+            busy={busyTier !== null}
             onSubscribe={handleSubscribe}
             onManage={handleManage}
           />

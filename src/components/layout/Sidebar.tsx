@@ -18,12 +18,14 @@ export function Sidebar({ open, onNavigate }: SidebarProps) {
 
   return (
     <aside
-      className={`fixed inset-y-0 left-0 z-40 w-64 transform border-r border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 transition-transform duration-200 ease-in-out lg:static lg:translate-x-0 ${
-        open ? 'translate-x-0' : '-translate-x-full'
+      id="app-navigation"
+      className={`fixed inset-y-0 left-0 z-40 w-64 max-w-[85vw] overflow-y-auto transform border-r border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 transition-transform duration-200 ease-in-out lg:static lg:visible lg:shrink-0 lg:translate-x-0 ${
+        open ? 'visible translate-x-0' : 'invisible -translate-x-full'
       }`}
     >
       <div className="flex h-16 items-center border-b border-slate-200 dark:border-slate-700 px-6">
         <Logo size={32} withWordmark />
+        <button onClick={onNavigate} aria-label={t('common.close')} className="ml-auto min-h-11 min-w-11 rounded-lg lg:hidden">✕</button>
       </div>
       <nav className="flex flex-col gap-1 p-3">
         {items.map((item) => (
@@ -33,7 +35,7 @@ export function Sidebar({ open, onNavigate }: SidebarProps) {
             end={item.path === '/' || item.path === '/dashboard'}
             onClick={onNavigate}
             className={({ isActive }) =>
-              `flex items-center justify-between rounded-lg px-3 py-2 text-sm font-medium transition-colors ${
+              `flex items-center justify-between rounded-lg px-3 py-3 text-sm font-medium transition-colors ${
                 isActive
                   ? 'bg-indigo-50 dark:bg-indigo-500/10 text-indigo-700 dark:text-indigo-300'
                   : 'text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800 hover:text-slate-900 dark:hover:text-slate-100'

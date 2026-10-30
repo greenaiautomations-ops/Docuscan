@@ -1,4 +1,4 @@
-import { fetchWithRetry } from './httpRetry.ts'
+import { reserveCredits } from './aiBudget.ts'
 
 const GEMINI_API_BASE = 'https://generativelanguage.googleapis.com/v1beta/models'
 const DEFAULT_EMBEDDING_MODEL = 'gemini-embedding-001'
@@ -19,9 +19,13 @@ export async function generateEmbedding(text: string): Promise<number[]> {
   }
 
   const model = Deno.env.get('GEMINI_EMBEDDING_MODEL') || DEFAULT_EMBEDDING_MODEL
+  if (model !== DEFAULT_EMBEDDING_MODEL) throw new Error('Embedding model must be repriced before changing it.')
+  // UTF-8 bytes conservatively bound text tokens. Reserve at four credits/token
+  // (up to $1/M tokens), comfortably above embedding-001 pricing.
+  await reserveCredits(new TextEncoder().encode(text.slice(0, 8000)).length * 4 + 1024)
   const url = `${GEMINI_API_BASE}/${model}:embedContent`
 
-  const response = await fetchWithRetry(url, {
+  const response = await fetch(url, {
     method: 'POST',
     headers: {
       'content-type': 'application/json',
@@ -32,7 +36,7 @@ export async function generateEmbedding(text: string): Promise<number[]> {
       outputDimensionality: EMBEDDING_DIMENSIONS,
       taskType: 'RETRIEVAL_DOCUMENT',
     }),
-  }, 2) // fewer retries — embeddings are best-effort and non-fatal anyway
+  })
 
   if (!response.ok) {
     const body = await response.text().catch(() => '')

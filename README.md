@@ -186,8 +186,8 @@ supabase functions deploy create-portal-session
 supabase functions deploy stripe-webhook
 
 supabase secrets set GEMINI_API_KEY=AQ....   # or AIza... for older keys
-# optional override — the default is already gemini-flash-lite-latest:
-supabase secrets set GEMINI_MODEL=gemini-flash-lite-latest
+# optional override — the default is already gemini-3.1-flash-lite:
+supabase secrets set GEMINI_MODEL=gemini-3.1-flash-lite
 ```
 
 `create-checkout-session`, `create-portal-session`, and `stripe-webhook`
@@ -197,7 +197,7 @@ section below) — they need their own secrets (`STRIPE_SECRET_KEY`,
 before checkout or the billing portal will work.
 
 **About the model choice / "429 quota exceeded" errors:** DocVault defaults
-to `gemini-flash-lite-latest`, not the plain `-latest` Flash alias. Google
+to `gemini-3.1-flash-lite`, not the plain `-latest` Flash alias. Google
 cut the full Flash model's free-tier quota hard in late 2025 (as low as
 ~20 requests/day in some configurations), which is easy to blow through in
 a single testing session — Flash-Lite keeps a much higher free daily quota.
@@ -515,3 +515,17 @@ through Billing. See README "6. Set up Stripe" for setup.
 Google/Outlook Calendar sync, email ingestion, WhatsApp/Telegram
 notifications, family/shared accounts, mobile apps, advanced financial
 analytics, and automatic bank connections. Those are future phases.
+
+## Mobile, inactivity timeout, and metered AI (October 2026)
+
+The app now signs out after 10 minutes of inactivity, including checks across
+reloads, tabs, and resume from sleep. Mobile navigation and auth controls wrap,
+dialogs use native focus management and scroll within the viewport, and the
+calendar starts in Agenda view on small screens.
+
+Basic remains €5/month and Pro €14.99/month. Stored document limits are separate
+from monthly OCR/AI credits: Free 1M, Basic 4M, Pro 16M, Enterprise 64M. Input uses
+1 credit/token and output/thinking 6. Credits are enforced by migration
+`0012_ai_usage.sql` plus the three AI Edge Functions. The priced generation model
+is pinned to `gemini-3.1-flash-lite`; older environment overrides must be updated.
+See [pricing review and deployment order](docs/pricing-review.md) before rollout.
