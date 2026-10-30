@@ -5,7 +5,7 @@
 
 import { handleCors, jsonResponse } from '../_shared/cors.ts'
 import { getUserClient, requireUser, HttpError } from '../_shared/supabaseClient.ts'
-import { getStripeClient } from '../_shared/stripeClient.ts'
+import { appOrigin, getStripeClient } from '../_shared/stripeClient.ts'
 
 Deno.serve(async (req: Request) => {
   const cors = handleCors(req)
@@ -30,7 +30,7 @@ Deno.serve(async (req: Request) => {
       throw new HttpError(409, "You don't have a billing account yet — subscribe to a plan first.")
     }
 
-    const origin = req.headers.get('origin') ?? Deno.env.get('APP_URL') ?? 'http://localhost:5173'
+    const origin = appOrigin()
     const stripe = getStripeClient()
 
     const session = await stripe.billingPortal.sessions.create({

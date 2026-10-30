@@ -529,3 +529,16 @@ from monthly OCR/AI credits: Free 1M, Basic 4M, Pro 16M, Enterprise 64M. Input u
 `0012_ai_usage.sql` plus the three AI Edge Functions. The priced generation model
 is pinned to `gemini-3.1-flash-lite`; older environment overrides must be updated.
 See [pricing review and deployment order](docs/pricing-review.md) before rollout.
+
+## Current packages, Business teams, and sign-out policy
+
+The earlier pricing notes above are superseded by the [Business release guide](docs/business-launch.md):
+Free €0, Basic €6.99/month, Pro €17.99/month, Business from €49/month, VAT included.
+The release adds per-page OCR and AI-request quotas, actual storage limits,
+paid add-on checkout, shared Business libraries with verified-email invitations,
+roles and audit history, and workspace-scoped semantic search. See migrations
+0013–0016 and the guide for the coordinated Stripe/Supabase deployment.
+
+Login is now memory-only: closing **or refreshing** the page signs out; normal
+in-app navigation retains login. The homepage has a visible Sign out control for
+signed-in visitors. The ten-minute inactivity policy remains enabled.

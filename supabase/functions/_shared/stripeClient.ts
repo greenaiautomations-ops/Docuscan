@@ -19,7 +19,7 @@ export function getStripeClient(): Stripe {
   }
 
   cached = new Stripe(key, {
-    apiVersion: '2024-06-20',
+    apiVersion: '2023-10-16',
     httpClient: Stripe.createFetchHttpClient(),
   })
   return cached

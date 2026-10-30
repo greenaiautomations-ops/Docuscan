@@ -230,12 +230,14 @@ async function runPipeline(supabase: any, document: any) {
 
   // ---- 8. Embeddings (best-effort, non-fatal) ----
   try {
-    const chunks = chunkText(rawText)
+    const chunks = chunkText(rawText, 6000, 64)
     if (chunks.length > 0) {
       const rows = []
-      for (let i = 0; i < chunks.length; i++) {
-        const embedding = await generateEmbedding(chunks[i])
-        rows.push({ document_id: documentId, chunk_index: i, content: chunks[i], embedding })
+      for (let i = 0; i < chunks.length; i += 4) {
+        const batch = await Promise.all(chunks.slice(i, i + 4).map(async (content, offset) => ({
+          document_id: documentId, chunk_index: i + offset, content, embedding: await generateEmbedding(content),
+        })))
+        rows.push(...batch)
       }
       if (rows.length > 0) {
         await supabase.from('document_embeddings').insert(rows)

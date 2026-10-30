@@ -238,13 +238,13 @@ export function DocumentViewerPage() {
               </a>
             )}
             <button
-              onClick={handleToggleImportant}
+              disabled={!writable} onClick={handleToggleImportant}
               className="rounded-lg border border-slate-300 dark:border-slate-600 px-3 py-1.5 text-sm font-medium text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-800"
             >
               {document.is_important ? t('documentViewerPage.unmarkImportant') : t('documentViewerPage.markImportant')}
             </button>
             <button
-              onClick={handleToggleArchive}
+              disabled={!writable} onClick={handleToggleArchive}
               className="rounded-lg border border-slate-300 dark:border-slate-600 px-3 py-1.5 text-sm font-medium text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-800"
             >
               {document.is_archived ? t('documentViewerPage.unarchive') : t('documentViewerPage.archive')}
@@ -436,7 +436,7 @@ export function DocumentViewerPage() {
           </div>
           <select
             value={document.folder_id ?? ''}
-            onChange={(e) => handleFolderChange(e.target.value || null)}
+            disabled={!writable} onChange={(e) => handleFolderChange(e.target.value || null)}
             className="w-full rounded-lg border border-slate-300 dark:border-slate-600 px-3 py-2 text-sm focus:border-indigo-500 focus:outline-none focus:ring-1 focus:ring-indigo-500"
           >
             <option value="">{t('documentViewerPage.noFolder')}</option>

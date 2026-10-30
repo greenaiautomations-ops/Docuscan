@@ -1,0 +1,22 @@
+import { beforeEach, expect, it, vi } from 'vitest'
+const { createClient } = vi.hoisted(() => ({ createClient: vi.fn(() => ({})) }))
+vi.mock('@supabase/supabase-js', () => ({ createClient }))
+beforeEach(() => {
+  vi.resetModules(); vi.clearAllMocks()
+  vi.stubEnv('VITE_SUPABASE_URL', 'https://example.supabase.co')
+  vi.stubEnv('VITE_SUPABASE_ANON_KEY', 'public-test-key')
+})
+it('does not restore persistent credentials and reauthenticates a back/forward-cache restore', async () => {
+  const removeItem = vi.fn()
+  const listeners = new Map<string, (event: { persisted: boolean }) => void>()
+  const replace = vi.fn()
+  vi.stubGlobal('localStorage', { removeItem })
+  vi.stubGlobal('window', { location: { replace }, addEventListener: (name: string, fn: (event: { persisted: boolean }) => void) => listeners.set(name, fn) })
+  await import('../src/lib/supabase')
+  expect(createClient).toHaveBeenCalledWith('https://example.supabase.co', 'public-test-key', { auth: { persistSession: false, autoRefreshToken: true, detectSessionInUrl: true } })
+  expect(removeItem).toHaveBeenCalledWith('sb-example-auth-token')
+  listeners.get('pageshow')!({ persisted: false })
+  expect(replace).not.toHaveBeenCalled()
+  listeners.get('pageshow')!({ persisted: true })
+  expect(replace).toHaveBeenCalledWith('/login')
+})

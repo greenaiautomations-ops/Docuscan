@@ -37,7 +37,7 @@ Deno.test('Business RLS, invitations, audit, shared usage and storage limits', a
       grant all on all tables in schema public to service_role;
       grant all on storage.objects to authenticated,service_role;
     `)
-    for (const migration of ['0012_ai_usage.sql','0013_business_workspaces.sql','0014_package_allowances.sql']) await db.exec(await Deno.readTextFile(new URL(`../migrations/${migration}`, import.meta.url)))
+    for (const migration of ['0012_ai_usage.sql','0013_business_workspaces.sql','0014_package_allowances.sql','0016_seat_expiry.sql']) await db.exec(await Deno.readTextFile(new URL(`../migrations/${migration}`, import.meta.url)))
     await db.exec('create trigger check_document_limit before insert on documents for each row execute function check_document_limit()')
     await login(owner)
     await db.query('select create_workspace($1)', ['Company'])
@@ -78,6 +78,16 @@ Deno.test('Business RLS, invitations, audit, shared usage and storage limits', a
     await reject(() => db.query('select consume_package_usage($1,$2,$3)', [outsider,'questions',1]), 'Free questions capped at three')
     for (let i=0;i<19;i++) await db.query('insert into documents(user_id,title) values($1,$2)', [outsider,'doc'])
     await reject(() => db.query('insert into documents(user_id,title) values($1,$2)', [outsider,'overflow']), 'Free stored documents capped at 20')
+    // Paid seats expire without silently retaining excess shared access.
+    await db.query("insert into billing_addons values('seat',$1,'seats',1,now()+interval '1 day',true)", [owner])
+    await db.exec('reset role')
+    await db.query("insert into workspace_members(owner_id,user_id,role,joined_at) values($1,$2,'editor',now()-interval '1 day')", [owner,editor])
+    await db.query("insert into workspace_members(owner_id,user_id,role,joined_at) values($1,$2,'viewer',now()+interval '1 day')", [owner,outsider])
+    await login(outsider)
+    assert((await db.query<{ allowed: boolean }>('select can_workspace($1) allowed', [owner])).rows[0].allowed, 'Paid extra seat grants access')
+    await db.exec("reset role; update billing_addons set active=false where stripe_id='seat'")
+    await login(outsider)
+    assert(!(await db.query<{ allowed: boolean }>('select can_workspace($1) allowed', [owner])).rows[0].allowed, 'Expired extra seat removes excess access')
     await db.exec(`reset role; update profiles set subscription_status='canceled' where user_id='${owner}'`)
     await login(viewer)
     assert((await db.query('select * from documents')).rows.length === 0, 'Inactive Business plan suspends shared access')

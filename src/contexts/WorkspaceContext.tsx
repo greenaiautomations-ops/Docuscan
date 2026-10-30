@@ -1,4 +1,4 @@
-import { createContext, useCallback, useContext, useEffect, useState, type ReactNode } from 'react'
+import { createContext, useCallback, useContext, useEffect, useRef, useState, type ReactNode } from 'react'
 import { useAuth } from '../hooks/useAuth'
 import { supabase } from '../lib/supabase'
 export interface Workspace {
@@ -11,18 +11,25 @@ const WorkspaceContext = createContext<{ workspaces: Workspace[]; error: string 
 export function WorkspaceProvider({ children }: { children: ReactNode }) {
   const { user } = useAuth()
   const userId = user?.id
+  const activeUser = useRef(userId)
+  activeUser.current = userId
+  const [loadedFor, setLoadedFor] = useState<string | undefined>(undefined)
   const [workspaces, setWorkspaces] = useState<Workspace[]>([])
   const [error, setError] = useState<string | null>(null)
   const refresh = useCallback(async () => {
     if (!userId) { setWorkspaces([]); return }
     const result = await supabase.rpc('workspace_snapshot', {})
+    if (activeUser.current !== userId) return
+    setLoadedFor(userId)
     if (result.error) { setError(result.error.message); setWorkspaces([]); return }
     setError(null)
     setWorkspaces(result.data as Workspace[])
   }, [userId])
   useEffect(() => { void refresh() }, [refresh])
-  return <WorkspaceContext.Provider value={{ workspaces, error, refresh, canEdit: ownerId => ownerId === userId || workspaces.some(w => w.ownerId === ownerId && w.role !== 'viewer') }}>{children}</WorkspaceContext.Provider>
+  const visibleWorkspaces = loadedFor === userId ? workspaces : []
+  return <WorkspaceContext.Provider value={{ workspaces: visibleWorkspaces, error, refresh, canEdit: ownerId => ownerId === userId || visibleWorkspaces.some(w => w.ownerId === ownerId && w.role !== 'viewer') }}>{children}</WorkspaceContext.Provider>
 }
+// eslint-disable-next-line react-refresh/only-export-components
 export function useWorkspaces() {
   const value = useContext(WorkspaceContext)
   if (!value) throw new Error('WorkspaceProvider is missing')
