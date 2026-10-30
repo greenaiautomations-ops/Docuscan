@@ -14,7 +14,7 @@
 import Stripe from 'npm:stripe@14.21.0'
 import { jsonResponse } from '../_shared/cors.ts'
 import { getInternalServiceClient } from '../_shared/supabaseClient.ts'
-import { getStripeClient, tierForPriceId } from '../_shared/stripeClient.ts'
+import { ADDONS, getAddonPrice, getStripeClient, tierForPriceId, type AddonKind } from '../_shared/stripeClient.ts'
 
 Deno.serve(async (req: Request) => {
   if (req.method !== 'POST') {
@@ -56,16 +56,24 @@ Deno.serve(async (req: Request) => {
     switch (event.type) {
       case 'customer.subscription.created':
       case 'customer.subscription.updated': {
-        await syncSubscription(supabase, event.data.object as Stripe.Subscription)
+        const current = await stripe.subscriptions.retrieve((event.data.object as Stripe.Subscription).id)
+        if (current.metadata.addon) await syncAddonSubscription(supabase, current)
+        else await syncSubscription(supabase, current)
         break
       }
       case 'customer.subscription.deleted': {
         const subscription = event.data.object as Stripe.Subscription
+        if (subscription.metadata.addon) { await syncAddonSubscription(supabase, subscription); break }
         const { error } = await supabase
           .from('profiles')
           .update({ subscription_status: 'canceled' })
           .eq('stripe_subscription_id', subscription.id)
-        if (error) console.error('Failed to mark subscription canceled:', error.message)
+        if (error) throw error
+        break
+      }
+      case 'checkout.session.completed':
+      case 'checkout.session.async_payment_succeeded': {
+        await syncAddonPurchase(supabase, event.data.object as Stripe.Checkout.Session)
         break
       }
       case 'invoice.payment_failed': {
@@ -76,7 +84,7 @@ Deno.serve(async (req: Request) => {
             .from('profiles')
             .update({ subscription_status: 'past_due' })
             .eq('stripe_subscription_id', subId)
-          if (error) console.error('Failed to mark subscription past_due:', error.message)
+          if (error) throw error
         }
         break
       }
@@ -85,10 +93,8 @@ Deno.serve(async (req: Request) => {
         break
     }
   } catch (err) {
-    // Log but still return 200: a bug in our own sync logic shouldn't make
-    // Stripe hammer this endpoint with retries indefinitely. Failures here
-    // are visible in `supabase functions logs stripe-webhook`.
     console.error('Error processing Stripe webhook event:', event.type, err)
+    return jsonResponse({ error: 'Billing sync failed; retry required.' }, 500)
   }
 
   return jsonResponse({ received: true })
@@ -106,7 +112,7 @@ async function syncSubscription(
   }
 
   const priceId = subscription.items.data[0]?.price?.id
-  const tier = tierForPriceId(priceId) ?? (subscription.metadata?.tier as 'basic' | 'pro' | undefined)
+  const tier = tierForPriceId(priceId) ?? (['basic','pro','enterprise'].includes(subscription.metadata?.tier) ? subscription.metadata.tier as 'basic' | 'pro' | 'enterprise' : undefined)
   if (!tier) {
     console.error('Could not resolve tier for subscription (unrecognized price id).', subscription.id, priceId)
     return
@@ -129,7 +135,7 @@ async function syncSubscription(
     })
     .eq('user_id', userId)
 
-  if (error) console.error('Failed to sync subscription to profile:', error.message)
+  if (error) throw error
 }
 
 function mapStripeStatus(status: Stripe.Subscription.Status): 'active' | 'trialing' | 'past_due' | 'canceled' | 'incomplete' {
@@ -147,6 +153,39 @@ function mapStripeStatus(status: Stripe.Subscription.Status): 'active' | 'triali
     case 'incomplete':
       return 'incomplete'
     default:
-      return 'active'
+      return 'incomplete'
   }
+}
+
+// Supabase client is intentionally untyped in this Deno integration.
+// deno-lint-ignore no-explicit-any
+async function syncAddonSubscription(supabase: any, subscription: Stripe.Subscription) {
+  const kind = subscription.metadata.addon as AddonKind
+  const userId = subscription.metadata.supabase_user_id
+  if (!userId || !Object.prototype.hasOwnProperty.call(ADDONS, kind) || !ADDONS[kind].recurring) throw new Error('Invalid add-on metadata')
+  const item = subscription.items.data[0]
+  if (item?.price.id !== getAddonPrice(kind)) throw new Error('Unrecognized add-on price')
+  const customerId = typeof subscription.customer === 'string' ? subscription.customer : subscription.customer.id
+  const { error: customerError } = await supabase.from('profiles').update({ stripe_customer_id: customerId }).eq('user_id', userId).is('stripe_customer_id', null)
+  if (customerError) throw customerError
+  const { error } = await supabase.from('billing_addons').upsert({ stripe_id: subscription.id, owner_id: userId, kind,
+    quantity: item.quantity ?? 1, active: ['active','trialing'].includes(subscription.status),
+    expires_at: new Date(subscription.current_period_end * 1000).toISOString(),
+  })
+  if (error) throw error
+}
+// deno-lint-ignore no-explicit-any
+async function syncAddonPurchase(supabase: any, session: Stripe.Checkout.Session) {
+  if (!session.metadata?.addon || session.mode !== 'payment' || session.payment_status !== 'paid') return
+  const kind = session.metadata.addon as AddonKind
+  const userId = session.metadata.supabase_user_id
+  if (!userId || !Object.prototype.hasOwnProperty.call(ADDONS, kind) || ADDONS[kind].recurring) throw new Error('Invalid add-on purchase')
+  const items = await getStripeClient().checkout.sessions.listLineItems(session.id)
+  if (items.data.length !== 1 || items.data[0].price?.id !== getAddonPrice(kind)) throw new Error('Unrecognized add-on purchase price')
+  const purchased = new Date(session.created * 1000)
+  const expiry = new Date(Date.UTC(purchased.getUTCFullYear(), purchased.getUTCMonth() + 1, 1))
+  const { error } = await supabase.from('billing_addons').upsert({ stripe_id: session.id, owner_id: userId, kind,
+    quantity: items.data[0].quantity ?? 1, active: true, expires_at: expiry.toISOString(),
+  }, { onConflict: 'stripe_id', ignoreDuplicates: true })
+  if (error) throw error
 }

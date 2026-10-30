@@ -1,3 +1,4 @@
+import { consumePackageUsage } from '../_shared/packageUsage.ts'
 import { withAiBudget } from '../_shared/aiBudget.ts'
 // Supabase Edge Function: translate-document
 // Translates the full OCR text, the AI summary, or an arbitrary selected
@@ -21,12 +22,7 @@ Deno.serve(async (req: Request) => {
 
   try {
     const supabase = getUserClient(req)
-    const user = await requireUser(supabase)
-
-    const entitlements = await getCallerEntitlements(supabase, user.id)
-    if (!entitlements.translation) {
-      throw new HttpError(403, 'FEATURE_LOCKED: Translation is included from the Basic plan. Upgrade to unlock it.')
-    }
+    await requireUser(supabase)
 
     const body = await req.json().catch(() => ({}))
     const documentId: string = body.documentId
@@ -46,12 +42,19 @@ Deno.serve(async (req: Request) => {
 
     const { data: document, error: docError } = await supabase
       .from('documents')
-      .select('id')
+      .select('id, user_id')
       .eq('id', documentId)
       .maybeSingle()
     if (docError) throw new HttpError(500, docError.message)
     if (!document) throw new HttpError(404, 'Document not found.')
 
+    const entitlements = await getCallerEntitlements(supabase, document.user_id)
+    if (!entitlements.translation) {
+      throw new HttpError(403, 'FEATURE_LOCKED: Translation is included from the Basic plan. Upgrade to unlock it.')
+    }
+
+    const { data: canWrite } = await supabase.rpc('can_workspace', { p_owner: document.user_id, p_write: true })
+    if (!canWrite) throw new HttpError(403, 'Viewers cannot run AI requests.')
     let sourceText: string
 
     if (scope === 'selection') {
@@ -86,7 +89,8 @@ Deno.serve(async (req: Request) => {
       sourceText = ocr.raw_text
     }
 
-    const translatedText = await withAiBudget(user.id, () => translateText(sourceText, language))
+    await consumePackageUsage(document.user_id, 'questions', 1)
+    const translatedText = await withAiBudget(document.user_id, () => translateText(sourceText, language))
 
     if (scope === 'selection') {
       const { data: row, error } = await supabase

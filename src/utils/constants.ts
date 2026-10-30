@@ -12,6 +12,7 @@ export const NAV_ITEMS = [
   { key: 'deadlines', path: '/deadlines' },
   { key: 'payments', path: '/payments' },
   { key: 'notifications', path: '/notifications' },
+  { key: 'teams', path: '/teams' },
   { key: 'billing', path: '/billing' },
   { key: 'settings', path: '/settings' },
 ] as const

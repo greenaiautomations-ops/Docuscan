@@ -2,11 +2,11 @@ import { useEffect, useMemo, useState } from 'react'
 import { useSearchParams } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
 import { useAuth } from '../hooks/useAuth'
-import { createCheckoutSession, createPortalSession, getMonthlyAiUsage } from '../services/subscriptionService'
-import { AI_CREDIT_LIMITS, TIERS, TIER_ORDER, formatTierPrice, type PaidTier, type Tier } from '../utils/entitlements'
+import { createCheckoutSession, createPortalSession, getPackageUsage } from '../services/subscriptionService'
+import { TIERS, TIER_ORDER, formatTierPrice, type PaidTier, type Tier } from '../utils/entitlements'
+import { PackageAddons } from '../components/common/PackageAddons'
 import { ErrorMessage } from '../components/common/ErrorMessage'
 
-const CONTACT_EMAIL = 'zoraiz1002@gmail.com'
 
 function TierCard({
   tier,
@@ -26,7 +26,7 @@ function TierCard({
   const { t } = useTranslation()
   const def = TIERS[tier]
   const isCurrent = tier === currentTier
-  const isPurchasable = tier === 'basic' || tier === 'pro'
+  const isPurchasable = tier === 'basic' || tier === 'pro' || tier === 'enterprise'
   const label = t(`billing.tiers.${tier}.label`)
   const tagline = t(`billing.tiers.${tier}.tagline`)
   const features = t(`billing.tiers.${tier}.features`, { returnObjects: true }) as string[]
@@ -61,14 +61,7 @@ function TierCard({
         ))}
       </ul>
 
-      {tier === 'enterprise' ? (
-        <a
-          href={`mailto:${CONTACT_EMAIL}?subject=DocVault Enterprise`}
-          className="rounded-lg border border-slate-300 dark:border-slate-600 px-4 py-2 text-center text-sm font-semibold text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-800"
-        >
-          {t('billing.contactUs')}
-        </a>
-      ) : isPaidActive && isPurchasable ? (
+      {isPaidActive && isPurchasable ? (
         <button
           onClick={onManage}
           disabled={busy}
@@ -101,10 +94,10 @@ export function BillingPage() {
   const [error, setError] = useState<string | null>(null)
 
   const userId = user?.id
-  const [credits, setCredits] = useState<number | null>(null)
+  const [credits, setCredits] = useState<Awaited<ReturnType<typeof getPackageUsage>> | null>(null)
   useEffect(() => {
     let active = true
-    if (userId) void getMonthlyAiUsage(userId).then(value => { if (active) setCredits(value) }).catch(() => { if (active) setCredits(null) })
+    if (userId) void getPackageUsage(userId).then(value => { if (active) setCredits(value) }).catch(() => { if (active) setCredits(null) })
     return () => { active = false }
   }, [userId])
 
@@ -112,7 +105,7 @@ export function BillingPage() {
 
   const currentTier = entitlements.tier
   const isPaidActive =
-    (currentTier === 'basic' || currentTier === 'pro') &&
+    (currentTier === 'basic' || currentTier === 'pro' || currentTier === 'enterprise') &&
     !entitlements.isAdmin &&
     !entitlements.isCompAccess &&
     (profile?.subscription_status === 'active' || profile?.subscription_status === 'trialing')
@@ -186,7 +179,7 @@ export function BillingPage() {
                 : t('billingPage.documentLimit', { count: entitlements.documentLimit })}
             </p>
           </div>
-          {isPaidActive && (
+          {profile?.stripe_customer_id && (
             <button
               onClick={handleManage}
               disabled={busyTier !== null}
@@ -200,8 +193,9 @@ export function BillingPage() {
 
       {error && <ErrorMessage message={error} />}
 
-<p className="text-sm text-slate-500 dark:text-slate-400">{credits === null ? t('billing.usageUnavailable') : t('billing.usage', { used: credits.toLocaleString(), total: AI_CREDIT_LIMITS[currentTier].toLocaleString() })}</p>
+<p className="text-sm text-slate-500 dark:text-slate-400">{credits === null ? t('billing.usageUnavailable') : t('billing.packageUsage', { pages: credits.pages, pageLimit: credits.pageLimit, questions: credits.questions, questionLimit: credits.questionLimit, storage: (credits.storageBytes / 1e9).toFixed(2), storageLimit: credits.storageLimit / 1e9 })}</p>
       <p className="text-sm text-slate-500 dark:text-slate-400">{t('billing.usageNote')}</p>
+<p className="text-sm text-slate-500">{t('billing.vatNote')}</p>
       <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-4">
         {TIER_ORDER.map((tier) => (
           <TierCard
@@ -215,6 +209,8 @@ export function BillingPage() {
           />
         ))}
       </div>
+      <PackageAddons />
+      <a className="text-sm text-indigo-600 underline" href="mailto:zoraiz1002@gmail.com?subject=DocVault%20Enterprise">{t('billing.enterpriseQuote')}</a>
     </div>
   )
 }

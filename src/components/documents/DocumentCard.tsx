@@ -1,3 +1,4 @@
+import { useWorkspaces } from '../../contexts/WorkspaceContext'
 import { Link } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
 import type { Document, Folder } from '../../types/document'
@@ -25,6 +26,8 @@ export function DocumentCard({
   onMoveToFolder,
 }: DocumentCardProps) {
   const { t } = useTranslation()
+  const { canEdit } = useWorkspaces()
+  const writable = canEdit(document.user_id)
   const folder = folders.find((f) => f.id === document.folder_id) ?? null
   const folderStyles = folder ? FOLDER_COLOR_STYLES[folder.color] ?? FOLDER_COLOR_STYLES.slate : null
 
@@ -38,6 +41,7 @@ export function DocumentCard({
           {document.title}
         </Link>
         <button
+          disabled={!writable}
           onClick={() => onToggleImportant(document)}
           title={document.is_important ? t('documentCard.unmarkImportant') : t('documentCard.markImportant')}
           className={`shrink-0 text-lg leading-none ${
@@ -73,12 +77,13 @@ export function DocumentCard({
       <div>
         <label className="mb-1 block text-[11px] font-medium text-slate-400 dark:text-slate-500">{t('documentCard.folderLabel')}</label>
         <select
+          disabled={!writable}
           value={document.folder_id ?? ''}
           onChange={(e) => onMoveToFolder(document, e.target.value || null)}
           className="w-full rounded-lg border border-slate-200 dark:border-slate-700 px-2 py-1.5 text-xs text-slate-600 dark:text-slate-400 focus:border-indigo-500 focus:outline-none focus:ring-1 focus:ring-indigo-500"
         >
           <option value="">{t('documentCard.noFolder')}</option>
-          {folders.map((f) => (
+          {folders.filter(f => f.user_id === document.user_id).map((f) => (
             <option key={f.id} value={f.id}>
               {f.name}
             </option>
@@ -90,13 +95,13 @@ export function DocumentCard({
         <Link to={`/documents/${document.id}`} className="font-medium text-indigo-600 dark:text-indigo-400 hover:text-indigo-700 dark:hover:text-indigo-300">
           {t('documentCard.open')}
         </Link>
-        <button onClick={() => onRename(document)} className="text-slate-500 dark:text-slate-400 hover:text-slate-700 dark:hover:text-slate-300">
+        <button disabled={!writable} onClick={() => onRename(document)} className="text-slate-500 dark:text-slate-400 hover:text-slate-700 dark:hover:text-slate-300">
           {t('documentCard.rename')}
         </button>
-        <button onClick={() => onToggleArchive(document)} className="text-slate-500 dark:text-slate-400 hover:text-slate-700 dark:hover:text-slate-300">
+        <button disabled={!writable} onClick={() => onToggleArchive(document)} className="text-slate-500 dark:text-slate-400 hover:text-slate-700 dark:hover:text-slate-300">
           {document.is_archived ? t('documentCard.unarchive') : t('documentCard.archive')}
         </button>
-        <button onClick={() => onDelete(document)} className="ml-auto text-red-500 dark:text-red-400 hover:text-red-700 dark:hover:text-red-400">
+        <button disabled={!writable} onClick={() => onDelete(document)} className="ml-auto text-red-500 dark:text-red-400 hover:text-red-700 dark:hover:text-red-400">
           {t('common.delete')}
         </button>
       </div>

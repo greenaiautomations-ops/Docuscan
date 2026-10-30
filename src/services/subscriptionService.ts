@@ -64,3 +64,10 @@ export async function getMonthlyAiUsage(userId: string): Promise<number> {
   if (error) throw error
   return data?.credits ?? 0
 }
+
+export interface PackageUsage { pages: number; questions: number; storageBytes: number; pageLimit: number; questionLimit: number; storageLimit: number; seats: number }
+export async function getPackageUsage(ownerId: string): Promise<PackageUsage> {
+  const { data, error } = await supabase.rpc('package_usage', { p_owner: ownerId })
+  if (error) throw error
+  return data as PackageUsage
+}

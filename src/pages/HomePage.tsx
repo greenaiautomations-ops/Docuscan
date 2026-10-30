@@ -3,6 +3,8 @@ import { Link } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
 import { useAuth } from '../hooks/useAuth'
 import { Logo } from '../components/common/Logo'
+import { PackageAddons } from '../components/common/PackageAddons'
+import { SignOutButton } from '../components/common/SignOutButton'
 import { ThemeToggle } from '../components/common/ThemeToggle'
 import { LanguageToggle } from '../components/common/LanguageToggle'
 import { TIERS, TIER_ORDER, formatTierPrice } from '../utils/entitlements'
@@ -65,12 +67,15 @@ export function HomePage() {
             </div>
             <div className="flex w-full flex-wrap items-center justify-end gap-2 sm:w-auto">
             {user ? (
+              <>
+              <SignOutButton />
               <Link
                 to="/dashboard"
                 className="rounded-lg bg-indigo-600 px-3.5 py-2 text-sm font-semibold text-white hover:bg-indigo-700"
               >
                 {t('home.nav.goToDashboard')}
               </Link>
+              </>
             ) : (
               <>
                 <Link
@@ -251,21 +256,14 @@ export function HomePage() {
                     ))}
                   </ul>
 
-                  {tier === 'enterprise' ? (
-                    <a
-                      href="mailto:zoraiz1002@gmail.com?subject=DocVault%20Enterprise"
-                      className="rounded-lg border border-slate-300 dark:border-slate-600 px-4 py-2 text-center text-sm font-semibold text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-800"
-                    >
-                      {t('home.pricing.contactCta')}
-                    </a>
-                  ) : (
+
                     <Link
                       to={user ? '/billing' : '/signup'}
                       className="rounded-lg bg-indigo-600 px-4 py-2 text-center text-sm font-semibold text-white hover:bg-indigo-700"
                     >
                       {t('home.pricing.cta')}
                     </Link>
-                  )}
+
                 </div>
               )
             })}
@@ -274,6 +272,7 @@ export function HomePage() {
       </section>
 
 <p className="mx-auto max-w-6xl px-4 pb-8 text-sm text-slate-500 dark:text-slate-400">{t('billing.usageNote')}</p>
+      <div className="mx-auto max-w-6xl px-4 pb-12"><p className="mb-4 text-sm text-slate-500">{t('billing.vatNote')}</p><PackageAddons /><a className="mt-4 inline-block text-sm text-indigo-600 underline" href="mailto:zoraiz1002@gmail.com?subject=DocVault%20Enterprise">{t('billing.enterpriseQuote')}</a></div>
       {/* Final CTA */}
       {!user && (
         <section className="border-t border-slate-100 dark:border-slate-800 bg-indigo-600 py-16">

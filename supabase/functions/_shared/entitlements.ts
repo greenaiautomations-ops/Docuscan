@@ -15,10 +15,10 @@ export interface TierDefinition {
 }
 
 export const TIERS: Record<Tier, TierDefinition> = {
-  free: { id: 'free', documentLimit: 10, translation: false, explain: false, askAi: false },
-  basic: { id: 'basic', documentLimit: 100, translation: true, explain: true, askAi: false },
-  pro: { id: 'pro', documentLimit: 1000, translation: true, explain: true, askAi: true },
-  enterprise: { id: 'enterprise', documentLimit: null, translation: true, explain: true, askAi: true },
+  free: { id: 'free', documentLimit: 20, translation: false, explain: false, askAi: true },
+  basic: { id: 'basic', documentLimit: 200, translation: true, explain: true, askAi: true },
+  pro: { id: 'pro', documentLimit: 1500, translation: true, explain: true, askAi: true },
+  enterprise: { id: 'enterprise', documentLimit: 5000, translation: true, explain: true, askAi: true },
 }
 
 export interface Entitlements {
@@ -76,11 +76,7 @@ export function computeEntitlements(profile: ProfileSubscriptionFields): Entitle
 
 // deno-lint-ignore no-explicit-any
 export async function getCallerEntitlements(supabase: any, userId: string): Promise<Entitlements> {
-  const { data, error } = await supabase
-    .from('profiles')
-    .select('role, subscription_tier, subscription_status, is_comp_access')
-    .eq('user_id', userId)
-    .maybeSingle()
+  const { data, error } = await supabase.rpc('workspace_plan', { p_owner: userId })
 
   if (error || !data) {
     // Fail closed: if we can't confirm entitlements, treat as Free rather

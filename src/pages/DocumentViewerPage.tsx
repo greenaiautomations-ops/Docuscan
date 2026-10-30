@@ -35,6 +35,8 @@ import { PaymentModal } from '../components/events/PaymentModal'
 import { getEventsForDocument, completeEvent, snoozeEvent } from '../services/eventService'
 import { getPaymentsForDocument, markPaymentPaid } from '../services/paymentService'
 import { setDocumentFolder } from '../services/folderService'
+import { useWorkspaces } from '../contexts/WorkspaceContext'
+import { computeEntitlements } from '../utils/entitlements'
 import { useAuth } from '../hooks/useAuth'
 import { FolderModal } from '../components/documents/FolderModal'
 import { useFolders } from '../hooks/useFolders'
@@ -46,7 +48,11 @@ export function DocumentViewerPage() {
   const { id } = useParams<{ id: string }>()
   const navigate = useNavigate()
   const { document, setDocument, loading, error, refresh } = useDocumentProcessing(id)
-  const { entitlements } = useAuth()
+  const { entitlements: personalEntitlements, user } = useAuth()
+  const { workspaces, canEdit } = useWorkspaces()
+  const shared = workspaces.some(w => w.ownerId === document?.user_id && w.ownerId !== user?.id)
+  const entitlements = shared ? computeEntitlements({ role: 'user', subscription_tier: 'enterprise', subscription_status: 'active', is_comp_access: false }) : personalEntitlements
+  const writable = document ? canEdit(document.user_id) : false
   const { t } = useTranslation()
 
   const [previewUrl, setPreviewUrl] = useState<string | null>(null)
@@ -244,7 +250,7 @@ export function DocumentViewerPage() {
               {document.is_archived ? t('documentViewerPage.unarchive') : t('documentViewerPage.archive')}
             </button>
             <button
-              onClick={() => setDeleteOpen(true)}
+              disabled={!writable} onClick={() => setDeleteOpen(true)}
               className="rounded-lg border border-red-300 dark:border-red-500/40 px-3 py-1.5 text-sm font-medium text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-500/10"
             >
               {t('documentViewerPage.delete')}
@@ -353,7 +359,7 @@ export function DocumentViewerPage() {
           {isAnalyzed && (
             <div className="flex flex-wrap gap-2">
               <button
-                onClick={entitlements.explain ? openExplain : () => navigate('/billing')}
+                disabled={!writable} onClick={entitlements.explain ? openExplain : () => navigate('/billing')}
                 title={entitlements.explain ? undefined : t('documentViewerPage.upgradeExplainTitle')}
                 className={`rounded-lg border px-3 py-1.5 text-sm font-medium ${
                   entitlements.explain
@@ -364,7 +370,7 @@ export function DocumentViewerPage() {
                 {t('documentViewerPage.explain')}{!entitlements.explain && ' 🔒'}
               </button>
               <button
-                onClick={entitlements.translation ? () => setTranslateOpen(true) : () => navigate('/billing')}
+                disabled={!writable} onClick={entitlements.translation ? () => setTranslateOpen(true) : () => navigate('/billing')}
                 title={entitlements.translation ? undefined : t('documentViewerPage.upgradeTranslateTitle')}
                 className={`rounded-lg border px-3 py-1.5 text-sm font-medium ${
                   entitlements.translation
@@ -375,7 +381,7 @@ export function DocumentViewerPage() {
                 {t('documentViewerPage.translate')}{!entitlements.translation && ' 🔒'}
               </button>
               <button
-                onClick={entitlements.askAi ? openAskAi : () => navigate('/billing')}
+                disabled={!writable} onClick={entitlements.askAi ? openAskAi : () => navigate('/billing')}
                 title={entitlements.askAi ? undefined : t('documentViewerPage.upgradeAskAiTitle')}
                 className={`rounded-lg border px-3 py-1.5 text-sm font-medium ${
                   entitlements.askAi
@@ -387,7 +393,7 @@ export function DocumentViewerPage() {
               </button>
               {analysis && (
                 <button
-                  onClick={() => setEditOpen(true)}
+                  disabled={!writable} onClick={() => setEditOpen(true)}
                   className="rounded-lg border border-slate-300 dark:border-slate-600 px-3 py-1.5 text-sm font-medium text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-800"
                 >
                   {t('documentViewerPage.editInformation')}
@@ -395,7 +401,7 @@ export function DocumentViewerPage() {
               )}
               <button
                 onClick={handleRetry}
-                disabled={retrying}
+                disabled={retrying || !writable}
                 className="rounded-lg border border-slate-300 dark:border-slate-600 px-3 py-1.5 text-sm font-medium text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-800 disabled:opacity-60"
               >
                 {retrying ? t('documentViewerPage.retrying') : t('documentViewerPage.retryProcessing')}
@@ -422,7 +428,7 @@ export function DocumentViewerPage() {
           <div className="mb-2 flex items-center justify-between">
             <h2 className="text-sm font-semibold text-slate-700 dark:text-slate-300">{t('documentViewerPage.folder')}</h2>
             <button
-              onClick={() => setFolderModalOpen(true)}
+              disabled={!writable} onClick={() => setFolderModalOpen(true)}
               className="text-xs font-medium text-indigo-600 dark:text-indigo-400 hover:text-indigo-700 dark:hover:text-indigo-300"
             >
               {t('documentViewerPage.newFolder')}
@@ -434,7 +440,7 @@ export function DocumentViewerPage() {
             className="w-full rounded-lg border border-slate-300 dark:border-slate-600 px-3 py-2 text-sm focus:border-indigo-500 focus:outline-none focus:ring-1 focus:ring-indigo-500"
           >
             <option value="">{t('documentViewerPage.noFolder')}</option>
-            {folders.map((f) => (
+            {folders.filter(f => f.user_id === document.user_id).map((f) => (
               <option key={f.id} value={f.id}>
                 {f.name}
               </option>

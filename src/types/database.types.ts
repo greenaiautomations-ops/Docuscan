@@ -617,6 +617,16 @@ export interface Database {
     }
     Views: Record<string, never>
     Functions: {
+      workspace_snapshot: { Args: Record<string, never>; Returns: unknown }
+      workspace_plan: { Args: { p_owner: string }; Returns: unknown }
+      can_workspace: { Args: { p_owner: string; p_write?: boolean }; Returns: boolean }
+      create_workspace: { Args: { p_name: string }; Returns: undefined }
+      invite_workspace_member: { Args: { p_owner: string; p_email: string; p_role: string }; Returns: string }
+      accept_workspace_invite: { Args: { p_invite: string }; Returns: undefined }
+      change_workspace_member: { Args: { p_owner: string; p_user: string; p_role: string }; Returns: undefined }
+      revoke_workspace_invite: { Args: { p_invite: string }; Returns: undefined }
+      package_usage: { Args: { p_owner: string }; Returns: unknown }
+
       refresh_document_search_vector: {
         Args: { p_document_id: string }
         Returns: undefined

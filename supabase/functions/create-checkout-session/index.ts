@@ -11,7 +11,7 @@
 
 import { handleCors, jsonResponse } from '../_shared/cors.ts'
 import { getUserClient, requireUser, HttpError } from '../_shared/supabaseClient.ts'
-import { getPriceId, getStripeClient, type PaidTier } from '../_shared/stripeClient.ts'
+import { appOrigin, validatePrice, getPriceId, getStripeClient, type PaidTier } from '../_shared/stripeClient.ts'
 
 Deno.serve(async (req: Request) => {
   const cors = handleCors(req)
@@ -28,11 +28,11 @@ Deno.serve(async (req: Request) => {
     const body = await req.json().catch(() => ({}))
     const tier: PaidTier = body.tier
 
-    if (tier !== 'basic' && tier !== 'pro') {
-      throw new HttpError(400, 'tier must be "basic" or "pro".')
+    if (tier !== 'basic' && tier !== 'pro' && tier !== 'enterprise') {
+      throw new HttpError(400, 'tier must be basic, pro, or enterprise (Business).')
     }
 
-    const origin = req.headers.get('origin') ?? Deno.env.get('APP_URL') ?? 'http://localhost:5173'
+    const origin = appOrigin()
 
     const { data: profile, error: profileError } = await supabase
       .from('profiles')
@@ -42,14 +42,15 @@ Deno.serve(async (req: Request) => {
     if (profileError) throw new HttpError(500, profileError.message)
 
     if (
-      profile?.subscription_tier === tier &&
+      profile?.subscription_tier && profile.subscription_tier !== 'free' &&
       (profile.subscription_status === 'active' || profile.subscription_status === 'trialing')
     ) {
-      throw new HttpError(409, `You're already on the ${tier === 'basic' ? 'Basic' : 'Pro'} plan.`)
+      throw new HttpError(409, `Manage your existing subscription in the billing portal.`)
     }
 
     const stripe = getStripeClient()
     const priceId = getPriceId(tier)
+    await validatePrice(priceId, { basic: 699, pro: 1799, enterprise: 4900 }[tier], true)
 
     const session = await stripe.checkout.sessions.create({
       mode: 'subscription',
@@ -66,6 +67,8 @@ Deno.serve(async (req: Request) => {
       success_url: `${origin}/billing?checkout=success`,
       cancel_url: `${origin}/billing?checkout=canceled`,
       allow_promotion_codes: true,
+      automatic_tax: { enabled: true },
+      billing_address_collection: 'required',
     })
 
     if (!session.url) throw new HttpError(500, 'Stripe did not return a checkout URL.')

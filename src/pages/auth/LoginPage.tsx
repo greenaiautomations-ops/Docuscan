@@ -52,6 +52,7 @@ export function LoginPage() {
         <p className="mt-4 text-sm text-slate-500 dark:text-slate-400">{t('auth.login.subtitle')}</p>
 
         {sessionStorage.getItem('docvault:session-expired') && <p role="status" className="mt-4 text-sm text-amber-700 dark:text-amber-300">{t('auth.login.sessionExpired')}</p>}
+        <p className="mt-3 text-xs text-slate-500">{t('auth.login.sessionPolicy')}</p>
         <form onSubmit={handleSubmit} className="mt-6 flex flex-col gap-4">
           <div>
             <label htmlFor="email" className="mb-1 block text-sm font-medium text-slate-700 dark:text-slate-300">

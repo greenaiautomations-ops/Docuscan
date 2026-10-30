@@ -1,3 +1,4 @@
+import { consumePackageUsage } from '../_shared/packageUsage.ts'
 import { withAiBudget } from '../_shared/aiBudget.ts'
 // Supabase Edge Function: chat-with-document
 // Answers a question about ONE document using only that document's OCR text
@@ -40,25 +41,27 @@ Deno.serve(async (req: Request) => {
       throw new HttpError(400, 'message is too long (max 2000 characters).')
     }
 
-    const entitlements = await getCallerEntitlements(supabase, user.id)
+    const { data: document, error: docError } = await supabase
+      .from('documents')
+      .select('id, user_id, title, document_type, status')
+      .eq('id', documentId)
+      .maybeSingle()
+    if (docError) throw new HttpError(500, docError.message)
+    if (!document) throw new HttpError(404, 'Document not found.')
+
+    const entitlements = await getCallerEntitlements(supabase, document.user_id)
     const allowed = mode === 'explain' ? entitlements.explain : entitlements.askAi
     if (!allowed) {
       throw new HttpError(
         403,
         mode === 'explain'
           ? 'FEATURE_LOCKED: Explain is included from the Basic plan. Upgrade to unlock it.'
-          : 'FEATURE_LOCKED: Ask AI is included from the Pro plan. Upgrade to unlock it.',
+          : 'FEATURE_LOCKED: AI questions are unavailable for this workspace.',
       )
     }
 
-    const { data: document, error: docError } = await supabase
-      .from('documents')
-      .select('id, title, document_type, status')
-      .eq('id', documentId)
-      .maybeSingle()
-    if (docError) throw new HttpError(500, docError.message)
-    if (!document) throw new HttpError(404, 'Document not found.')
-
+    const { data: canWrite } = await supabase.rpc('can_workspace', { p_owner: document.user_id, p_write: true })
+    if (!canWrite) throw new HttpError(403, 'Viewers cannot run AI requests.')
     if (document.status !== 'analyzed' && document.status !== 'completed') {
       throw new HttpError(409, 'This document has not finished processing yet.')
     }
@@ -105,6 +108,7 @@ Deno.serve(async (req: Request) => {
       content: row.content,
     }))
 
+    await consumePackageUsage(document.user_id, 'questions', 1)
     const { error: insertUserError } = await supabase.from('document_chat_messages').insert({
       user_id: user.id,
       document_id: documentId,
@@ -113,7 +117,7 @@ Deno.serve(async (req: Request) => {
     })
     if (insertUserError) throw new HttpError(500, insertUserError.message)
 
-    const reply = await withAiBudget(user.id, () => answerQuestion(context, history, mode === 'explain' ? 'Explain this document in plain language.' : message))
+    const reply = await withAiBudget(document.user_id, () => answerQuestion(context, history, mode === 'explain' ? 'Explain this document in plain language.' : message))
 
     const { data: assistantRow, error: insertAssistantError } = await supabase
       .from('document_chat_messages')

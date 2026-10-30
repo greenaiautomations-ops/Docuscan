@@ -45,8 +45,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       const userId = newSession?.user.id
       if (userId) {
         const key = activityKey(userId)
-        const previous = localStorage.getItem(key)
-        if (signingIn.current || previous === null) localStorage.setItem(key, String(Date.now()))
+        const previous = sessionStorage.getItem(key)
+        if (signingIn.current || currentUser.current !== userId || previous === null) sessionStorage.setItem(key, String(Date.now()))
         else if (isInactive(Number(previous))) {
           currentUser.current = null
           setSession(null)
@@ -75,18 +75,32 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     }
   }, [])
 
+  useEffect(() => {
+    if (!session) return
+    const revoke = () => {
+      // keepalive can finish during page teardown; offline close still discards
+      // local credentials because persistSession is false.
+      void fetch(`${import.meta.env.VITE_SUPABASE_URL}/auth/v1/logout?scope=local`, {
+        method: 'POST', keepalive: true,
+        headers: { apikey: import.meta.env.VITE_SUPABASE_ANON_KEY, Authorization: `Bearer ${session.access_token}` },
+      }).catch(() => undefined)
+    }
+    window.addEventListener('pagehide', revoke)
+    return () => window.removeEventListener('pagehide', revoke)
+  }, [session])
+
   const sessionUserId = session?.user.id
-  // Persist activity across reloads and share it between tabs. Token refresh is
+  // Track activity for this page session. Token refresh is
   // deliberately not activity. Check expiry before accepting a new interaction.
   useEffect(() => {
     if (!sessionUserId) return
     const key = activityKey(sessionUserId)
-    let last = Number(localStorage.getItem(key)) || Date.now()
-    localStorage.setItem(key, String(last))
+    let last = Number(sessionStorage.getItem(key)) || Date.now()
+    sessionStorage.setItem(key, String(last))
     let expired = false
     let timer: ReturnType<typeof setTimeout>
     const check = () => {
-      last = Number(localStorage.getItem(key)) || last
+      last = Number(sessionStorage.getItem(key)) || last
       if (isInactive(last)) {
         if (expired) return
         expired = true
@@ -108,19 +122,17 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       if (expired || document.visibilityState === 'hidden') return
       if (Date.now() - last < 1000) return
       last = Date.now()
-      localStorage.setItem(key, String(last))
+      sessionStorage.setItem(key, String(last))
       check()
     }
     const events = ['pointerdown', 'pointermove', 'keydown', 'scroll', 'touchstart'] as const
     events.forEach(event => window.addEventListener(event, activity, { passive: true }))
-    window.addEventListener('storage', check)
     window.addEventListener('focus', check)
     document.addEventListener('visibilitychange', check)
     check()
     return () => {
       clearTimeout(timer)
       events.forEach(event => window.removeEventListener(event, activity))
-      window.removeEventListener('storage', check)
       window.removeEventListener('focus', check)
       document.removeEventListener('visibilitychange', check)
     }

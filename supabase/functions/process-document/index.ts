@@ -1,3 +1,5 @@
+import { PDFDocument } from 'npm:pdf-lib@1.17.1'
+import { consumePackageUsage } from '../_shared/packageUsage.ts'
 import { withAiBudget } from '../_shared/aiBudget.ts'
 // Supabase Edge Function: process-document
 // Pipeline: download file -> OCR -> language detection -> classification ->
@@ -48,8 +50,10 @@ Deno.serve(async (req: Request) => {
     if (docError) throw new HttpError(500, docError.message)
     if (!document) throw new HttpError(404, 'Document not found.')
 
+    const { data: canWrite } = await supabase.rpc('can_workspace', { p_owner: document.user_id, p_write: true })
+    if (!canWrite) throw new HttpError(403, 'Your workspace role cannot process documents.')
     try {
-      await withAiBudget(user.id, () => runPipeline(supabase, document))
+      await withAiBudget(document.user_id, () => runPipeline(supabase, document))
       return jsonResponse({ success: true, documentId, status: 'completed' })
     } catch (pipelineError) {
       const message =
@@ -82,6 +86,22 @@ Deno.serve(async (req: Request) => {
 async function runPipeline(supabase: any, document: any) {
   const documentId = document.id as string
 
+  // ---- 1. Download the file from Storage ----
+  const { data: fileBlob, error: downloadError } = await supabase.storage
+    .from(DOCUMENTS_BUCKET)
+    .download(document.file_path)
+  if (downloadError) throw new Error(`Could not download file: ${downloadError.message}`)
+
+  const arrayBuffer = await fileBlob.arrayBuffer()
+  let pages = 1
+  if (document.file_type === 'application/pdf') {
+    try { pages = (await PDFDocument.load(arrayBuffer)).getPageCount() }
+    catch { throw new HttpError(400, 'This PDF is encrypted or unreadable. Upload an unlocked PDF.') }
+  }
+  if (pages > 100) throw new HttpError(400, 'Split PDFs into files of at most 100 pages before processing.')
+  await consumePackageUsage(document.user_id, 'pages', pages)
+  const base64Data = encodeBase64(new Uint8Array(arrayBuffer))
+
   // Reset for a clean run (also makes retries idempotent).
   await supabase
     .from('documents')
@@ -94,15 +114,6 @@ async function runPipeline(supabase: any, document: any) {
     supabase.from('document_analysis').delete().eq('document_id', documentId),
     supabase.from('document_embeddings').delete().eq('document_id', documentId),
   ])
-
-  // ---- 1. Download the file from Storage ----
-  const { data: fileBlob, error: downloadError } = await supabase.storage
-    .from(DOCUMENTS_BUCKET)
-    .download(document.file_path)
-  if (downloadError) throw new Error(`Could not download file: ${downloadError.message}`)
-
-  const arrayBuffer = await fileBlob.arrayBuffer()
-  const base64Data = encodeBase64(new Uint8Array(arrayBuffer))
 
   // ---- 2. OCR ----
   await supabase

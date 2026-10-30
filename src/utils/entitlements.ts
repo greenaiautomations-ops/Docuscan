@@ -12,7 +12,7 @@
 export type Tier = 'free' | 'basic' | 'pro' | 'enterprise'
 
 /** Tiers that are actually purchasable via Stripe Checkout (Free has no checkout; Enterprise is sales-assisted). */
-export type PaidTier = 'basic' | 'pro'
+export type PaidTier = 'basic' | 'pro' | 'enterprise'
 
 // Display text (label/tagline/features) intentionally lives in the i18n
 // locale files (`billing.tiers.<tier>.*` in src/i18n/locales/*.json), not
@@ -36,23 +36,23 @@ export const TIERS: Record<Tier, TierDefinition> = {
   free: {
     id: 'free',
     priceEuros: 0,
-    documentLimit: 10,
+    documentLimit: 20,
     translation: false,
     explain: false,
-    askAi: false,
+    askAi: true,
   },
   basic: {
     id: 'basic',
-    priceEuros: 5,
-    documentLimit: 100,
+    priceEuros: 6.99,
+    documentLimit: 200,
     translation: true,
     explain: true,
-    askAi: false,
+    askAi: true,
   },
   pro: {
     id: 'pro',
-    priceEuros: 14.99,
-    documentLimit: 1000,
+    priceEuros: 17.99,
+    documentLimit: 1500,
     translation: true,
     explain: true,
     askAi: true,
@@ -60,8 +60,8 @@ export const TIERS: Record<Tier, TierDefinition> = {
   },
   enterprise: {
     id: 'enterprise',
-    priceEuros: null,
-    documentLimit: null,
+    priceEuros: 49,
+    documentLimit: 5000,
     translation: true,
     explain: true,
     askAi: true,
@@ -134,7 +134,9 @@ export function computeEntitlements(profile: ProfileSubscriptionFields): Entitle
 export function formatTierPrice(tier: TierDefinition, t: (key: string) => string): string {
   if (tier.priceEuros === null) return t('billing.contactUs')
   if (tier.priceEuros === 0) return t('billing.free')
-  return `€${tier.priceEuros}${t('billing.perMonth')}`
+  return `${tier.id === 'enterprise' ? t('billing.from') : ''}€${tier.priceEuros}${t('billing.perMonth')}`
 }
 
 export const AI_CREDIT_LIMITS: Record<Tier, number> = { free: 1_000_000, basic: 4_000_000, pro: 16_000_000, enterprise: 64_000_000 }
+
+export const PACKAGE_LIMITS = { free: { pages: 30, questions: 3, storageBytes: 100_000_000 }, basic: { pages: 150, questions: 30, storageBytes: 1_000_000_000 }, pro: { pages: 750, questions: 200, storageBytes: 10_000_000_000 }, enterprise: { pages: 2000, questions: 500, storageBytes: 25_000_000_000 } } as const

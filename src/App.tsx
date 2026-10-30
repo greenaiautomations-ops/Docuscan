@@ -1,4 +1,6 @@
 import { BrowserRouter, Routes, Route } from 'react-router-dom'
+import { WorkspaceProvider } from './contexts/WorkspaceContext'
+import { TeamsPage } from './pages/TeamsPage'
 import { AuthProvider } from './contexts/AuthContext'
 import { ThemeProvider } from './contexts/ThemeContext'
 import { ProtectedRoute } from './components/layout/ProtectedRoute'
@@ -26,6 +28,7 @@ function App() {
     <ThemeProvider>
       <BrowserRouter>
         <AuthProvider>
+          <WorkspaceProvider>
           <Routes>
             <Route path="/" element={<HomePage />} />
             <Route path="/login" element={<LoginPage />} />
@@ -47,6 +50,7 @@ function App() {
               <Route path="/payments" element={<PaymentsPage />} />
               <Route path="/deadlines" element={<DeadlinesPage />} />
               <Route path="/notifications" element={<NotificationsPage />} />
+              <Route path="/teams" element={<TeamsPage />} />
               <Route path="/billing" element={<BillingPage />} />
               <Route
                 path="/admin"
@@ -61,6 +65,7 @@ function App() {
 
             <Route path="*" element={<NotFoundPage />} />
           </Routes>
+          </WorkspaceProvider>
         </AuthProvider>
       </BrowserRouter>
     </ThemeProvider>

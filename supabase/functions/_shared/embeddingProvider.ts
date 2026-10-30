@@ -12,7 +12,7 @@ const EMBEDDING_DIMENSIONS = 512 // matches document_embeddings.embedding vector
  * configured, or the request fails, callers should treat a thrown error as
  * non-fatal and simply skip storing embeddings.
  */
-export async function generateEmbedding(text: string): Promise<number[]> {
+export async function generateEmbedding(text: string, taskType: 'RETRIEVAL_DOCUMENT' | 'RETRIEVAL_QUERY' = 'RETRIEVAL_DOCUMENT'): Promise<number[]> {
   const apiKey = Deno.env.get('GEMINI_API_KEY')
   if (!apiKey) {
     throw new Error('GEMINI_API_KEY is not configured; skipping embedding generation.')
@@ -34,7 +34,7 @@ export async function generateEmbedding(text: string): Promise<number[]> {
     body: JSON.stringify({
       content: { parts: [{ text: text.slice(0, 8000) }] },
       outputDimensionality: EMBEDDING_DIMENSIONS,
-      taskType: 'RETRIEVAL_DOCUMENT',
+      taskType,
     }),
   })
 

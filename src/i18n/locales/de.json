@@ -33,7 +33,8 @@
     "notifications": "Benachrichtigungen",
     "billing": "Abrechnung",
     "settings": "Einstellungen",
-    "admin": "Admin"
+    "admin": "Admin",
+    "teams": "Teams"
   },
   "theme": {
     "label": "Design",
@@ -52,7 +53,8 @@
     "account": "Konto",
     "openMenu": "Menü öffnen",
     "signOut": "Abmelden",
-    "signOutError": "Abmelden fehlgeschlagen. Bitte erneut versuchen."
+    "signOutError": "Abmelden fehlgeschlagen. Bitte erneut versuchen.",
+    "signingOut": "Abmelden…"
   },
   "home": {
     "nav": {
@@ -66,7 +68,7 @@
       "subtitle": "DocVault liest, sortiert und versteht deine Unterlagen automatisch — Fristen, Zahlungen und wichtige Details werden erkannt, bevor du überhaupt fragst.",
       "ctaPrimary": "Kostenlos starten",
       "ctaSecondary": "Anmelden",
-      "trustNote": "Keine Kreditkarte für den kostenlosen Tarif nötig · 10 Dokumente inklusive"
+      "trustNote": "Keine Kreditkarte erforderlich · 20 gespeicherte Dokumente im kostenlosen Tarif"
     },
     "features": {
       "title": "Alles, was deine Unterlagen brauchen — an einem Ort",
@@ -163,53 +165,71 @@
     "tiers": {
       "free": {
         "label": "Kostenlos",
-        "tagline": "Teste DocVault mit deinen ersten Dokumenten.",
+        "tagline": "DocVault ausprobieren",
         "features": [
-          "Bis zu 10 Dokumente",
-          "OCR, Klassifizierung & Extraktion",
-          "KI-Zusammenfassung",
-          "Kalender, Fristen & Zahlungen",
-          "1 Million OCR-/KI-Credits pro Kalendermonat"
+          "20 gespeicherte Dokumente",
+          "30 OCR-Seiten/Monat",
+          "KI-Zusammenfassung & Klassifizierung",
+          "Kalender & Fristen",
+          "100 MB Speicher",
+          "3 KI-Fragen/Monat"
         ]
       },
       "basic": {
         "label": "Basic",
-        "tagline": "Für die regelmäßige Organisation privater oder familiärer Unterlagen.",
+        "tagline": "Einzelpersonen & Haushalte",
         "features": [
-          "Bis zu 100 Dokumente",
+          "200 gespeicherte Dokumente",
+          "150 OCR-Seiten/Monat",
           "Alles aus Kostenlos",
-          "Erklärung in einfacher Sprache",
-          "Dokumente übersetzen",
-          "Ask AI nicht enthalten",
-          "4 Millionen OCR-/KI-Credits pro Kalendermonat"
+          "Erklären & Übersetzen",
+          "1 GB Speicher",
+          "30 KI-Fragen/Monat"
         ]
       },
       "pro": {
         "label": "Pro",
-        "tagline": "Voller Zugriff für Power-User und kleine Teams.",
+        "tagline": "Freiberufler & Vielnutzer",
         "features": [
-          "Bis zu 1.000 Dokumente",
+          "1.500 gespeicherte Dokumente",
+          "750 OCR-Seiten/Monat",
           "Alles aus Basic",
-          "Ask AI — mit jedem Dokument chatten",
-          "Priorisierter Support",
-          "16 Millionen OCR-/KI-Credits pro Kalendermonat"
+          "KI-Dokumentenchat & intelligente Suche",
+          "10 GB Speicher",
+          "200 KI-Fragen/Monat",
+          "Bevorzugter E-Mail-Support"
         ]
       },
       "enterprise": {
-        "label": "Enterprise",
-        "tagline": "Individuelles Volumen, Sicherheit und Support — nach Absprache.",
+        "label": "Business",
+        "tagline": "Kleine Teams & Unternehmen",
         "features": [
-          "Unbegrenzte Dokumente",
+          "5.000 gespeicherte Dokumente",
+          "2.000 OCR-Seiten/Monat",
           "Alles aus Pro",
-          "Persönliches Onboarding",
-          "Individuelle Vereinbarung & Rechnungsstellung",
-          "64 Millionen OCR-/KI-Credits pro Kalendermonat"
+          "3 Teammitglieder inklusive",
+          "25 GB gemeinsamer Speicher",
+          "500 gemeinsame KI-Fragen/Monat",
+          "Rollen, Berechtigungen & Audit-Protokolle"
         ]
       }
     },
-    "usageNote": "Speicherlimits zählen gespeicherte Dokumente, nicht monatliche Uploads. OCR, Zusammenfassungen, Übersetzung und Chat teilen sich das monatliche KI-Kontingent; es wird am 1. (UTC) zurückgesetzt. Eingabe-Tokens kosten 1 Credit, Ausgabe- und Denk-Tokens 6. Anfragen reservieren zunächst die maximale Ausgabe; ungenutzte Credits werden nach erfolgreicher Antwort zurückgegeben. Fehlversuche können Credits verbrauchen. Keine automatischen Mehrkosten.",
+    "usageNote": "Kontingente werden am 1. jedes Monats (UTC) zurückgesetzt. Jede verarbeitete PDF-Seite oder jedes Bild zählt als OCR-Seite; erneute Verarbeitung zählt erneut. Jede Chat-, Erklären- oder Übersetzungsanfrage zählt als KI-Frage. Add-ons sind optional; keine automatischen Mehrkosten. Sehr lange Anfragen unterliegen Token-Limits.",
     "usage": "Verbrauchte OCR-/KI-Credits diesen Monat: {{used}} / {{total}}",
-    "usageUnavailable": "Der aktuelle KI-Verbrauch ist nicht verfügbar. Dein monatliches Kontingent gilt weiterhin."
+    "usageUnavailable": "Verbrauch nicht verfügbar. Die Kontingente gelten weiterhin.",
+    "from": "Ab ",
+    "vatNote": "Einführungspreise inkl. MwSt. Größere Enterprise-Konten: individuelles Angebot anfragen.",
+    "addonsTitle": "Optionale Add-ons",
+    "addonsNote": "Seiten- und Fragenpakete sind Einmalkäufe für den aktuellen Kalendermonat. Speicher und Teamplätze verlängern sich monatlich bis zur Kündigung.",
+    "buyAddon": "Add-on kaufen",
+    "addons": {
+      "pages": "100 zusätzliche OCR-Seiten",
+      "questions": "100 zusätzliche KI-Fragen",
+      "storage": "5 GB zusätzlicher Speicher",
+      "seats": "Zusätzliches Business-Teammitglied"
+    },
+    "enterpriseQuote": "Größeres Enterprise-Konto? Individuelles Angebot anfragen.",
+    "packageUsage": "Diesen Monat: {{pages}} / {{pageLimit}} OCR-Seiten · {{questions}} / {{questionLimit}} KI-Anfragen · {{storage}} / {{storageLimit}} GB gespeichert"
   },
   "billingPage": {
     "title": "Abrechnung & Tarife",
@@ -256,7 +276,8 @@
         "emptyPassword": "Gib dein Passwort ein.",
         "generic": "Anmeldung nicht möglich."
       },
-      "sessionExpired": "Du wurdest nach 10 Minuten Inaktivität abgemeldet. Bitte melde dich erneut an."
+      "sessionExpired": "Du wurdest nach 10 Minuten Inaktivität abgemeldet. Bitte melde dich erneut an.",
+      "sessionPolicy": "Zum Schutz deiner Daten meldet dich das Schließen oder Neuladen dieser Seite ab. Innerhalb von DocVault bleibst du angemeldet."
     },
     "signup": {
       "subtitle": "Erstelle dein Konto",
@@ -948,5 +969,54 @@
   "dashboardWidgets": {
     "recentNotifications": "Neueste Benachrichtigungen",
     "allCaughtUp": "Sie sind auf dem neuesten Stand."
+  },
+  "teams": {
+    "title": "Teams & gemeinsame Bibliotheken",
+    "description": "Business-Bibliotheken teilen Dokumente, OCR-Seiten, KI-Fragen und Speicher. Eigentümer verwalten die Abrechnung, Admins Mitglieder, Bearbeiter Dokumente. Betrachter dürfen nur lesen.",
+    "failed": "Die Teamaktion ist fehlgeschlagen.",
+    "acceptNote": "Nimm die Einladung mit der verifizierten E-Mail-Adresse an, für die sie erstellt wurde.",
+    "accept": "Einladung annehmen",
+    "create": "Gemeinsame Bibliothek erstellen",
+    "shareNotice": "Mit einer gemeinsamen Bibliothek erhalten eingeladene Mitglieder nach Annahme Zugriff auf deine bestehende Bibliothek. Fahre nur fort, wenn diese Dokumente für dein Team bestimmt sind.",
+    "name": "Name der Bibliothek",
+    "businessRequired": "Business-Tarif erforderlich",
+    "library": "Gemeinsame Bibliothek",
+    "members": "Mitglieder & Berechtigungen",
+    "ownerIncluded": "Der Eigentümer belegt einen der drei enthaltenen Plätze. Offene Einladungen reservieren Plätze bis zur Annahme, zum Widerruf oder Ablauf.",
+    "role": "Rolle",
+    "removeConfirm": "Diesem Mitglied den Zugriff auf die gemeinsame Bibliothek entziehen?",
+    "remove": "Entfernen",
+    "email": "E-Mail-Adresse der Einladung",
+    "invite": "Einladungslink erstellen",
+    "inviteNote": "Teile den Link mit der genannten Person. Es wird keine E-Mail automatisch versendet. Einladungen gelten sieben Tage.",
+    "inviteLink": "Einladungslink",
+    "pending": "Offene Einladung",
+    "revoke": "Widerrufen",
+    "documents": "Gemeinsame Dokumente · letzte 100",
+    "upload": "In diese gemeinsame Bibliothek hochladen",
+    "refresh": "Dokumente aktualisieren",
+    "empty": "Noch keine gemeinsamen Dokumente.",
+    "audit": "Audit-Verlauf · letzte 50 Änderungen",
+    "auditNote": "Schreibgeschützter Verlauf von Dokument-, Ordner-, Termin-, Zahlungs- und Mitgliederänderungen. Akteure werden als Konto-ID erfasst.",
+    "system": "System",
+    "roles": {
+      "owner": "Eigentümer",
+      "admin": "Admin",
+      "editor": "Bearbeiter",
+      "viewer": "Betrachter"
+    }
+  },
+  "smartSearch": {
+    "title": "Intelligente Suche",
+    "description": "Beschreibe, was du suchst. Die semantische Suche findet verwandte Textstellen in verarbeiteten Dokumenten, auch bei anderer Wortwahl.",
+    "personal": "Meine Bibliothek",
+    "library": "Bibliothek durchsuchen",
+    "query": "Wonach suchst du?",
+    "placeholder": "Zum Beispiel: Rechnungen mit anstehenden Zahlungsfristen",
+    "search": "Suchen",
+    "searching": "Suche läuft…",
+    "upgrade": "Mit Pro oder Business verfügbar",
+    "failed": "Suche fehlgeschlagen.",
+    "empty": "Keine passenden indizierten Dokumente. Verarbeite zuerst Dokumente oder nutze unten die Stichwortsuche."
   }
 }

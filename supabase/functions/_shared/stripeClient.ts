@@ -25,11 +25,11 @@ export function getStripeClient(): Stripe {
   return cached
 }
 
-export type PaidTier = 'basic' | 'pro'
+export type PaidTier = 'basic' | 'pro' | 'enterprise'
 
 /** Stripe Price ids for the two self-serve paid tiers, created in the Stripe Dashboard (Products). */
 export function getPriceId(tier: PaidTier): string {
-  const envKey = tier === 'basic' ? 'STRIPE_PRICE_BASIC' : 'STRIPE_PRICE_PRO'
+  const envKey = tier === 'basic' ? 'STRIPE_PRICE_BASIC' : tier === 'pro' ? 'STRIPE_PRICE_PRO' : 'STRIPE_PRICE_BUSINESS'
   const priceId = Deno.env.get(envKey)
   if (!priceId) {
     throw new Error(
@@ -45,5 +45,31 @@ export function tierForPriceId(priceId: string | null | undefined): PaidTier | n
   if (!priceId) return null
   if (priceId === Deno.env.get('STRIPE_PRICE_BASIC')) return 'basic'
   if (priceId === Deno.env.get('STRIPE_PRICE_PRO')) return 'pro'
+  if (priceId === Deno.env.get('STRIPE_PRICE_BUSINESS')) return 'enterprise'
   return null
+}
+
+export type AddonKind = 'pages' | 'questions' | 'storage' | 'seats'
+export const ADDONS = {
+  pages: { cents: 200, recurring: false, env: 'STRIPE_PRICE_ADDON_PAGES' },
+  questions: { cents: 300, recurring: false, env: 'STRIPE_PRICE_ADDON_QUESTIONS' },
+  storage: { cents: 200, recurring: true, env: 'STRIPE_PRICE_ADDON_STORAGE' },
+  seats: { cents: 500, recurring: true, env: 'STRIPE_PRICE_ADDON_SEATS' },
+} as const
+export function getAddonPrice(kind: AddonKind): string {
+  const value = Deno.env.get(ADDONS[kind].env)
+  if (!value) throw new Error(`${ADDONS[kind].env} is not configured.`)
+  return value
+}
+export async function validatePrice(priceId: string, cents: number, recurring: boolean) {
+  const price = await getStripeClient().prices.retrieve(priceId)
+  if (!price.active || price.currency !== 'eur' || price.unit_amount !== cents || price.tax_behavior !== 'inclusive'
+    || (recurring ? price.recurring?.interval !== 'month' || price.recurring?.interval_count !== 1 : price.type !== 'one_time')) {
+    throw new Error('Checkout is unavailable: configure the current EUR, VAT-inclusive price before accepting payment.')
+  }
+}
+export function appOrigin(): string {
+  const url = Deno.env.get('APP_URL')
+  if (!url) throw new Error('APP_URL must be configured for safe checkout redirects.')
+  return new URL(url).origin
 }

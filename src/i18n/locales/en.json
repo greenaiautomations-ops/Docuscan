@@ -33,7 +33,8 @@
     "notifications": "Notifications",
     "billing": "Billing",
     "settings": "Settings",
-    "admin": "Admin"
+    "admin": "Admin",
+    "teams": "Teams"
   },
   "theme": {
     "label": "Theme",
@@ -52,7 +53,8 @@
     "account": "Account",
     "openMenu": "Open menu",
     "signOut": "Sign out",
-    "signOutError": "Could not sign out. Please try again."
+    "signOutError": "Could not sign out. Please try again.",
+    "signingOut": "Signing out…"
   },
   "home": {
     "nav": {
@@ -66,7 +68,7 @@
       "subtitle": "DocVault reads, sorts, and understands your paperwork automatically — deadlines, payments, and important details surfaced before you even ask.",
       "ctaPrimary": "Get started free",
       "ctaSecondary": "Sign in",
-      "trustNote": "No credit card required for the Free plan · 10 documents included"
+      "trustNote": "No credit card required · 20 stored documents on Free"
     },
     "features": {
       "title": "Everything your paperwork needs, in one place",
@@ -163,53 +165,71 @@
     "tiers": {
       "free": {
         "label": "Free",
-        "tagline": "Try DocVault with your first documents.",
+        "tagline": "Try DocVault",
         "features": [
-          "Up to 10 documents",
-          "OCR, classification & extraction",
-          "AI summary",
-          "Calendar, deadlines & payments",
-          "1 million OCR/AI credits per calendar month"
+          "20 stored documents",
+          "30 OCR pages/month",
+          "AI summary & classification",
+          "Calendar & deadlines",
+          "100 MB storage",
+          "3 AI questions/month"
         ]
       },
       "basic": {
         "label": "Basic",
-        "tagline": "For regularly organizing personal or household documents.",
+        "tagline": "Individuals & households",
         "features": [
-          "Up to 100 documents",
+          "200 stored documents",
+          "150 OCR pages/month",
           "Everything in Free",
-          "Explain in plain language",
-          "Translate documents",
-          "Ask AI not included",
-          "4 million OCR/AI credits per calendar month"
+          "Explain & translate",
+          "1 GB storage",
+          "30 AI questions/month"
         ]
       },
       "pro": {
         "label": "Pro",
-        "tagline": "Full access for power users and small teams.",
+        "tagline": "Freelancers & power users",
         "features": [
-          "Up to 1,000 documents",
+          "1,500 stored documents",
+          "750 OCR pages/month",
           "Everything in Basic",
-          "Ask AI — chat with any document",
-          "Priority support",
-          "16 million OCR/AI credits per calendar month"
+          "AI document chat & smart search",
+          "10 GB storage",
+          "200 AI questions/month",
+          "Priority email support"
         ]
       },
       "enterprise": {
-        "label": "Enterprise",
-        "tagline": "Custom volume, security, and support — by consultation and agreement.",
+        "label": "Business",
+        "tagline": "Small teams & companies",
         "features": [
-          "Unlimited documents",
+          "5,000 stored documents",
+          "2,000 OCR pages/month",
           "Everything in Pro",
-          "Dedicated onboarding",
-          "Custom agreement & invoicing",
-          "64 million OCR/AI credits per calendar month"
+          "3 team members included",
+          "25 GB shared storage",
+          "500 shared AI questions/month",
+          "Roles, permissions & audit logs"
         ]
       }
     },
-    "usageNote": "Storage limits count saved documents, not monthly uploads. OCR, summaries, translation and chat share the monthly AI allowance, which resets on the 1st (UTC). Input tokens use 1 credit; output and thinking tokens use 6. Requests reserve their maximum output first; unused credits return after a successful response. Failed attempts may consume credits. No automatic overage charges.",
+    "usageNote": "Allowances reset on the 1st of each month (UTC). Each PDF page or image processed counts as one OCR page; reprocessing counts again. Each chat, Explain or translation request counts as one AI question. Add-ons are optional; no automatic overage charges. Very long requests are subject to token limits.",
     "usage": "OCR/AI credits used this month: {{used}} / {{total}}",
-    "usageUnavailable": "Current AI usage is unavailable. Your monthly allowance still applies."
+    "usageUnavailable": "Usage is unavailable. Allowances still apply.",
+    "from": "From ",
+    "vatNote": "Launch prices include VAT. Larger Enterprise accounts: request a custom quote.",
+    "addonsTitle": "Optional add-ons",
+    "addonsNote": "Page and question packs are one-time purchases valid for the current calendar month. Storage and seats renew monthly until canceled.",
+    "buyAddon": "Buy add-on",
+    "addons": {
+      "pages": "Extra 100 OCR pages",
+      "questions": "Extra 100 AI questions",
+      "storage": "Extra 5 GB storage",
+      "seats": "Additional Business team member"
+    },
+    "enterpriseQuote": "Larger Enterprise account? Request a custom quote.",
+    "packageUsage": "This month: {{pages}} / {{pageLimit}} OCR pages · {{questions}} / {{questionLimit}} AI requests · {{storage}} / {{storageLimit}} GB stored"
   },
   "billingPage": {
     "title": "Billing & plans",
@@ -256,7 +276,8 @@
         "emptyPassword": "Enter your password.",
         "generic": "Could not sign in."
       },
-      "sessionExpired": "You were signed out after 10 minutes of inactivity. Please sign in again."
+      "sessionExpired": "You were signed out after 10 minutes of inactivity. Please sign in again.",
+      "sessionPolicy": "For your privacy, closing or refreshing this page signs you out. Navigation inside DocVault keeps you signed in."
     },
     "signup": {
       "subtitle": "Create your account",
@@ -948,5 +969,54 @@
   "dashboardWidgets": {
     "recentNotifications": "Recent notifications",
     "allCaughtUp": "You're all caught up."
+  },
+  "teams": {
+    "title": "Teams & shared libraries",
+    "description": "Business libraries share documents, OCR pages, AI questions and storage. Owners manage billing; admins manage members; editors change documents; viewers read only.",
+    "failed": "The team action failed.",
+    "acceptNote": "Accept this invitation using the verified email address it was sent to.",
+    "accept": "Accept invitation",
+    "create": "Create shared library",
+    "shareNotice": "Creating a shared library makes your existing library available to members you invite and who accept. Only continue if these documents are intended for your team.",
+    "name": "Library name",
+    "businessRequired": "Business plan required",
+    "library": "Shared library",
+    "members": "Members & permissions",
+    "ownerIncluded": "The owner occupies one of the three included seats. Pending invitations reserve seats until accepted, revoked or expired.",
+    "role": "Role",
+    "removeConfirm": "Remove this member’s access to this shared library?",
+    "remove": "Remove",
+    "email": "Invitation email",
+    "invite": "Create invitation link",
+    "inviteNote": "Share the link with the named person. No email is sent automatically. Invitations expire after seven days.",
+    "inviteLink": "Invitation link",
+    "pending": "Pending invitation",
+    "revoke": "Revoke",
+    "documents": "Shared documents · latest 100",
+    "upload": "Upload to this shared library",
+    "refresh": "Refresh documents",
+    "empty": "No shared documents yet.",
+    "audit": "Audit history · latest 50 changes",
+    "auditNote": "Read-only history of document, folder, event, payment and membership changes. Actors are recorded by account ID.",
+    "system": "System",
+    "roles": {
+      "owner": "Owner",
+      "admin": "Admin",
+      "editor": "Editor",
+      "viewer": "Viewer"
+    }
+  },
+  "smartSearch": {
+    "title": "Smart search",
+    "description": "Describe what you need. Semantic search finds related passages in processed documents, even when the wording differs.",
+    "personal": "My library",
+    "library": "Search library",
+    "query": "What are you looking for?",
+    "placeholder": "For example: bills with upcoming payment deadlines",
+    "search": "Search",
+    "searching": "Searching…",
+    "upgrade": "Available with Pro or Business",
+    "failed": "Search failed.",
+    "empty": "No matching indexed documents. Process documents first, or use keyword search below."
   }
 }

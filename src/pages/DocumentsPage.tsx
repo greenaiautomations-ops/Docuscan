@@ -1,3 +1,4 @@
+import { SmartSearch } from '../components/documents/SmartSearch'
 import { useMemo, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { useDocuments } from '../hooks/useDocuments'
@@ -83,6 +84,7 @@ export function DocumentsPage() {
         <UploadButton />
       </div>
 
+      <SmartSearch />
       <div className="flex flex-col gap-6 sm:flex-row">
         <FolderSidebar
           folders={folders}
